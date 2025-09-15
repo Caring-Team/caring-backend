@@ -41,14 +41,26 @@ jobs:
                 id: login-ecr
                 uses: aws-actions/amazon-ecr-login@v2
 
-            -   name: Docker 이미지 빌드
-                run: docker build -t caring-server .
+            # 이미지 태그( latest + sha ) 자동 생성
+            -   name: Docker meta
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ${{ env.IMAGE_URI }}
+                    tags: |
+                        type=raw,value=latest
+                        type=sha
 
-            -   name: ECR에 태그 추가
-                run: docker tag caring-server ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
-
-            -   name: ECR에 Docker 이미지 Push
-                run: docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+                # Dockerfile에서 build(멀티스테이지로 test/build 실행) + ECR 푸시
+            -   name: Build & Push to ECR
+                uses: docker/build-push-action@v6
+                with:
+                    context: .
+                    push: true
+                    tags: ${{ steps.meta.outputs.tags }}
+                    cache-from: type=gha
+                    cache-to: type=gha,mode=max
+                    platforms: linux/amd64
 
             -   name: EC2 접속 및 배포
                 uses: appleboy/ssh-action@v1.0.3
