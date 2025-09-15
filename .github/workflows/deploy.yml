@@ -9,7 +9,7 @@ env:
     AWS_REGION: ap-northeast-2
     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}   # 12자리 AWS 계정 ID
     ECR_REPO: caring-server
-    IMAGE_URI: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/caring-server
+    IMAGE_URI: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}
 
 permissions:
     id-token: write    # GitHub → AWS OIDC 필요
@@ -50,6 +50,7 @@ jobs:
                     tags: |
                         type=raw,value=latest
                         type=sha
+
 
         # ✨ 추가: Buildx를 docker-container 드라이버로
             -   name: Set up Docker Buildx
