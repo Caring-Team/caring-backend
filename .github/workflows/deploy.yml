@@ -9,7 +9,7 @@ env:
     AWS_REGION: ap-northeast-2
     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}   # 12자리 AWS 계정 ID
     ECR_REPO: caring-server
-    IMAGE_URI: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}
+    IMAGE_URI: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}
 
 permissions:
     id-token: write    # GitHub → AWS OIDC 필요
@@ -26,7 +26,7 @@ jobs:
                 uses: aws-actions/configure-aws-credentials@v4
                 with:
                     role-to-assume: arn:aws:iam::430118840639:role/GitHubActionsECRDeployRole
-                    aws-region: ${{ env.AWS_REGION }}
+                    aws-region: ${{ secrets.AWS_REGION }}
 
             -   name: ECR에 로그인
                 uses: aws-actions/amazon-ecr-login@v2
