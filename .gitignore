@@ -36,3 +36,6 @@ replay_pid*
 # Gradle
 .gradle/
 build/
+
+# application-dev.yml
+src/main/resources/application-dev.yml
