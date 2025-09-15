@@ -8,3 +8,4 @@ services:
             - SPRING_PROFILES_ACTIVE=prod
         volumes:
             - ./files:/app/files
+
