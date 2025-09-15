@@ -29,13 +29,18 @@ jobs:
                     aws-region: ${{ secrets.AWS_REGION }}
 
             -   name: ECR에 로그인
+                id: login-ecr
                 uses: aws-actions/amazon-ecr-login@v2
 
-            -   name: Docker 이미지 생성
-                run: docker build -t caring-server .
-
-            -   name: Docker 이미지에 Tag 붙이기
-                run: docker tag caring-server ${{ steps.login-ecr.outputs.registry }}/caring-server:latest
+            -   name: Docker 메타데이터 추출
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}
+                    tags: |
+                        type=ref,event=branch
+                        type=sha,prefix={{branch}}-
+                        latest
 
             -   name: Build & Push to ECR
                 uses: docker/build-push-action@v6
@@ -43,6 +48,7 @@ jobs:
                     context: .
                     push: true
                     tags: ${{ steps.meta.outputs.tags }}
+                    labels: ${{ steps.meta.outputs.labels }}
                     cache-from: type=gha
                     cache-to: type=gha,mode=max
 
@@ -54,14 +60,20 @@ jobs:
                     key: ${{ secrets.EC2_KEY }}
                     script: |
                         set -e
-                        AWS_REGION=${{ env.AWS_REGION }}
-                        IMAGE_URI=${{ env.IMAGE_URI }}
+                        AWS_REGION=${{ secrets.AWS_REGION }}
+                        ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+                        ECR_REPO=${{ secrets.ECR_REPO }}
                         
                         # EC2에서 ECR 로그인
                         aws ecr get-login-password --region ${AWS_REGION} \
-                          | docker login --username AWS --password-stdin ${IMAGE_URI%/*}
+                          | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                         
                         cd /apps/caring/prod
+                        
+                        # 최신 이미지 가져오기
+                        docker pull ${ECR_REGISTRY}/${ECR_REPO}:latest
+                        
+                        # 기존 컨테이너 정리
                         docker stop caring-server || true
                         docker rm caring-server || true
                         docker compose pull
