@@ -3,11 +3,8 @@ services:
         image: 430118840639.dkr.ecr.ap-northeast-2.amazonaws.com/caring-server:latest
         container_name: caring-server
         ports:
-            - "8080:8080"
+            - 8080:8080
         environment:
             - SPRING_PROFILES_ACTIVE=prod
-            - TZ=Asia/Seoul
         volumes:
-            - ./logs:/app/logs
             - ./files:/app/files
-        restart: always
