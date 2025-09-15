@@ -1,0 +1,69 @@
+name: Deploy to EC2
+
+on:
+    push:
+        branches: [ "main" ]
+    workflow_dispatch:
+
+env:
+    AWS_REGION: ap-northeast-2
+    AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}   # 12자리 AWS 계정 ID
+    ECR_REPO: caring-server
+    IMAGE_URI: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}
+
+permissions:
+    id-token: write    # GitHub → AWS OIDC 필요
+    contents: read
+
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Configure AWS
+                uses: aws-actions/configure-aws-credentials@v4
+                with:
+                    role-to-assume: arn:aws:iam::430118840639:role/GitHubActionsECRDeployRole
+                    aws-region: ${{ env.AWS_REGION }}
+
+            -   name: ECR에 로그인
+                uses: aws-actions/amazon-ecr-login@v2
+
+            -   name: Docker 이미지 생성
+                run: docker build -t caring-server .
+
+            -   name: Docker 이미지에 Tag 붙이기
+                run: docker tag caring-server ${{ steps.login-ecr.outputs.registry }}/caring-server:latest
+
+            -   name: Build & Push to ECR
+                uses: docker/build-push-action@v6
+                with:
+                    context: .
+                    push: true
+                    tags: ${{ steps.meta.outputs.tags }}
+                    cache-from: type=gha
+                    cache-to: type=gha,mode=max
+
+            -   name: EC2 접속 및 배포
+                uses: appleboy/ssh-action@v1.0.3
+                with:
+                    host: ${{ secrets.EC2_HOST }}
+                    username: ${{ secrets.EC2_USER }}   # ubuntu 또는 ec2-user
+                    key: ${{ secrets.EC2_KEY }}
+                    script: |
+                        set -e
+                        AWS_REGION=${{ env.AWS_REGION }}
+                        IMAGE_URI=${{ env.IMAGE_URI }}
+                        
+                        # EC2에서 ECR 로그인
+                        aws ecr get-login-password --region ${AWS_REGION} \
+                          | docker login --username AWS --password-stdin ${IMAGE_URI%/*}
+                        
+                        cd /apps/caring/prod
+                        docker stop caring-server || true
+                        docker rm caring-server || true
+                        docker compose pull
+                        docker compose up -d
+                        docker image prune -f
