@@ -1,120 +1,336 @@
-# caring-backend
+# 🏥 Caring Backend
 
-caring 백엔드 레포지토리입니다. 본 문서는 조직 레포지토리의 공통 규칙, 개발/배포 흐름, 인프라 개요, 환경변수/프로필 관리, 브랜치·이슈·PR 규칙, 코드 컨벤션, Swagger 계획을 정리합니다.
+> **케어링 플랫폼 백엔드 서비스** - 현대적이고 확장 가능한 케어 서비스 플랫폼
 
-## 1) 인프라 및 배포 개요
-- 기술 스택
-  - Java 17, Spring Boot 3.5.x (Web, Data JPA), Lombok, PostgreSQL
-- 프로필
-  - 기본 활성 프로필: dev (src/main/resources/application.yml)
-  - dev: 로컬 개발용, DDL auto=create, 8080 포트
-  - prod: 운영용, DDL auto=update, 환경변수로 DB 접속정보 주입
-- 컨테이너/이미지
-  - Dockerfile: Gradle 멀티스테이지 빌드 → Temurin 17 JRE로 app.jar 실행, EXPOSE 8080
-  - ECR 이미지: 430118840639.dkr.ecr.ap-northeast-2.amazonaws.com/caring-server:latest
-- 런타임
-  - docker-compose (서버): SPRING_PROFILES_ACTIVE=prod, 8080:8080 포트, /app/files 볼륨 마운트
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Latest-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Latest-blue.svg)](https://www.docker.com/)
+[![AWS](https://img.shields.io/badge/AWS-ECR%20%7C%20EC2%20%7C%20RDS-orange.svg)](https://aws.amazon.com/)
 
-### AWS 구성 요약
-- ECR: 애플리케이션 도커 이미지 저장소(caring-server)
-- EC2: 애플리케이션 컨테이너 실행 호스트
-- RDS(PostgreSQL): 운영 DB
+## 📋 목차
 
-### 배포 파이프라인
-- 흐름: develop 브랜치에 PR merge → main 브랜치로 push → GitHub Actions → 도커 이미지 빌드/푸시(ECR) → EC2에서 pull & 재기동
-- 필요 시나리오
-
-## 2) 환경변수 및 yml 관리
-- 파일 구성
-  - application.yml: 기본 프로필(dev) 지정
-  - application-dev.yml: 로컬 개발 DB (jdbc:postgresql://localhost:5432/caring), ddl-auto=create
-  - application-prod.yml: DATASOURCE_URL/USERNAME/PASSWORD 환경변수 사용, ddl-auto=update, show-sql=false
-
-  - 비밀번호/키 등 비밀정보는 코드에 커밋 금지. GitHub Actions Secrets, EC2 환경변수 또는 .env 파일(docker-compose에서 참조) 사용 권장
-  - 현재 dev yml에 비밀번호가 하드코딩되어 있으므로, 추후 환경변수로 전환 권장
-
-## 3) 로컬 개발
-- 요구사항: Java 17, Gradle(Wrapper 포함), PostgreSQL(로컬)
-- 실행
-  - 기본 dev 프로필 활성화로, `http://localhost:8080` 제공
-  - DB: 로컬 Postgres에 caring 데이터베이스/계정 생성 후 application-dev.yml 정보에 맞추기
-  - application-dev.yml 파일은 올리지 말아주세요!!
-
-## 4) 브랜치 전략
-- 기본 브랜치: main(배포), develop(통합)
-- 작업 브랜치 규칙: [type]/branch생성날짜-#issue번호-짧은-설명
-  - type: feat, fix, hotfix, refactor, chore, docs, test, ci, build, perf
-  - 예: feat/250918-#123-사용자-회원가입-기능추가, fix/250918-#231-기관관리-기능추가
-
-## 5) 이슈 규칙
-- 제목: [type] 간단 요약 (#issueId 선택)
-  - type: feat, fix, refactor, chore, docs, test, ci, build, perf, hotfix
-  - 예: [feat] 회원가입 API 추가
-- 본문 템플릿 권장
-  - 배경/목표, 완료 조건(AC), 체크리스트, 영향 범위(스키마/배포), 스크린샷/참고자료
-- 라벨: 영역(module), 우선순위(P0/1/2), 상태(TODO/DOING/REVIEW)
-
-## 6) PR 규칙과 리뷰 규칙
-- PR 대상: 본인기능브랜치 → develop, develop → main(릴리즈)
-- 제목: [type](scope): PR 요약 제목 (#issue)
-  - 예: [feat](auth): 회원가입 API 추가 (#123)
-- 본문
-    - [ ] 이슈 번호 연결
-    - [ ] 기능/버그 수정 내용 요약
-- 리뷰
-  - 최소 1~2인 승인, 셀프-머지 금지(상황에 따라 유지보수자 승인 필요)
-  - 변경 파일이 많으면 모듈/커밋 단위로 분리 제출
-  - 성능/보안/호환성/테스트 누락 관점 리뷰
-  - 최소 당일 24시간 내로 리뷰 후 merge 권장
-
-## 8) 코드 컨벤션
-- 언어/버전: Java 17, Spring Boot 3.5.x
-- 스타일: 의존성 주입은 생성자 사용(@RequiredArgsConstructor), 필드 주입 금지
-- 패키지 구조 MVC
-  - controller → service → repository
-- Null/Optional: NPE 방지 방어코드, Optional은 반환에 한정하여 사용
-- 로깅: lombok @Slf4j 또는 LoggerFactory, System.out 금지,
-- 예외: CustomException(에러코드 포함) 사용, ControllerAdvice로 일괄 처리
-
-## 9) 주석 방식
-- Javadoc 적극 사용: public 클래스/메서드, DTO, API 인터페이스에 문서화
-- /* 
--  *이렇게 사용하시면 됩니다. 
--  *@param xxx 설명
--  *@return 설명
--  */
-- 비즈니스 규칙/의도/경계조건은 코드 상단 블록 주석으로 명시
-- TODO/FIXME: 추적 가능한 이슈 번호와 함께 사용
-
-## 10) 계층 구조/폴더 구조
-- 기준 패키지: `com.caring.caringbackend`
-- 권장 구조
-  - domain: 도메인별 패키지로 분리 
-    - entity: JPA 엔티티
-    - repository: JPA 리포지토리
-    - service: 서비스/비즈니스 로직
-  - global: 공통/전역 설정
-    - config: 스프링 설정
-    - exception: 예외 처리
-    - util: 유틸리티 클래스
-    - security: 시큐리티 설정
-  - api 웹 계층
-    - controller: REST 컨트롤러
-    - dto: request/response DTO
-    - infra: 외부 API 연동, 파일 저장 등
-
-## 11) 사용할 의존성(현황)
-- spring-boot-starter-web, spring-boot-starter-data-jpa
-- lombok (compileOnly/annotationProcessor)
-- postgresql (runtimeOnly)
-- test: spring-boot-starter-test, junit-platform-launcher
-
-## 12) Swagger(OpenAPI)
-- 계획: springdoc-openapi 사용
-  - 의존성 예: `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.x`
-  - 설정 예: `/swagger-ui.html` 접근 허용, 프로필 별 노출 제어(dev만 노출 권장)
-- 컨트롤러/DTO에 Javadoc/Swagger 어노테이션으로 필드/응답 문서화
+1. [🏗️ 프로젝트 개요](#️-프로젝트-개요)
+2. [🌐 인프라 및 배포](#-인프라-및-배포)
+3. [🔀 브랜치 전략](#-브랜치-전략)
+4. [📝 개발 규칙](#-개발-규칙)
+5. [🏗️ 프로젝트 구조](#️-프로젝트-구조)
+6. [⚙️ 환경설정](#️-환경설정)
+7. [🚀 시작하기](#-시작하기)
+8. [📚 API 문서](#-api-문서)
 
 ---
 
-문의/변경 제안은 이슈로 등록하고, 규칙 변경은 PR로 검토 후 본 문서에 반영합니다.
+## 🏗️ 프로젝트 개요
+
+### 🎯 주요 기능
+- 👤 **사용자 관리**: 회원가입, 로그인, 프로필 관리
+- 🏥 **기관 관리**: 케어 기관 등록 및 정보 관리
+- 📋 **케어 서비스**: 케어 요청, 매칭, 관리 시스템
+- 🔒 **인증/인가**: JWT 기반 보안 시스템
+- 📊 **모니터링**: 시스템 상태 및 성능 모니터링
+
+### 🛠️ 기술 스택
+- **Language**: Java 17
+- **Framework**: Spring Boot 3.5.5
+- **Database**: PostgreSQL
+- **ORM**: Spring Data JPA
+- **Documentation**: Swagger/OpenAPI 3
+- **Build**: Gradle
+- **Containerization**: Docker
+- **Cloud**: AWS (ECR, EC2, RDS)
+
+---
+
+## 🌐 인프라 및 배포
+
+### ☁️ AWS 아키텍처
+
+```mermaid
+graph TB
+    A[GitHub Actions] -->|Push Image| B[AWS ECR]
+    B -->|Deploy| C[AWS EC2]
+    C -->|Connect| D[AWS RDS PostgreSQL]
+    
+    subgraph "EC2 Instance"
+        C1[Docker Container]
+        C2[Spring Boot App]
+    end
+    
+    C --> C1
+    C1 --> C2
+```
+
+### 🚀 배포 프로세스
+
+```
+develop 브랜치 PR merge → main 브랜치 push → GitHub Actions → Docker Build → ECR Push → EC2 Deploy
+```
+
+#### 📋 배포 단계별 설명
+
+1. **🔀 코드 병합**: `develop` → `main` 브랜치로 PR 승인 후 병합
+2. **🤖 자동화**: GitHub Actions 워크플로 트리거
+3. **🏗️ 빌드**: Docker 이미지 빌드 (멀티스테이지)
+4. **📦 배포**: AWS ECR로 이미지 푸시
+5. **🚀 실행**: EC2에서 새 컨테이너 배포
+
+### 🗄️ 데이터베이스 구성
+
+- **운영 DB**: AWS RDS PostgreSQL
+- **개발 DB**: 로컬 PostgreSQL (Docker Compose)
+- **테스트 DB**: H2 In-Memory
+
+---
+
+## 🔀 브랜치 전략
+
+### 🌳 브랜치 구조
+
+```
+main (운영)
+├── develop (개발)
+│   ├── feature/기능명
+│   ├── bugfix/버그명
+│   └── hotfix/긴급수정명
+└── release/버전명
+```
+
+### 📋 브랜치 네이밍 규칙
+
+| 브랜치 타입 | 네이밍 형식 | 예시 |
+|------------|-------------|------|
+| 기능 개발 | `feature/기능명` | `feature/user-authentication` |
+| 버그 수정 | `bugfix/버그명` | `bugfix/login-validation` |
+| 긴급 수정 | `hotfix/수정명` | `hotfix/security-patch` |
+| 릴리즈 | `release/버전` | `release/v1.0.0` |
+
+---
+
+## 📝 개발 규칙
+
+### 📖 주석 작성 규칙
+
+#### JavaDoc 적극 활용
+```java
+/**
+ * 👤 사용자 서비스
+ * 
+ * 사용자 관련 비즈니스 로직을 처리합니다.
+ * 
+ * @author caring-team
+ * @since 1.0.0
+ */
+@Service
+public class UserService {
+    
+    /**
+     * 🔍 사용자 ID로 조회
+     * 
+     * @param userId 사용자 ID
+     * @return 사용자 정보
+     * @throws UserNotFoundException 사용자를 찾을 수 없는 경우
+     */
+    public User findById(Long userId) {
+        // 구현 내용
+    }
+}
+```
+
+### 🏗️ 계층 구조 및 폴더 구조
+
+```
+src/main/java/com/caring/caringbackend/
+├── 📱 api/                    # API 계층
+│   ├── controller/            # 컨트롤러
+│   ├── dto/                   # 데이터 전송 객체
+│   │   ├── request/          # 요청 DTO
+│   │   └── response/         # 응답 DTO
+│   └── mapper/               # 엔티티-DTO 매퍼
+├── 🏢 domain/                # 도메인 계층
+│   ├── user/                 # 사용자 도메인
+│   │   ├── entity/          # 엔티티
+│   │   ├── repository/      # 레포지토리
+│   │   ├── service/         # 서비스
+│   │   └── dto/             # 도메인 DTO
+│   ├── institution/         # 기관 도메인
+│   ├── care/                # 케어 도메인
+│   └── notification/        # 알림 도메인
+├── 🌐 global/               # 글로벌 설정
+│   ├── config/              # 설정 클래스
+│   │   ├── jpa/            # JPA 설정
+│   │   ├── security/       # 보안 설정
+│   │   ├── swagger/        # API 문서 설정
+│   │   └── web/            # 웹 설정
+│   ├── exception/          # 예외 처리
+│   ├── model/              # 공통 모델
+│   ├── response/           # 공통 응답
+│   └── util/               # 유틸리티
+└── 🧪 CaringBackendApplication.java
+```
+
+### 📋 이슈 및 브랜치 생성 규칙
+
+#### 🎯 이슈 네이밍
+```
+[타입] 간단한 설명 (#이슈번호)
+
+예시:
+[FEAT] 사용자 로그인 기능 구현 (#123)
+[BUG] 회원가입 시 이메일 중복 검증 오류 (#124)
+[DOCS] API 문서 업데이트 (#125)
+```
+
+#### 🏷️ 이슈 라벨
+- `🚀 enhancement`: 새로운 기능
+- `🐛 bug`: 버그 수정
+- `📚 documentation`: 문서 작업
+- `🔧 maintenance`: 유지보수
+- `🚨 critical`: 긴급 수정
+
+### 💻 코드 컨벤션
+
+#### 📝 네이밍 규칙
+- **클래스**: PascalCase (`UserService`, `OrderController`)
+- **메서드/변수**: camelCase (`findUser`, `userName`)
+- **상수**: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
+- **패키지**: lowercase (`com.caring.caringbackend.domain.user`)
+
+#### 🔧 메서드 네이밍
+```java
+// ✅ 좋은 예
+public User findUserById(Long id)
+public void createUser(CreateUserRequest request)
+public boolean isEmailDuplicated(String email)
+
+// ❌ 나쁜 예
+public User getUser(Long id)
+public void makeUser(CreateUserRequest request)
+public boolean checkEmail(String email)
+```
+
+### 🔄 PR 규칙 및 리뷰 규칙
+
+#### 📋 PR 템플릿
+```markdown
+## 🎯 작업 내용
+- [ ] 구현한 기능 1
+- [ ] 구현한 기능 2
+
+## 🧪 테스트
+- [ ] 단위 테스트 작성
+- [ ] 통합 테스트 확인
+
+## 📸 스크린샷 (필요시)
+
+## 📝 특이사항
+```
+
+#### ✅ PR 승인 기준
+- **필수**: 최소 1명의 리뷰어 승인
+- **권장**: 2명의 리뷰어 승인 (중요 기능)
+- **빌드**: 빌드 성공 확인
+
+---
+
+## ⚙️ 환경설정
+
+### 📄 프로필 관리
+
+#### `application.yml` (공통 설정)
+```yaml
+spring:
+  application:
+    name: caring
+  profiles:
+    active: dev
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+```
+
+#### `application-dev.yml` (개발 환경)
+```yaml
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATABASE_USERNAME}
+    password:  ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+logging:
+  level:
+    com.caring.caringbackend: DEBUG
+```
+
+#### `application-prod.yml` (운영 환경)
+```yaml
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+logging:
+  level:
+    com.caring.caringbackend: INFO
+```
+
+### 🔐 환경변수 관리
+
+| 변수명                   | 설명 | 예시 |
+|-----------------------|------|------|
+| `DATASOURCE_URL`      | 데이터베이스 URL | `jdbc:postgresql://rds-endpoint:5432/caring` |
+| `DATASOURCE_USERNAME` | DB 사용자명 | `caring_user` |
+| `DATASOURCE_PASSWORD` | DB 비밀번호 | `secure_password` |
+| `JWT_SECRET`          | JWT 서명 키 | `your-secret-key` |
+
+---
+
+## 🚀 시작하기
+
+### 📋 사전 요구사항
+- Java 17+
+- Docker & Docker Compose
+- PostgreSQL 13+
+
+---
+
+## 📚 API 문서
+
+### 📖 Swagger UI
+- **개발 환경**: http://localhost:8080/swagger-ui.html
+- **운영 환경**: https://api.caring.com/swagger-ui.html
+
+---
+
+## 🤝 기여하기
+
+1. 이슈 생성 및 할당
+2. 브랜치 생성 (`feature/기능명`)
+3. 코드 작성 및 테스트
+4. PR 생성 (템플릿 활용)
+5. 코드 리뷰 및 승인
+6. 메인 브랜치 병합
+
+---
+
+## 📞 문의
+
+- 🐛 **버그 리포트**: GitHub Issues
+- 💡 **기능 제안**: GitHub Discussions
+- 📧 **일반 문의**: caring-team@example.com
+
+---
+
+**Made with ❤️ by Caring Team**
