@@ -65,7 +65,7 @@ jobs:
                     tags: ${{ steps.meta.outputs.tags }}
                     cache-from: type=gha
                     cache-to: type=gha,mode=max
-                  # 필요 시 아키텍처 강제
+                    # 필요 시 아키텍처 강제
                     platforms: linux/amd64
 
             -   name: EC2 접속 및 배포
