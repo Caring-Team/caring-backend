@@ -309,8 +309,8 @@ logging:
 ## 📚 API 문서
 
 ### 📖 Swagger UI
-- **개발 환경**: http://localhost:8080/swagger-ui.html
-- **운영 환경**: https://api.caring.com/swagger-ui.html
+- **개발 환경**: http://localhost:8080/swagger-ui/index.html
+- **운영 환경**: http://43.203.41.246:8080/swagger-ui/index.html
 
 ---
 
