@@ -1,0 +1,50 @@
+package com.caring.caringbackend.domain.tag.entity;
+
+import com.caring.caringbackend.domain.institution.entity.Institution;
+import com.caring.caringbackend.global.model.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
+
+// 기관 태그 (기관이 제공하는 서비스/특성)
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"institution_id", "tag_id"})
+})
+public class InstitutionTag extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "institution_id", nullable = false)
+    private Institution institution;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tag_id", nullable = false)
+    private Tag tag;
+
+    // 추가 설명
+    @Column(length = 500)
+    private String additionalInfo;
+
+    @Builder
+    public InstitutionTag(Institution institution, Tag tag, String additionalInfo) {
+        Objects.requireNonNull(institution, "기관은 필수입니다.");
+        Objects.requireNonNull(tag, "태그는 필수입니다.");
+
+        this.institution = institution;
+        this.tag = tag;
+        this.additionalInfo = additionalInfo;
+    }
+
+    // TODO: 필요한 도메인 로직 추가
+}
+
