@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 가격 정보 임베디드 타입
- *
+ * <p>
  * 요양 기관의 이용 가격 정보를 관리합니다.
  * 월 기본 요금, 입소 비용, 식비 등의 정보를 포함합니다.
  */
@@ -31,8 +31,8 @@ public class PriceInfo {
 
     @Builder
     public PriceInfo(Integer monthlyBaseFee, Integer admissionFee,
-                    Integer monthlyMealCost, Integer monthlySnackCost,
-                    Integer additionalCost, String priceNotes) {
+                     Integer monthlyMealCost, Integer monthlySnackCost,
+                     Integer additionalCost, String priceNotes) {
         this.monthlyBaseFee = monthlyBaseFee;
         this.admissionFee = admissionFee;
         this.monthlyMealCost = monthlyMealCost;
