@@ -10,12 +10,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-// 기관 태그 (기관이 제공하는 서비스/특성)
+/**
+ * 기관 태그 엔티티
+ * <p>
+ * 요양 기관이 제공하는 서비스나 특성을 태그로 관리합니다.
+ * 기관과 태그 간의 다대다 관계를 표현하며, 추가 설명을 포함할 수 있습니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"institution_id", "tag_id"})
+        @UniqueConstraint(columnNames = {"institution_id", "tag_id"})
 })
 public class InstitutionTag extends BaseEntity {
 
@@ -47,4 +52,3 @@ public class InstitutionTag extends BaseEntity {
 
     // TODO: 필요한 도메인 로직 추가
 }
-

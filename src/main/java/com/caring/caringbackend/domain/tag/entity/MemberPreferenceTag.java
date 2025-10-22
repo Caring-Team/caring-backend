@@ -8,12 +8,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// 사용자 선호 태그 (사용자가 원하는 기관 특성)
+/**
+ * 회원 선호 태그 엔티티
+ * <p>
+ * 회원이 선호하는 요양 기관의 특성을 태그로 관리합니다.
+ * 기관 추천 및 매칭 시스템에 활용됩니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "tag_id"})
+        @UniqueConstraint(columnNames = {"user_id", "tag_id"})
 })
 public class MemberPreferenceTag extends BaseEntity {
 
@@ -37,4 +42,3 @@ public class MemberPreferenceTag extends BaseEntity {
 
     // TODO: 필요한 도메인 로직 추가
 }
-

@@ -8,6 +8,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 리뷰 엔티티
+ * <p>
+ * 회원이 요양 기관에 대해 작성한 리뷰 정보를 관리합니다.
+ * 예약을 기반으로 작성되며, 별점, 내용, 태그 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

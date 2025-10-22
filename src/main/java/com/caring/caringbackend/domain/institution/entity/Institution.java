@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 요양 기관 엔티티
+ *
+ * 요양원, 주간보호센터 등 케어 서비스를 제공하는 기관 정보를 관리합니다.
+ * 기관의 기본 정보, 위치, 가격, 전문 질환, 승인 상태 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

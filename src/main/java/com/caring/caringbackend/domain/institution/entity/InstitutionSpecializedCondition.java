@@ -7,6 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 기관 전문 질환 엔티티
+ *
+ * 요양 기관이 전문적으로 케어할 수 있는 질환 정보를 관리합니다.
+ * 치매, 뇌졸중, 파킨슨병 등 기관이 특화된 질환과 그에 대한 설명을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,4 +52,3 @@ public class InstitutionSpecializedCondition extends BaseEntity {
 
     // TODO: 필요한 도메인 로직 작성
 }
-

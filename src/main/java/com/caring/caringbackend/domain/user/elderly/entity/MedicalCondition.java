@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * 질병 정보 엔티티
+ *
+ * 어르신의 질병 및 의료 상태 정보를 관리합니다.
+ * 한 어르신은 여러 질병 정보를 가질 수 있습니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

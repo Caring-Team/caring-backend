@@ -9,7 +9,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-// 통합 태그 엔티티
+/**
+ * 태그 엔티티
+ * <p>
+ * 시스템 전체에서 사용되는 태그 정보를 중앙 관리합니다.
+ * 전문 질환, 서비스 유형, 운영 특성, 환경/시설, 리뷰 등 다양한 카테고리의 태그를 포함합니다.
+ * 각 태그는 고유한 코드와 이름을 가지며, 활성화 여부와 정렬 순서를 관리할 수 있습니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -108,4 +114,3 @@ public class Tag extends BaseEntity {
         this.displayOrder = displayOrder;
     }
 }
-

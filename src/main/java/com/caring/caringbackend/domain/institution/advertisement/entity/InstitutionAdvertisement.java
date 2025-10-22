@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 기관 광고 엔티티
+ *
+ * 요양 기관의 활성화된 광고 정보를 관리합니다.
+ * 승인된 광고의 게재 기간, 유형, 상태를 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

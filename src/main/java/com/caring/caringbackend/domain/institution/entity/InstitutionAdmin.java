@@ -7,6 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 기관 관리자 엔티티
+ *
+ * 요양 기관을 관리하는 관리자 계정 정보를 관리합니다.
+ * 한 기관은 여러 관리자를 가질 수 있으며, 각 관리자는 Admin, Staff을 가집니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

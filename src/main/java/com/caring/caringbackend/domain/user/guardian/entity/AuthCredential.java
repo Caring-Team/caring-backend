@@ -6,6 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 인증 정보 엔티티
+ *
+ * 회원의 로그인 인증 정보를 관리합니다.
+ * 로컬 로그인(이메일/비밀번호) 또는 소셜 로그인(카카오, 네이버, 구글) 정보를 저장합니다.
+ * 한 회원은 여러 인증 수단을 가질 수 있습니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor

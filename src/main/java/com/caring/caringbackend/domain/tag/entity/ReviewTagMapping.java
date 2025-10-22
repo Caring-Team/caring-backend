@@ -10,12 +10,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-// 리뷰 태그 (N:M 매핑 테이블)
+/**
+ * 리뷰 태그 매핑 엔티티
+ * <p>
+ * 리뷰에 첨부된 태그 정보를 관리합니다.
+ * 한 리뷰는 여러 태그를 가질 수 있으며, 리뷰 분석 및 통계에 활용됩니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"review_id", "tag_id"})
+        @UniqueConstraint(columnNames = {"review_id", "tag_id"})
 })
 public class ReviewTagMapping extends BaseEntity {
 
@@ -39,4 +44,3 @@ public class ReviewTagMapping extends BaseEntity {
 
     // TODO: 필요한 도메인 로직 추가
 }
-

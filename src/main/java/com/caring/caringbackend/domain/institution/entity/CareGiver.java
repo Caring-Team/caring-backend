@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * 요양사 엔티티
+ *
+ * 요양 기관에 소속된 요양사(간병인) 정보를 관리합니다.
+ * 요양사의 기본 정보, 경력, 전문성 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

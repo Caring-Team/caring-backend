@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 기관 광고 요청 엔티티
+ * <p>
+ * 요양 기관이 신청한 광고 요청 정보를 관리합니다.
+ * 관리자의 승인 대기 중인 광고 요청의 정보를 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,8 +48,8 @@ public class InstitutionAdvertisementRequest {
 
     @Builder
     public InstitutionAdvertisementRequest(Institution institution, AdvertisementType type,
-                                    AdvertisementStatus status, LocalDateTime startDateTime,
-                                    LocalDateTime endDateTime) {
+                                           AdvertisementStatus status, LocalDateTime startDateTime,
+                                           LocalDateTime endDateTime) {
         this.institution = institution;
         this.type = type;
         this.status = status;

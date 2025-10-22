@@ -9,6 +9,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 리뷰 신고 엔티티
+ * <p>
+ * 부적절한 리뷰에 대한 신고 정보를 관리합니다.
+ * 회원 또는 기관이 신고할 수 있으며, 신고 사유, 처리 상태 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

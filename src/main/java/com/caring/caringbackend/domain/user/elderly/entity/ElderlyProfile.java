@@ -13,6 +13,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * 어르신 프로필 엔티티
+ *
+ * 케어 서비스를 받을 어르신의 정보를 관리합니다.
+ * 회원(보호자)은 여러 어르신 프로필을 등록할 수 있습니다.
+ * 어르신의 건강 상태, 활동 수준, 인지 수준 등의 정보를 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -88,4 +95,3 @@ public class ElderlyProfile extends BaseEntity {
 
     // TODO: 필요한 도메인 로직 작성
 }
-

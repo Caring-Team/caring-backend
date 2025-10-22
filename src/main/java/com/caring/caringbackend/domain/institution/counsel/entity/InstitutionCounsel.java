@@ -7,8 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// 기관에서 상담에 제공하는 서비스 엔티티
-
+/**
+ * 기관 상담 서비스 엔티티
+ *
+ * 요양 기관이 제공하는 상담 서비스 정보를 관리합니다.
+ * 상담 서비스의 이름, 설명, 일정 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

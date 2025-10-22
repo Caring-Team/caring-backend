@@ -9,6 +9,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 예약 엔티티
+ * <p>
+ * 회원이 요양 기관의 상담 서비스를 예약한 정보를 관리합니다.
+ * 예약자(회원), 대상 어르신, 예약 서비스, 예약 상태 등을 포함합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
