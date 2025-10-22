@@ -19,9 +19,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,16 +58,16 @@ public class User extends BaseEntity {
     private GeoPoint location;
 
     // AuthCredential 연관관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuthCredential> authCredentials = new ArrayList<>();
 
     // 어르신 프로필 연관관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
 
     @Builder
-    public User(String email, String name, String phoneNumber, Gender gender,
-                LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
+    public Member(String email, String name, String phoneNumber, Gender gender,
+                  LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;

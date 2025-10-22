@@ -3,7 +3,7 @@ package com.caring.caringbackend.domain.user.elderly.entity;
 import com.caring.caringbackend.domain.user.Address;
 import com.caring.caringbackend.domain.user.Gender;
 import com.caring.caringbackend.domain.user.GeoPoint;
-import com.caring.caringbackend.domain.user.guardian.entity.User;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,7 +24,7 @@ public class ElderlyProfile extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member member;
 
     // 이름
     @Column(nullable = false, length = 100)
@@ -69,11 +69,11 @@ public class ElderlyProfile extends BaseEntity {
     private GeoPoint location;
 
     @Builder
-    public ElderlyProfile(User user, String name, Gender gender, LocalDate birthDate,
+    public ElderlyProfile(Member member, String name, Gender gender, LocalDate birthDate,
                           BloodType bloodType, String phoneNumber,
                           ActivityLevel activityLevel, CognitiveLevel cognitiveLevel,
                           String notes, Address address, GeoPoint location) {
-        this.user = user;
+        this.member = member;
         this.name = name;
         this.gender = gender;
         this.birthDate = birthDate;

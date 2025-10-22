@@ -16,10 +16,10 @@ public class AuthCredential extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // User
+    // Member
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    public User user;
+    public Member member;
 
     // credential type
     @Enumerated(EnumType.STRING)
@@ -38,9 +38,9 @@ public class AuthCredential extends BaseTimeEntity {
     private Boolean isVerifiedByPhone;
 
     @Builder
-    private AuthCredential(User user, CredentialType type, String identifier,
+    private AuthCredential(Member member, CredentialType type, String identifier,
                            String passwordHash, Boolean isVerifiedByPhone) {
-        this.user = user;
+        this.member = member;
         this.type = type;
         this.identifier = identifier;
         this.passwordHash = passwordHash;
@@ -49,9 +49,9 @@ public class AuthCredential extends BaseTimeEntity {
 
     // 정적 팩토리 메소드
     // 로컬 패스워드 인증 정보 생성
-    public static AuthCredential createLocalCredential(User user, String email, String passwordHash) {
+    public static AuthCredential createLocalCredential(Member member, String email, String passwordHash) {
         return AuthCredential.builder()
-                .user(user)
+                .member(member)
                 .type(CredentialType.LOCAL)
                 .identifier(email)
                 .passwordHash(passwordHash)
@@ -60,9 +60,9 @@ public class AuthCredential extends BaseTimeEntity {
     }
 
     // 소셜 인증 정보 생성
-    public static AuthCredential createSocialCredential(User user, CredentialType type, String providerId) {
+    public static AuthCredential createSocialCredential(Member member, CredentialType type, String providerId) {
         return AuthCredential.builder()
-                .user(user)
+                .member(member)
                 .type(type)
                 .identifier(providerId)
                 .passwordHash(null)

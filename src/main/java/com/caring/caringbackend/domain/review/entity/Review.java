@@ -2,7 +2,7 @@ package com.caring.caringbackend.domain.review.entity;
 
 import com.caring.caringbackend.domain.institution.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
-import com.caring.caringbackend.domain.user.guardian.entity.User;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class Review {
     // 사용자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member member;
 
     // 기관
     @ManyToOne(fetch = FetchType.LAZY)

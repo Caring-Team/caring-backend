@@ -1,14 +1,12 @@
 package com.caring.caringbackend.domain.tag.entity;
 
-import com.caring.caringbackend.domain.user.guardian.entity.User;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 // 사용자 선호 태그 (사용자가 원하는 기관 특성)
 @Entity
@@ -17,7 +15,7 @@ import java.util.Objects;
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "tag_id"})
 })
-public class UserPreferenceTag extends BaseEntity {
+public class MemberPreferenceTag extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +23,15 @@ public class UserPreferenceTag extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
     @Builder
-    public UserPreferenceTag(User user, Tag tag) {
-        this.user = user;
+    public MemberPreferenceTag(Member member, Tag tag) {
+        this.member = member;
         this.tag = tag;
     }
 

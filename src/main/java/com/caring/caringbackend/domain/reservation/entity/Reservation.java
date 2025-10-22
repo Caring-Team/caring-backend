@@ -2,7 +2,7 @@ package com.caring.caringbackend.domain.reservation.entity;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
-import com.caring.caringbackend.domain.user.guardian.entity.User;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,10 +23,10 @@ public class Reservation {
     @JoinColumn(name = "institution_counsel_id", nullable = false)
     private InstitutionCounsel institutionCounsel;
 
-    // User
+    // Member
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member member;
 
     // 어르신
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,9 +39,9 @@ public class Reservation {
     private ReservationStatus status;
 
     @Builder
-    public Reservation(InstitutionCounsel institutionCounsel, User user, ElderlyProfile elderlyProfile, ReservationStatus status) {
+    public Reservation(InstitutionCounsel institutionCounsel, Member member, ElderlyProfile elderlyProfile, ReservationStatus status) {
         this.institutionCounsel = institutionCounsel;
-        this.user = user;
+        this.member = member;
         this.elderlyProfile = elderlyProfile;
         this.status = status;
     }

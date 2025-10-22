@@ -172,7 +172,7 @@ src/main/java/com/caring/caringbackend/
 │   │   └── response/         # 응답 DTO
 │   └── mapper/               # 엔티티-DTO 매퍼
 ├── 🏢 domain/                # 도메인 계층
-│   ├── user/                 # 사용자 도메인
+│   ├── member/                 # 사용자 도메인
 │   │   ├── entity/          # 엔티티
 │   │   ├── repository/      # 레포지토리
 │   │   ├── service/         # 서비스
@@ -240,7 +240,7 @@ src/main/java/com/caring/caringbackend/
 - **클래스**: PascalCase (`UserService`, `OrderController`)
 - **메서드/변수**: camelCase (`findUser`, `userName`)
 - **상수**: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
-- **패키지**: lowercase (`com.caring.caringbackend.domain.user`)
+- **패키지**: lowercase (`com.caring.caringbackend.domain.member`)
 
 #### 🔧 메서드 네이밍
 ```java

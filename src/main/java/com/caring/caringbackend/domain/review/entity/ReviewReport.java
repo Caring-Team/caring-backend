@@ -1,15 +1,13 @@
 package com.caring.caringbackend.domain.review.entity;
 
 import com.caring.caringbackend.domain.institution.entity.Institution;
-import com.caring.caringbackend.domain.user.guardian.entity.User;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -23,7 +21,7 @@ public class ReviewReport extends BaseEntity {
     // 사용자 (신고자)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     // 기관 (신고자)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,18 +48,18 @@ public class ReviewReport extends BaseEntity {
     private ReportStatus status;
 
     @Builder
-    public ReviewReport(User user, Institution institution, Review review,
-                       ReportReason reason, String description) {
+    public ReviewReport(Member member, Institution institution, Review review,
+                        ReportReason reason, String description) {
         // 둘 중 하나는 필수
-        if (user == null && institution == null) {
+        if (member == null && institution == null) {
             // TODO: 커스텀 예외 처리
         }
         // 둘 다 있으면 안됨
-        if (user != null && institution != null) {
+        if (member != null && institution != null) {
             // TODO: 커스텀 예외 처리
         }
 
-        this.user = user;
+        this.member = member;
         this.institution = institution;
         this.review = review;
         this.reason = reason;
