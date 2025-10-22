@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 /**
  * ⏰ 시간 추적 베이스 엔티티
  *
- * ID가 필요하지 않고 생성/수정 시간만 필요한 엔티티용
+ * 생성/수정 시간만 필요한 엔티티용
  *
  * @author caring-team
  */
