@@ -3,6 +3,7 @@ package com.caring.caringbackend.domain.reservation.entity;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
+import com.caring.caringbackend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reservation {
+public class Reservation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

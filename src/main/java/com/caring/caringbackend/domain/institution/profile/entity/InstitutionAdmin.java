@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InstitutionAdmin {
+public class InstitutionAdmin extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

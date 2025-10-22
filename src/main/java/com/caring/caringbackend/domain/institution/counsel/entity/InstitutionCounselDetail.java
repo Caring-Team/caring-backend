@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.counsel.entity;
 
+import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InstitutionCounselDetail {
+public class InstitutionCounselDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

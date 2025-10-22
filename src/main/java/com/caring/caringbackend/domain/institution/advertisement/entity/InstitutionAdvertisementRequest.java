@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.advertisement.entity;
 
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InstitutionAdvertisementRequest {
+public class InstitutionAdvertisementRequest extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

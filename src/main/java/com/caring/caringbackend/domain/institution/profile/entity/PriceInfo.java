@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PriceInfo {
+public class PriceInfo extends BaseEntity {
 
     // 월 기본 요금
     private Integer monthlyBaseFee;
