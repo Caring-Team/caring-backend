@@ -9,6 +9,12 @@ spring:
         hibernate:
             ddl-auto: create
         show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+                default_schema: public
+        open-in-view: false
+
 
 # 📚 Swagger/OpenAPI 설정
 springdoc:
