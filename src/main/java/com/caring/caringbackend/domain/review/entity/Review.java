@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.review.entity;
 
-import com.caring.caringbackend.domain.institution.entity.Institution;
+import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import jakarta.persistence.*;

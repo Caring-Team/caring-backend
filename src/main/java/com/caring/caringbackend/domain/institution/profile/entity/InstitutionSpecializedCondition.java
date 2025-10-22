@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.institution.entity;
+package com.caring.caringbackend.domain.institution.profile.entity;
 
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;

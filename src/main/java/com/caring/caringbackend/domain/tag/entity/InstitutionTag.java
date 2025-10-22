@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.tag.entity;
 
-import com.caring.caringbackend.domain.institution.entity.Institution;
+import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

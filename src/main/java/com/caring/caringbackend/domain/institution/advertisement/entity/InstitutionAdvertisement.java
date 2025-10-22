@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.institution.advertisement.entity;
 
-import com.caring.caringbackend.domain.institution.entity.Institution;
+import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
