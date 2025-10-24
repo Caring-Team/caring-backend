@@ -41,9 +41,6 @@ public class AuthCredential extends BaseTimeEntity {
     @Column(length = 255)
     private String passwordHash;
 
-    // 전화번호 인증 여부
-    private Boolean isVerifiedByPhone;
-
     @Builder
     private AuthCredential(Member member, CredentialType type, String identifier,
                            String passwordHash, Boolean isVerifiedByPhone) {
@@ -51,7 +48,6 @@ public class AuthCredential extends BaseTimeEntity {
         this.type = type;
         this.identifier = identifier;
         this.passwordHash = passwordHash;
-        this.isVerifiedByPhone = isVerifiedByPhone != null ? isVerifiedByPhone : false;
     }
 
     // 정적 팩토리 메소드
