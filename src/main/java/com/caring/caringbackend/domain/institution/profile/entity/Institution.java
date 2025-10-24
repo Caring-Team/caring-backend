@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
-import com.caring.caringbackend.domain.user.Address;
-import com.caring.caringbackend.domain.user.GeoPoint;
+import com.caring.caringbackend.global.model.Address;
+import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,8 +1,8 @@
 package com.caring.caringbackend.domain.user.elderly.entity;
 
-import com.caring.caringbackend.domain.user.Address;
-import com.caring.caringbackend.domain.user.Gender;
-import com.caring.caringbackend.domain.user.GeoPoint;
+import com.caring.caringbackend.global.model.Address;
+import com.caring.caringbackend.global.model.Gender;
+import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;

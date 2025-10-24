@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.user;
+package com.caring.caringbackend.global.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

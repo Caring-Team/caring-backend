@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
-import com.caring.caringbackend.domain.user.Gender;
+import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

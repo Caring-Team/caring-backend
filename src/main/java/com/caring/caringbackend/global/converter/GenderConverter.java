@@ -1,6 +1,6 @@
 package com.caring.caringbackend.global.converter;
 
-import com.caring.caringbackend.domain.user.Gender;
+import com.caring.caringbackend.global.model.Gender;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

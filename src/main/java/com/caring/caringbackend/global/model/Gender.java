@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.user;
+package com.caring.caringbackend.global.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Gender {
-    
+
     NOT_KNOWN(0, "미기입"),
     MALE(1, "남성"),
     FEMALE(2, "여성"),

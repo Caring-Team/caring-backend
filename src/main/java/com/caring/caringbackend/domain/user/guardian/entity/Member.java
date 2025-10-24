@@ -1,8 +1,8 @@
 package com.caring.caringbackend.domain.user.guardian.entity;
 
-import com.caring.caringbackend.domain.user.Address;
-import com.caring.caringbackend.domain.user.Gender;
-import com.caring.caringbackend.domain.user.GeoPoint;
+import com.caring.caringbackend.global.model.Address;
+import com.caring.caringbackend.global.model.Gender;
+import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
@@ -11,7 +11,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
