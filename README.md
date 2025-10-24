@@ -78,8 +78,7 @@ develop 브랜치 PR merge → main 브랜치 push → GitHub Actions → Docker
 ### 🗄️ 데이터베이스 구성
 
 - **운영 DB**: AWS RDS PostgreSQL
-- **개발 DB**: 로컬 PostgreSQL (Docker Compose)
-- **테스트 DB**: H2 In-Memory
+- **개발 DB**: 로컬 PostgreSQL
 
 ---
 
@@ -90,20 +89,45 @@ develop 브랜치 PR merge → main 브랜치 push → GitHub Actions → Docker
 ```
 main (운영)
 ├── develop (개발)
-│   ├── feature/기능명
-│   ├── bugfix/버그명
-│   └── hotfix/긴급수정명
+│   ├── feature/기능명-#이슈번호
+│   ├── bugfix/버그명-#이슈번호
+│   └── hotfix/긴급수정명-#이슈번호
 └── release/버전명
+```
+
+### 📋 브랜치 생성 워크플로우
+
+#### 1️⃣ 이슈 생성
+먼저 GitHub에서 이슈를 생성합니다.
+
+**예시:**
+```
+제목: [FEAT] ERD 기반 엔티티 코드화
+내용: User, Institution, Care 엔티티를 ERD 기반으로 구현
+라벨: 🚀 enhancement
+```
+
+#### 2️⃣ 이슈 번호 확인
+생성된 이슈의 번호를 확인합니다. (예: `#6`)
+
+#### 3️⃣ 브랜치 생성
+이슈 번호를 포함한 브랜치를 생성합니다.
+
+```bash
+# 이슈 #6에 대한 브랜치 생성
+git checkout develop
+git pull origin develop
+git checkout -b feature/ERD-기반-엔티티-코드화-#6
 ```
 
 ### 📋 브랜치 네이밍 규칙
 
-| 브랜치 타입 | 네이밍 형식 | 예시 |
-|------------|-------------|------|
-| 기능 개발 | `feature/기능명` | `feature/user-authentication` |
-| 버그 수정 | `bugfix/버그명` | `bugfix/login-validation` |
-| 긴급 수정 | `hotfix/수정명` | `hotfix/security-patch` |
-| 릴리즈 | `release/버전` | `release/v1.0.0` |
+| 브랜치 타입 | 네이밍 형식 | 예시                           |
+|------------|-------------|------------------------------|
+| 기능 개발 | `feature/기능명-#이슈번호` | `feature/erd-기발-엔티티-코드화-#12` |
+| 버그 수정 | `bugfix/버그명-#이슈번호` | `bugfix/로그인-인증-버그수정-#24`     |
+| 긴급 수정 | `hotfix/수정명-#이슈번호` | `hotfix/security-patch-#35`  |
+| 릴리즈 | `release/버전` | `release/v1.0.0`             |
 
 ---
 
@@ -115,18 +139,18 @@ main (운영)
 ```java
 /**
  * 👤 사용자 서비스
- * 
+ *
  * 사용자 관련 비즈니스 로직을 처리합니다.
- * 
+ *
  * @author caring-team
  * @since 1.0.0
  */
 @Service
 public class UserService {
-    
+
     /**
      * 🔍 사용자 ID로 조회
-     * 
+     *
      * @param userId 사용자 ID
      * @return 사용자 정보
      * @throws UserNotFoundException 사용자를 찾을 수 없는 경우
@@ -148,7 +172,7 @@ src/main/java/com/caring/caringbackend/
 │   │   └── response/         # 응답 DTO
 │   └── mapper/               # 엔티티-DTO 매퍼
 ├── 🏢 domain/                # 도메인 계층
-│   ├── user/                 # 사용자 도메인
+│   ├── member/                 # 사용자 도메인
 │   │   ├── entity/          # 엔티티
 │   │   ├── repository/      # 레포지토리
 │   │   ├── service/         # 서비스
@@ -188,13 +212,35 @@ src/main/java/com/caring/caringbackend/
 - `🔧 maintenance`: 유지보수
 - `🚨 critical`: 긴급 수정
 
+#### 🔗 이슈-브랜치-PR 연결 워크플로우
+
+##### 📌 전체 프로세스
+```
+1. 이슈 생성
+   [FEAT] ERD 기반 엔티티 코드화 #6
+
+2. 브랜치 생성
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/ERD-기반-엔티티-코드화-#6
+
+3. 작업 및 커밋
+   git commit -m "feat: User 엔티티 구현 #6"
+   git commit -m "feat: Institution 엔티티 구현 #6"
+
+4. PR 생성
+   제목: [FEAT] ERD 기반 엔티티 코드화 #6
+
+5. 코드 리뷰 및 병합
+```
+
 ### 💻 코드 컨벤션
 
 #### 📝 네이밍 규칙
 - **클래스**: PascalCase (`UserService`, `OrderController`)
 - **메서드/변수**: camelCase (`findUser`, `userName`)
 - **상수**: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
-- **패키지**: lowercase (`com.caring.caringbackend.domain.user`)
+- **패키지**: lowercase (`com.caring.caringbackend.domain.member`)
 
 #### 🔧 메서드 네이밍
 ```java
