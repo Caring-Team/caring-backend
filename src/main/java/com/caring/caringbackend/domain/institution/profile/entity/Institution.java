@@ -31,9 +31,10 @@ public class Institution extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    // 기관장 이름
-    @Column(length = 100)
-    private String directorName;
+    // 기관장 (OWNER 역할을 가진 InstitutionAdmin)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private InstitutionAdmin owner;
 
     // 기관 유형
     @Enumerated(EnumType.STRING)
@@ -74,12 +75,13 @@ public class Institution extends BaseEntity {
     private String openingHours;
 
     @Builder
-    public Institution(String name, InstitutionType institutionType,
+    public Institution(String name, InstitutionAdmin owner, InstitutionType institutionType,
                        String phoneNumber, Address address, GeoPoint location,
                        ApprovalStatus approvalStatus, Integer bedCount,
                        Boolean isAdmissionAvailable,
                        PriceInfo priceInfo, String openingHours) {
         this.name = name;
+        this.owner = owner;
         this.institutionType = institutionType;
         this.phoneNumber = phoneNumber;
         this.address = address;

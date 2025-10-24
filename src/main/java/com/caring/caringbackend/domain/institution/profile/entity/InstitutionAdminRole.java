@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum InstitutionAdminRole {
 
-    ADMIN("관리자"),
+    OWNER("기관장"),
     STAFF("직원");
 
     private final String description;
