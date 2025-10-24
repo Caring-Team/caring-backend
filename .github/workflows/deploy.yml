@@ -7,12 +7,12 @@ on:
 
 env:
     AWS_REGION: ap-northeast-2
-    AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}   # 12자리 AWS 계정 ID
+    AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
     ECR_REPO: caring-server
     IMAGE_URI: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}
 
 permissions:
-    id-token: write    # GitHub → AWS OIDC 필요
+    id-token: write
     contents: read
 
 jobs:
@@ -28,12 +28,8 @@ jobs:
                     distribution: temurin
                     java-version: 17
 
-            -   name: Grant execute permission for gradlew
+            -   name: gradlew 실행 권한 추가
                 run: chmod +x ./gradlew
-
-            -   name: 테스트 및 빌드하기
-                run: ./gradlew clean build -x test
-                working-directory: ./caring-backend
 
             -   name: AWS Role 설정
                 uses: aws-actions/configure-aws-credentials@v4
@@ -45,14 +41,32 @@ jobs:
                 id: login-ecr
                 uses: aws-actions/amazon-ecr-login@v2
 
-            -   name: Docker 이미지 빌드
-                run: docker build -t caring-server .
+            # 이미지 태그( latest + sha ) 자동 생성
+            -   name: Docker metadata 설정
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ${{ env.IMAGE_URI }}
+                    tags: |
+                        type=raw,value=latest
+                        type=sha
 
-            -   name: ECR에 태그 추가
-                run: docker tag caring-server ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+            #  추가: Buildx를 docker-container 드라이버로
+            -   name: Docker Buildx 설정
+                uses: docker/setup-buildx-action@v3
+                with:
+                    driver: docker-container
 
-            -   name: ECR에 Docker 이미지 Push
-                run: docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+            -   name: Docker 이미지 빌드 및 ECR에 Push
+                uses: docker/build-push-action@v6
+                with:
+                    context: .
+                    push: true
+                    tags: ${{ steps.meta.outputs.tags }}
+                    cache-from: type=gha
+                    cache-to: type=gha,mode=max
+                    # 필요 시 아키텍처 강제
+                    platforms: linux/amd64
 
             -   name: EC2 접속 및 배포
                 uses: appleboy/ssh-action@v1.0.3
@@ -66,7 +80,12 @@ jobs:
                         ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
                         ECR_REPO=${{ secrets.ECR_REPO }}
 
-                        cd /apps/caring/prod 
+                        # ECR 로그인
+                        aws ecr get-login-password --region ${AWS_REGION} \
+                        | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                        
+                        # EC2에서 Docker 이미지 Pull & Run
+                        cd /home/ubuntu/apps/caring/prod 
                         docker stop caring-server || true
                         docker rm caring-server || true
                         docker compose pull caring-server
