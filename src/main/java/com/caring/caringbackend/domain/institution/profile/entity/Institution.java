@@ -31,6 +31,10 @@ public class Institution extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
+    // 기관장 이름
+    @Column(length = 100)
+    private String directorName;
+
     // 기관 유형
     @Enumerated(EnumType.STRING)
     private InstitutionType institutionType;
