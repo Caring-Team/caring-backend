@@ -63,10 +63,6 @@ public class Member extends BaseEntity {
     @Embedded
     private GeoPoint location;
 
-    // AuthCredential 연관관계
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AuthCredential> authCredentials = new ArrayList<>();
-
     // 어르신 프로필 연관관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
@@ -82,7 +78,6 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.address = address;
         this.location = location;
-        this.authCredentials = new ArrayList<>();
     }
 
     // TODO: 필요한 도메인 로직 작성
