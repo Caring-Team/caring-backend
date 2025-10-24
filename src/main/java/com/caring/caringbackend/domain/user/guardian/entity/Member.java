@@ -32,6 +32,11 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Role -> TEMP_USER, USER
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberRole role;
+
     // 이메일
     @Email
     @Column(unique = true, nullable = false, length = 255)
