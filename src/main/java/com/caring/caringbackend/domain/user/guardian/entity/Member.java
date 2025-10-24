@@ -51,7 +51,7 @@ public class Member extends BaseEntity {
     private String phoneNumber;
 
     // 성별
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
     // 생년월일

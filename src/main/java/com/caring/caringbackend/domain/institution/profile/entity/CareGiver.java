@@ -41,8 +41,7 @@ public class CareGiver extends BaseEntity {
     @Column(length = 20)
     private String phoneNumber;
 
-    // 성별
-    @Enumerated(EnumType.STRING)
+    // 성별 (ISO-IEC-5218)
     @Column(nullable = false)
     private Gender gender;
 
