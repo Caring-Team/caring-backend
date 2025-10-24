@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 /**
  * 예약 엔티티
  * <p>
@@ -24,6 +26,22 @@ public class Reservation extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // 예약 이름
+    @Column(nullable = false, length = 100)
+    private String title;
+
+    // 예약 설명
+    @Column(length = 500)
+    private String description;
+
+    // 예약 날짜
+    @Column(nullable = false)
+    private LocalDate reservationDate;
+
+    // 예약 시간
+    @Column(nullable = false)
+    private String reservationTime;
 
     // 기관 상담 서비스
     @ManyToOne(fetch = FetchType.LAZY)
