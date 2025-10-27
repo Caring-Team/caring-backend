@@ -195,12 +195,15 @@ public class AuthService {
         verifyPhoneService.verifyPhone(request);
         try {
             return transactionTemplate.execute(status -> {
-                String duplicationInformation = Member.makeDuplicationInformation(request.getName(),
-                        request.getBirthDate(), request.getPhoneNumber());
-                Optional<Member> byDuplicationInformation = memberRepository.findByDuplicationInformation(
-                        duplicationInformation);
-                if (byDuplicationInformation.isPresent()) {
-                    Member member = byDuplicationInformation.get();
+                Optional<Member> byPhoneNumber = memberRepository.findByPhoneNumber(request.getPhoneNumber());
+                if (byPhoneNumber.isPresent()) {
+                    Member member = byPhoneNumber.get();
+                    String duplicationInformation = Member.makeDuplicationInformation(request.getName(),
+                            request.getBirthDate(), request.getPhoneNumber());
+                    if (!member.getDuplicationInformation().equals(duplicationInformation)) {
+                        throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS);
+                    }
+
                     authCredentialRepository.findAuthCredentialByMemberAndType(
                             member, CredentialType.LOCAL).ifPresent((authCredential) -> {
                         throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
