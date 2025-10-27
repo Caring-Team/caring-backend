@@ -8,6 +8,7 @@ import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,8 @@ import java.util.List;
  */
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
@@ -38,22 +41,31 @@ public class Member extends BaseEntity {
 
     // 이메일
     @Email
-    @Column(unique = true, nullable = false, length = 255)
+    @Column(unique = true, length = 255)
     private String email;
 
     // 이름
-    @Column(nullable = false, length = 100)
+    @Column(length = 100, nullable = false)
     private String name;
 
     // 핸드폰
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     private String phoneNumber;
 
+    /**
+     * NICE 같은 본인인증 서비스 제공 업체에서 제공하는 중복 가입 정보 (CI로 대체 가능) <br>
+     * 중복가입 방지는 본인인증 서비스 없이는 불가능함 <br>
+     * 추후 본인인증 서비스 도입을 위한 컬럼 <br>
+     * 현재 임시로 이름, 생년월일, 전화번호를 조합하여 사용 <br>
+     */
+    @Column(nullable = false, unique = true, updatable = false)
+    private String duplicationInformation;
+
     // 성별
-    @Column(nullable = false)
     private Gender gender;
 
     // 생년월일
+    @Column(nullable = false)
     private LocalDate birthDate;
 
     // 프로필 사진
@@ -72,11 +84,13 @@ public class Member extends BaseEntity {
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
 
     @Builder
-    public Member(String email, String name, String phoneNumber, Gender gender,
-                  LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
+    public Member(MemberRole role, String email, String name, String phoneNumber, String duplicationInformation,
+                  Gender gender, LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
+        this.role = role;
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.duplicationInformation = duplicationInformation;
         this.gender = gender;
         this.birthDate = birthDate;
         this.profileImageUrl = profileImageUrl;
@@ -85,4 +99,15 @@ public class Member extends BaseEntity {
     }
 
     // TODO: 필요한 도메인 로직 작성
+
+    /**
+     * Make custom duplication information.
+     * @param name          name of member
+     * @param brithDate     birthdate of member
+     * @param phoneNumber   phone number of member
+     * @return simple combination of name, birthdate, phone number
+     */
+    public static String makeDuplicationInformation(String name, LocalDate brithDate, String phoneNumber) {
+        return name + brithDate + phoneNumber;
+    }
 }
