@@ -50,11 +50,11 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
 
-                        .requestMatchers("/auth/oauth2/login/**").permitAll()
-                        .requestMatchers("/auth/token/refresh").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/certification-code").permitAll()
-                        .requestMatchers("/auth/verify-phone").permitAll()
+                        .requestMatchers("/api/v1/auth/oauth2/login/**").permitAll()
+                        .requestMatchers("/api/v1/auth/token/refresh").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/certification-code").permitAll()
+                        .requestMatchers("/api/v1/auth/verify-phone").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }
