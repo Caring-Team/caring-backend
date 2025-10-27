@@ -4,11 +4,11 @@ import com.caring.caringbackend.domain.auth.dto.GenerateTemporaryTokenDto;
 import com.caring.caringbackend.domain.auth.dto.GenerateTokenDto;
 import com.caring.caringbackend.domain.auth.dto.RefreshTokenPayloadDto;
 import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdminRole;
 import com.caring.caringbackend.domain.user.guardian.entity.MemberRole;
-import com.caring.caringbackend.global.jwt.details.JwtUserDetails;
-import com.caring.caringbackend.global.jwt.details.TemporaryUserDetails;
-import com.caring.caringbackend.global.jwt.details.MemberDetails;
+import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.JwtUserDetails;
+import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.security.details.MemberDetails;
 import io.jsonwebtoken.Claims;
@@ -62,6 +62,18 @@ public class JwtUtils {
                     .authorities(Collections.singleton(new SimpleGrantedAuthority(role)))
                     .credentialType(credentialType)
                     .credentialId(credentialId)
+                    .accessToken(token)
+                    .build();
+        } else if (InstitutionAdminRole.TEMP_INSTITUTION.getKey().equals(role)) {
+            return TemporaryInstitutionAdminDetails.builder()
+                    .accessToken(token)
+                    .authorities(Collections.singleton(new SimpleGrantedAuthority(role)))
+                    .build();
+        } else if (InstitutionAdminRole.STAFF.getKey().equals(role) ||
+                InstitutionAdminRole.OWNER.getKey().equals(role)) {
+            return InstitutionAdminDetails.builder()
+                    .id(payload.get("id", Long.class))
+                    .authorities(Collections.singleton(new SimpleGrantedAuthority(role)))
                     .accessToken(token)
                     .build();
         }
@@ -119,9 +131,9 @@ public class JwtUtils {
                 .build();
     }
 
-    public JwtTokenResponse generateLocalRegisterToken(GenerateTemporaryTokenDto dto) {
+    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(GenerateTemporaryTokenDto dto) {
         String token = Jwts.builder()
-                .claim("role", MemberRole.TEMP_LOCAL.getKey())
+                .claim("role", InstitutionAdminRole.TEMP_INSTITUTION.getKey())
                 .claim("credential_type", dto.getCredentialType())
                 .claim("credential_id", dto.getCredentialId())
                 .issuedAt(new Date())
@@ -133,6 +145,7 @@ public class JwtUtils {
                 .expiresIn(accessTokenValidityInSeconds)
                 .build();
     }
+
 
     public JwtTokenResponse regenerateAccessToken(GenerateTokenDto dto) {
         String accessToken = makeAccessToken(dto);

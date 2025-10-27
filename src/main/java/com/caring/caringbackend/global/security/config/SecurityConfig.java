@@ -55,6 +55,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/certification-code").permitAll()
                         .requestMatchers("/api/v1/auth/verify-phone").permitAll()
+
+                        .requestMatchers("api/v1/auth/institution/login").permitAll()
+                        .requestMatchers("api/v1/auth/institution/verify-phone").permitAll()
+                        .requestMatchers("api/v1/auth/institution/certification-code").permitAll()
+                        .requestMatchers("api/v1/auth/institution/token/refresh").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

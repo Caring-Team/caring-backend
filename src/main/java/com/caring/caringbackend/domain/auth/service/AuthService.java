@@ -2,6 +2,8 @@ package com.caring.caringbackend.domain.auth.service;
 
 import com.caring.caringbackend.domain.auth.dto.GenerateTemporaryTokenDto;
 import com.caring.caringbackend.domain.auth.dto.GenerateTokenDto;
+import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalRegisterRequest;
 import com.caring.caringbackend.domain.auth.dto.request.OAuthLoginRequest;
 import com.caring.caringbackend.domain.auth.dto.request.SendCertificationCodeRequest;
 import com.caring.caringbackend.domain.auth.dto.request.TokenRefreshRequest;
@@ -14,6 +16,9 @@ import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderTokenResp
 import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.entity.TemporaryUserInfo;
 import com.caring.caringbackend.domain.auth.repository.TemporaryUserInfoRepository;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdminRole;
+import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.AuthCredential;
 import com.caring.caringbackend.domain.user.guardian.entity.CredentialType;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
@@ -22,10 +27,8 @@ import com.caring.caringbackend.domain.user.guardian.repository.AuthCredentialRe
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
-import com.caring.caringbackend.global.jwt.JwtUtils;
-import com.caring.caringbackend.global.jwt.details.TemporaryUserDetails;
-import com.caring.caringbackend.global.jwt.details.MemberDetails;
 import com.caring.caringbackend.global.security.JwtUtils;
+import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.security.details.MemberDetails;
 import java.util.Optional;
@@ -43,6 +46,7 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final AuthCredentialRepository authCredentialRepository;
+    private final InstitutionAdminRepository institutionAdminRepository;
     private final OAuth2ServiceFactory oAuth2ServiceFactory;
     private final TokenService tokenService;
     private final VerifyPhoneService verifyPhoneService;
@@ -67,7 +71,14 @@ public class AuthService {
         return tokenService.generateToken(dto);
     }
 
-    private JwtTokenResponse generateTemporaryToken(OAuth2ProviderUserInfoResponse userInfoFromProvider) {
+    private JwtTokenResponse generateTokenByInstitutionAdmin(InstitutionAdmin institutionAdmin) {
+        GenerateTokenDto dto = GenerateTokenDto.builder()
+                .id(institutionAdmin.getId())
+                .role(institutionAdmin.getRole().getKey())
+                .build();
+        return tokenService.generateToken(dto);
+    }
+
     private JwtTokenResponse generateTemporaryTokenOAuth2(OAuth2ProviderUserInfoResponse userInfoFromProvider) {
         GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
                 .credentialType(userInfoFromProvider.getProviderType().getKey())
@@ -279,8 +290,79 @@ public class AuthService {
         return true;
     }
 
-    public Member getMember(MemberDetails memberDetails) {
-        return memberRepository.findById(memberDetails.getId()).orElseThrow();
+    public JwtTokenResponse verifyPhoneInstitution(VerifyPhoneRequest request) {
+        verifyPhoneService.verifyPhone(request);
+        try {
+            return transactionTemplate.execute(status -> {
+                String duplicationInformation = InstitutionAdmin.makeDuplicationInformation(request.getName(),
+                        request.getBirthDate(), request.getPhoneNumber());
+                Optional<InstitutionAdmin> byDuplicationInformation = institutionAdminRepository.findByDuplicationInformation(
+                        duplicationInformation);
+
+                byDuplicationInformation.ifPresent((institutionAdmin) -> {
+                    throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
+                });
+                return generateTemporaryTokenInstitution(request); // 회원가입을 진행한다.
+            });
+        } catch (IllegalStateException e) {
+            log.warn("Failed to save phone number", e);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR,
+                    "전화번호 인증 과정에서 예상치 못한 오류가 발생했습니다.");
+        }
+    }
+
+    private JwtTokenResponse generateTemporaryTokenInstitution(VerifyPhoneRequest verifyPhoneRequest) {
+        GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
+                .credentialType(CredentialType.LOCAL_INSTITUTION.getKey())
+                .credentialId(null)
+                .build();
+        return transactionTemplate.execute(state -> {
+            JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenInstitutionAdmin(dto);
+            TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
+                    .accessToken(jwtTokenResponse.getAccessToken())
+                    .phone(verifyPhoneRequest.getPhoneNumber())
+                    .name(verifyPhoneRequest.getName())
+                    .birthDate(verifyPhoneRequest.getBirthDate())
+                    .expiresIn(jwtTokenResponse.getExpiresIn())
+                    .build();
+            temporaryUserInfoRepository.save(temporaryUserInfo);
+            return jwtTokenResponse;
+        });
+    }
+
+    public JwtTokenResponse completeRegisterInstitution(
+            TemporaryInstitutionAdminDetails userDetails,
+            InstitutionLocalRegisterRequest request) {
+        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
+                        userDetails.getAccessToken())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 도중 문제가 발생했습니다."));
+
+        String duplicationInformation = InstitutionAdmin.makeDuplicationInformation(temporaryUserInfo.getName(),
+                temporaryUserInfo.getBirthDate(), temporaryUserInfo.getPhone());
+        if (memberRepository.existsByDuplicationInformation(duplicationInformation)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 가입된 계정이 있습니다.");
+        }
+
+        if (authCredentialRepository.existsByIdentifierAndType(request.getUsername(), CredentialType.LOCAL)) {
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
+        }
+
+        // TODO: add old access token to black list
+        return transactionTemplate.execute(status -> {
+            InstitutionAdmin institutionAdmin = InstitutionAdmin.builder()
+                    .name(temporaryUserInfo.getName())
+                    .phoneNumber(temporaryUserInfo.getPhone())
+                    .birthDate(temporaryUserInfo.getBirthDate())
+                    .username(request.getUsername())
+                    .passwordHash(request.getPassword())
+                    .role(InstitutionAdminRole.STAFF)
+                    .duplicationInformation(duplicationInformation)
+                    .build();
+
+            institutionAdminRepository.save(institutionAdmin);
+            temporaryUserInfoRepository.delete(temporaryUserInfo);
+            return generateTokenByInstitutionAdmin(institutionAdmin);
+        });
     }
 
     @Transactional
@@ -289,6 +371,16 @@ public class AuthService {
                         request.getPassword())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD));
         return generateTokenByMember(member);
+    }
+
+    @Transactional
+    public JwtTokenResponse loginInstitutionAdmin(InstitutionLocalLoginRequest request) {
+        InstitutionAdmin institutionAdmin = institutionAdminRepository.findByUsernameAndPasswordHash(
+                        request.getUsername(),
+                        request.getPassword())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD));
+
+        return generateTokenByInstitutionAdmin(institutionAdmin);
     }
 
     private CredentialType findCredentialType(String credentialName) {
@@ -301,5 +393,9 @@ public class AuthService {
 
     public JwtTokenResponse regenerateAccessTokenMember(TokenRefreshRequest tokenRefreshRequest) {
         return tokenService.regenerateAccessToken(tokenRefreshRequest);
+    }
+
+    public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
+        return tokenService.regenerateAccessTokenInstitutionAdmin(tokenRefreshRequest);
     }
 }

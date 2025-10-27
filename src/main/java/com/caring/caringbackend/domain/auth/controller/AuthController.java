@@ -1,5 +1,7 @@
 package com.caring.caringbackend.domain.auth.controller;
 
+import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalRegisterRequest;
 import com.caring.caringbackend.domain.auth.dto.request.OAuthLoginRequest;
 import com.caring.caringbackend.domain.auth.dto.request.SendCertificationCodeRequest;
 import com.caring.caringbackend.domain.auth.dto.request.UserLocalLoginRequest;
@@ -9,8 +11,7 @@ import com.caring.caringbackend.domain.auth.dto.request.VerifyPhoneRequest;
 import com.caring.caringbackend.domain.auth.dto.request.TokenRefreshRequest;
 import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.domain.auth.service.AuthService;
-import com.caring.caringbackend.global.jwt.details.TemporaryUserDetails;
-import com.caring.caringbackend.global.jwt.details.MemberDetails;
+import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.security.details.MemberDetails;
 import com.caring.caringbackend.global.response.ApiResponse;
@@ -126,4 +127,55 @@ public class AuthController {
 
         return ApiResponse.success(ResponseEntity.ok(authService.addLocalCredential(memberDetails, request)));
     }
+
+    // INSTITUTION ENDPOINTS
+
+    @PostMapping("/institution/certification-code")
+    public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeInstitutionAdmin(
+            @Valid @RequestBody SendCertificationCodeRequest request) {
+
+        authService.sendCertificationCode(request);
+        return ApiResponse.success(ResponseEntity.ok(true));
+    }
+
+    @PostMapping("/institution/verify-phone")
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneInstitutionAdmin(
+            @Valid @RequestBody VerifyPhoneRequest request) {
+
+        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneInstitution(request)));
+    }
+
+    @PreAuthorize("hasRole('TEMP_INSTITUTION')")
+    @PostMapping("/institution/register")
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterInstitutionAdmin(
+            @AuthenticationPrincipal TemporaryInstitutionAdminDetails temporaryInstitutionDetails,
+            @Valid @RequestBody InstitutionLocalRegisterRequest registerRequest) {
+
+        return ApiResponse.success(ResponseEntity.ok(
+                authService.completeRegisterInstitution(temporaryInstitutionDetails, registerRequest)));
+    }
+
+    @PostMapping("/institution/login")
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> loginInstitutionAdmin(
+            @Valid @RequestBody InstitutionLocalLoginRequest request) {
+
+        return ApiResponse.success(ResponseEntity.ok(authService.loginInstitutionAdmin(request)));
+    }
+
+    @PostMapping("/institution/token/refresh")
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessTokenInstitutionAdmin(
+            @Valid @RequestBody TokenRefreshRequest request) {
+
+        return ApiResponse.success(ResponseEntity.ok(authService.regenerateAccessTokenInstitutionAdmin(request)));
+    }
+
+    /*
+    TODO: LOGOUT
+    Refresh token 을 ID로 redis 에 저장: 중복 로그인이 가능, 로그아웃 시 요청한 클라이언트를 구분할 방법이 필요함
+    Device ID는 접근 불가능 > Application 최초 구동 또는 로그인 시 State를 생성 후 요청마다 서버에 전송
+
+    User id 를 ID로 redis 에 저장: 중복 로그인 불가능, 로그아웃 시 User id로 간단하게 로그아웃 할 수 있음
+
+   중복 로그인이 필요한가?
+    */
 }

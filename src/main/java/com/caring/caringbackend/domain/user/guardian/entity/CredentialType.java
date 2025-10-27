@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CredentialType {
     LOCAL("local"),
+    LOCAL_INSTITUTION("local-institution"),
     OAUTH_KAKAO("kakao"),
     OAUTH_NAVER("naver"),
     OAUTH_GOOGLE("google"),

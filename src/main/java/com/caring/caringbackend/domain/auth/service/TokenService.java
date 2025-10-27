@@ -31,8 +31,6 @@ public class TokenService {
         return jwtTokenResponse;
     }
 
-    public JwtTokenResponse generateTemporaryOAuth2Token(GenerateTemporaryTokenDto dto) {
-        return jwtUtils.generateTemporaryOAuth2Token(dto);
     public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto dto) {
         return jwtUtils.generateTemporaryTokenOAuth2(dto);
     }
