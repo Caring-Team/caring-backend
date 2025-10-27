@@ -62,8 +62,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    // 프로필 사진
-    private String profileImageUrl;
+    // 프로필 사진 (TODO: 추후 구현 예정)
+    // private String profileImageUrl;
 
     // 주소
     @Embedded
@@ -79,14 +79,13 @@ public class Member extends BaseEntity {
 
     @Builder
     public Member(MemberRole role, String name, String phoneNumber, String duplicationInformation,
-                  Gender gender, LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
+                  Gender gender, LocalDate birthDate, Address address, GeoPoint location) {
         this.role = role;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.duplicationInformation = duplicationInformation;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.profileImageUrl = profileImageUrl;
         this.address = address;
         this.location = location;
     }
