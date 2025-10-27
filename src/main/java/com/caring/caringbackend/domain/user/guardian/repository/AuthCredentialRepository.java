@@ -15,8 +15,4 @@ public interface AuthCredentialRepository extends JpaRepository<AuthCredential, 
     public Optional<AuthCredential> findAuthCredentialByMemberAndType(Member member, CredentialType type);
 
     public boolean existsByIdentifierAndType(final String identifier, CredentialType type);
-
-    @Query("SELECT a.member FROM AuthCredential a WHERE a.identifier = :identifier AND a.passwordHash = :password")
-    Optional<Member> findMemberByIdentifierAndPasswordHash(@Param("identifier") String identifier, String password);
-
 }

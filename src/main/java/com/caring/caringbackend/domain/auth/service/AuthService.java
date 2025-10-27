@@ -35,6 +35,7 @@ import com.caring.caringbackend.global.security.details.MemberDetails;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -53,6 +54,7 @@ public class AuthService {
     private final VerifyPhoneService verifyPhoneService;
     private final TemporaryUserInfoRepository temporaryUserInfoRepository;
     private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
     public JwtTokenResponse oAuth2LoginOrGenerateTemporaryToken(String provider, OAuthLoginRequest request) {
         OAuth2Service service = oAuth2ServiceFactory.getService(provider);
@@ -253,7 +255,7 @@ public class AuthService {
                     .role(MemberRole.USER)
                     .build();
             AuthCredential credential = AuthCredential.createLocalCredential(member, request.getUsername(),
-                    request.getPassword());
+                    passwordEncoder.encode(request.getPassword()));
 
             memberRepository.save(member);
             authCredentialRepository.save(credential);
@@ -294,7 +296,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
         }
         AuthCredential credential = AuthCredential.createLocalCredential(member, request.getUsername(),
-                request.getPassword());
+                passwordEncoder.encode(request.getPassword()));
         authCredentialRepository.save(credential);
         return true;
     }
@@ -363,7 +365,7 @@ public class AuthService {
                     .phoneNumber(temporaryUserInfo.getPhone())
                     .birthDate(temporaryUserInfo.getBirthDate())
                     .username(request.getUsername())
-                    .passwordHash(request.getPassword())
+                    .passwordHash(passwordEncoder.encode(request.getPassword()))
                     .role(InstitutionAdminRole.STAFF)
                     .duplicationInformation(duplicationInformation)
                     .build();
@@ -376,19 +378,24 @@ public class AuthService {
 
     @Transactional
     public JwtTokenResponse loginMemberLocal(UserLocalLoginRequest request) {
-        Member member = authCredentialRepository.findMemberByIdentifierAndPasswordHash(request.getUsername(),
-                        request.getPassword())
+        AuthCredential credential = authCredentialRepository.findAuthCredentialByIdentifierAndType(
+                        request.getUsername(),
+                        CredentialType.LOCAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD));
-        return generateTokenByMember(member);
+        if (!passwordEncoder.matches(request.getPassword(), credential.getPasswordHash())) {
+            throw new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD);
+        }
+        return generateTokenByMember(credential.getMember());
     }
 
     @Transactional
     public JwtTokenResponse loginInstitutionAdmin(InstitutionLocalLoginRequest request) {
-        InstitutionAdmin institutionAdmin = institutionAdminRepository.findByUsernameAndPasswordHash(
-                        request.getUsername(),
-                        request.getPassword())
+        InstitutionAdmin institutionAdmin = institutionAdminRepository.findByUsername(
+                        request.getUsername())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD));
-
+        if (!passwordEncoder.matches(request.getPassword(), institutionAdmin.getPasswordHash())) {
+            throw new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD);
+        }
         return generateTokenByInstitutionAdmin(institutionAdmin);
     }
 

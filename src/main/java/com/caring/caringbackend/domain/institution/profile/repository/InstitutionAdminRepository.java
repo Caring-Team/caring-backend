@@ -8,5 +8,5 @@ public interface InstitutionAdminRepository extends JpaRepository<InstitutionAdm
 
     public Optional<InstitutionAdmin> findByDuplicationInformation(String duplicationInformation);
 
-    public Optional<InstitutionAdmin> findByUsernameAndPasswordHash(String username, String passwordHash);
+    public Optional<InstitutionAdmin> findByUsername(String username);
 }
