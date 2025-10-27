@@ -56,8 +56,8 @@ public class Member extends BaseEntity {
     // 생년월일
     private LocalDate birthDate;
 
-    // 프로필 사진
-    private String profileImageUrl;
+    // 프로필 사진 (TODO: 추후 구현 예정)
+    // private String profileImageUrl;
 
     // 주소
     @Embedded
@@ -73,13 +73,12 @@ public class Member extends BaseEntity {
 
     @Builder
     public Member(String email, String name, String phoneNumber, Gender gender,
-                  LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
+                  LocalDate birthDate, Address address, GeoPoint location) {
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.profileImageUrl = profileImageUrl;
         this.address = address;
         this.location = location;
     }
