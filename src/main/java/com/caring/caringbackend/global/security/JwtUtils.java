@@ -1,4 +1,4 @@
-package com.caring.caringbackend.global.jwt;
+package com.caring.caringbackend.global.security;
 
 import com.caring.caringbackend.domain.auth.dto.GenerateTemporaryTokenDto;
 import com.caring.caringbackend.domain.auth.dto.GenerateTokenDto;
@@ -8,6 +8,9 @@ import com.caring.caringbackend.domain.user.guardian.entity.MemberRole;
 import com.caring.caringbackend.global.jwt.details.JwtUserDetails;
 import com.caring.caringbackend.global.jwt.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.jwt.details.MemberDetails;
+import com.caring.caringbackend.global.security.details.JwtUserDetails;
+import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
+import com.caring.caringbackend.global.security.details.MemberDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;

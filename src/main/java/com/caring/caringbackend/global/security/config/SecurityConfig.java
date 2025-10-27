@@ -1,7 +1,7 @@
-package com.caring.caringbackend.global.config.security;
+package com.caring.caringbackend.global.security.config;
 
-import com.caring.caringbackend.global.jwt.exception.JwtAuthenticationEntryPoint;
-import com.caring.caringbackend.global.jwt.filter.JwtAuthenticationFilter;
+import com.caring.caringbackend.global.security.exception.JwtAuthenticationEntryPoint;
+import com.caring.caringbackend.global.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

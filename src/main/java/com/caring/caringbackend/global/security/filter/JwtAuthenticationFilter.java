@@ -1,9 +1,9 @@
-package com.caring.caringbackend.global.jwt.filter;
+package com.caring.caringbackend.global.security.filter;
 
-import com.caring.caringbackend.global.jwt.exception.JwtAuthenticationEntryPoint;
-import com.caring.caringbackend.global.jwt.exception.JwtAuthenticationException;
-import com.caring.caringbackend.global.jwt.JwtUtils;
-import com.caring.caringbackend.global.jwt.details.JwtUserDetails;
+import com.caring.caringbackend.global.security.exception.JwtAuthenticationEntryPoint;
+import com.caring.caringbackend.global.security.exception.JwtAuthenticationException;
+import com.caring.caringbackend.global.security.JwtUtils;
+import com.caring.caringbackend.global.security.details.JwtUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

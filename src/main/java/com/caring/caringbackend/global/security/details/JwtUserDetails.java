@@ -1,4 +1,4 @@
-package com.caring.caringbackend.global.jwt.details;
+package com.caring.caringbackend.global.security.details;
 
 import java.io.Serializable;
 import java.util.Collection;

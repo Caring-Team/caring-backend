@@ -1,4 +1,4 @@
-package com.caring.caringbackend.global.jwt.exception;
+package com.caring.caringbackend.global.security.exception;
 
 
 import org.springframework.security.authentication.InsufficientAuthenticationException;

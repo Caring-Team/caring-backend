@@ -11,6 +11,8 @@ import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.domain.auth.service.AuthService;
 import com.caring.caringbackend.global.jwt.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.jwt.details.MemberDetails;
+import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
+import com.caring.caringbackend.global.security.details.MemberDetails;
 import com.caring.caringbackend.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
