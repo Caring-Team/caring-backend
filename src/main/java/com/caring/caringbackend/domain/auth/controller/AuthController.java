@@ -29,12 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-/**
- * ID/PW 회원가입: 전화번호 인증 > ID/PW + 추가정보 입력 전화번호 인증 1. 전화번호가 DB에 있는 경우 (1) ID/PW로 이미 회원가입한 경우 이미 가입한 회원. 아이디/비밀번호 찾기로 유도한다.
- * (2) OAuth로 이미 회원가입한 경우 OAuth 계정과 연동을 진행한다. (3) 휴대전화 번호 변경 등 다른 사용자가 전화번호로 회원가입한 경우 기존 계정 비활성화 후 신규 회원가입 진행한다. 2.
- * 전화번호가 DB에 없는 경우 회원가입을 진행한다. OAuth 회원가입: OAuth 로그인 > 전화번호 인증 > 추가정보 입력 1. 전화번호가 DB에 있는 경우 (1) ID/PW 또는 OAuth로 이미 회원가입한
- * 경우 OAuth 계정과 연동을 진행한다. (2) 휴대전화 번호 변경 등 다론사용자가 전화번호로 회원가입한 경우 기존 계정 비활성화 후 신규 회원가입 진행한다.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -54,6 +48,13 @@ public class AuthController {
 
     // OAUTH ENDPOINTS
 
+    /**
+     * OAuth2 로그인을 한다.
+     *
+     * @param provider google, naver, kakao
+     * @param request  authentication code
+     * @return 해당 Provider로 계정이 있는 경우: <code>Fully jwt</code>> 해당 Provider로 계정이 없는 경우: 임시 <code>Access token</code>
+     */
     @PostMapping(value = "/oauth2/login/{provider}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberOAuth2(
             @PathVariable String provider,
@@ -62,6 +63,12 @@ public class AuthController {
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
+    /**
+     * OAuth2 회원가입 흐름에서 전화번호에 인증번호를 보낸다.
+     *
+     * @param certificationCodeRequest 이름, 생년월일, 전화번호
+     * @return true
+     */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/certification-code")
     public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeOAuth2(
@@ -70,6 +77,12 @@ public class AuthController {
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
+    /**
+     * OAuth2 회원가입 흐름에서 전화번호를 인증한다.
+     *
+     * @param request 이름, 생년월일, 전화번호, 인증번호
+     * @return 이미 계정이 존재하는 경우: 연동 후 <code>Fully jwt</code> <br> 계정이 존재하지 않은 경우: 기존 임시 <code>Access token</code>
+     */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/verify-phone")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneOAuth2(
@@ -79,6 +92,12 @@ public class AuthController {
                 ResponseEntity.ok(authService.verifyPhoneOAuth2(temporaryUserDetails, request)));
     }
 
+    /**
+     * OAuth2 회원가입 흐름에서 기본 정보를 입력한다.
+     *
+     * @param registerRequest 성별, 주소
+     * @return <code>Fully jwt</code>
+     */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/register")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterOAuth2(
@@ -90,12 +109,24 @@ public class AuthController {
 
     // LOCAL ENDPOINTS
 
+    /**
+     * local 로그인
+     *
+     * @param request id, password
+     * @return <code>Fully jwt</code>
+     */
     @PostMapping("/login")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberLocal(
             @Valid @RequestBody UserLocalLoginRequest request) {
         return ApiResponse.success(ResponseEntity.ok(authService.loginMemberLocal(request)));
     }
 
+    /**
+     * Local 회원가입 흐름에서 전화번호에 인증번호를 보낸다.
+     *
+     * @param certificationCodeRequest 이름, 생년월일, 전화번호
+     * @return true
+     */
     @PostMapping("/certification-code")
     public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeMemberLocal(
             @Valid @RequestBody SendCertificationCodeRequest certificationCodeRequest) {
@@ -103,6 +134,12 @@ public class AuthController {
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
+    /**
+     * Local 회원가입 흐름에서 전화번호를 인증한다.
+     *
+     * @param request 이름, 생년월일, 전화번호, 인증번호
+     * @return 기존 소셜 계정이 있는 경우: 해당 Member 권한의 <code>Fully jwt</code> <br>기존 소셜 계정이 없는 경우: 임시 <code>Access token</code>
+     */
     @PostMapping("/verify-phone")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneMemberLocal(
             @Valid @RequestBody VerifyPhoneRequest request) {
@@ -110,6 +147,12 @@ public class AuthController {
         return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneNumberLocal(request)));
     }
 
+    /**
+     * Local 회원가입을 완료한다
+     *
+     * @param request ID, PW, 성별, 주소
+     * @return <code>Fully jwt</code>
+     */
     @PreAuthorize("hasRole('TEMP_LOCAL')")
     @PostMapping("/register")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterMemberLocal(
@@ -119,6 +162,13 @@ public class AuthController {
         return ApiResponse.success(ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, request)));
     }
 
+
+    /**
+     * OAuth2로 이미 회원가입 된 유저의 ID/PW를 추가한다.
+     *
+     * @param request id, pw
+     * @return ture
+     */
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add-local")
     public ApiResponse<ResponseEntity<Boolean>> addLocalCredential(
