@@ -89,7 +89,7 @@ public class JwtUtils {
                 .build();
     }
 
-    public JwtTokenResponse generateTemporaryOAuth2Token(GenerateTemporaryTokenDto dto) {
+    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto dto) {
         String token = Jwts.builder()
                 .claim("role", MemberRole.TEMP_OAUTH.getKey())
                 .claim("credential_type", dto.getCredentialType())
@@ -104,9 +104,9 @@ public class JwtUtils {
                 .build();
     }
 
-    public JwtTokenResponse generateOAuth2RegisterToken(GenerateTemporaryTokenDto dto) {
+    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto dto) {
         String token = Jwts.builder()
-                .claim("role", MemberRole.TEMP_OAUTH.getKey())
+                .claim("role", MemberRole.TEMP_LOCAL.getKey())
                 .claim("credential_type", dto.getCredentialType())
                 .claim("credential_id", dto.getCredentialId())
                 .issuedAt(new Date())

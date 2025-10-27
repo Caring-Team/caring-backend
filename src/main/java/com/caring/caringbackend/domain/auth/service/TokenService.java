@@ -33,10 +33,12 @@ public class TokenService {
 
     public JwtTokenResponse generateTemporaryOAuth2Token(GenerateTemporaryTokenDto dto) {
         return jwtUtils.generateTemporaryOAuth2Token(dto);
+    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto dto) {
+        return jwtUtils.generateTemporaryTokenOAuth2(dto);
     }
 
-    public JwtTokenResponse generateLocalRegisterToken(GenerateTemporaryTokenDto dto) {
-        return jwtUtils.generateLocalRegisterToken(dto);
+    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto dto) {
+        return jwtUtils.generateTemporaryTokenLocal(dto);
     }
 
     public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest request) {

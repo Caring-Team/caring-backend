@@ -42,19 +42,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // GLOBAL ENDPOINTS
+    // MEMBER GLOBAL ENDPOINTS
 
     @PostMapping("/token/refresh")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessToken(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessTokenMember(
             @Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
-        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessToken(tokenRefreshRequest);
+        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessTokenMember(tokenRefreshRequest);
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
     // OAUTH ENDPOINTS
 
     @PostMapping(value = "/oauth2/login/{provider}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> oAuthLogin(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberOAuth2(
             @PathVariable String provider,
             @Valid @RequestBody OAuthLoginRequest request) {
         JwtTokenResponse jwtTokenResponse = authService.oAuth2LoginOrGenerateTemporaryToken(provider, request);
@@ -63,7 +63,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/certification-code")
-    public ApiResponse<ResponseEntity<Boolean>> sendOAuth2CertificationCode(
+    public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeOAuth2(
             @Valid @RequestBody SendCertificationCodeRequest certificationCodeRequest) {
         authService.sendCertificationCode(certificationCodeRequest);
         return ApiResponse.success(ResponseEntity.ok(true));
@@ -71,56 +71,59 @@ public class AuthController {
 
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/verify-phone")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhone(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneOAuth2(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
             @Valid @RequestBody VerifyPhoneRequest request) {
         return ApiResponse.success(
-                ResponseEntity.ok(authService.verifyOAuth2PhoneNumber(temporaryUserDetails, request)));
+                ResponseEntity.ok(authService.verifyPhoneOAuth2(temporaryUserDetails, request)));
     }
 
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/register")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> completeOAuth2Register(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterOAuth2(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
             @Valid @RequestBody UserOAuth2RegisterRequest registerRequest) {
         return ApiResponse.success(ResponseEntity.ok(
-                authService.completeOAuth2Register(temporaryUserDetails, registerRequest)));
+                authService.completeRegisterOAuth2(temporaryUserDetails, registerRequest)));
     }
 
     // LOCAL ENDPOINTS
 
     @PostMapping("/login")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> login(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberLocal(
             @Valid @RequestBody UserLocalLoginRequest request) {
-        return ApiResponse.success(ResponseEntity.ok(authService.loginLocal(request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.loginMemberLocal(request)));
     }
 
     @PostMapping("/certification-code")
-    public ApiResponse<ResponseEntity<Boolean>> sendLocalCertificationCode(
+    public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeMemberLocal(
             @Valid @RequestBody SendCertificationCodeRequest certificationCodeRequest) {
         authService.sendCertificationCode(certificationCodeRequest);
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
     @PostMapping("/verify-phone")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneNumber(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneMemberLocal(
             @Valid @RequestBody VerifyPhoneRequest request) {
-        return ApiResponse.success(ResponseEntity.ok(authService.verifyLocalPhoneNumber(request)));
+
+        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneNumberLocal(request)));
     }
 
     @PreAuthorize("hasRole('TEMP_LOCAL')")
     @PostMapping("/register")
-    public ApiResponse<ResponseEntity<JwtTokenResponse>> completeLocalRegister(
+    public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterMemberLocal(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
             @Valid @RequestBody UserLocalRegisterRequest request) {
-        return ApiResponse.success(ResponseEntity.ok(authService.completeLocalRegister(temporaryUserDetails, request)));
+
+        return ApiResponse.success(ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, request)));
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/add-username")
+    @PostMapping("/add-local")
     public ApiResponse<ResponseEntity<Boolean>> addLocalCredential(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @Valid @RequestBody UserLocalRegisterRequest request) {
+
         return ApiResponse.success(ResponseEntity.ok(authService.addLocalCredential(memberDetails, request)));
     }
 }

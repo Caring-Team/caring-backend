@@ -56,7 +56,7 @@ public class AuthService {
 
         return transactionTemplate.execute(
                 status -> findUserByOAuth2UserInfo(userInfoFromProvider).map(this::generateTokenByMember)
-                        .orElseGet(() -> generateTemporaryToken(userInfoFromProvider)));
+                        .orElseGet(() -> generateTemporaryTokenOAuth2(userInfoFromProvider)));
     }
 
     private JwtTokenResponse generateTokenByMember(Member member) {
@@ -68,11 +68,12 @@ public class AuthService {
     }
 
     private JwtTokenResponse generateTemporaryToken(OAuth2ProviderUserInfoResponse userInfoFromProvider) {
+    private JwtTokenResponse generateTemporaryTokenOAuth2(OAuth2ProviderUserInfoResponse userInfoFromProvider) {
         GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
                 .credentialType(userInfoFromProvider.getProviderType().getKey())
                 .credentialId(userInfoFromProvider.getUserId())
                 .build();
-        return tokenService.generateTemporaryOAuth2Token(dto);
+        return tokenService.generateTemporaryTokenOAuth2(dto);
     }
 
     /*    private JwtTokenResponse generateOAuth2RegisterToken(TemporaryUserDetails userDetails,
@@ -104,8 +105,8 @@ public class AuthService {
         verifyPhoneService.sendCertificationCode(certificationCodeRequest);
     }
 
-    public JwtTokenResponse verifyOAuth2PhoneNumber(TemporaryUserDetails userDetails,
-                                                    VerifyPhoneRequest request) {
+    public JwtTokenResponse verifyPhoneOAuth2(TemporaryUserDetails userDetails,
+                                              VerifyPhoneRequest request) {
         verifyPhoneService.verifyPhone(request);
         try {
             // TODO: add old access token to black list
@@ -148,7 +149,7 @@ public class AuthService {
         }
     }
 
-    public JwtTokenResponse completeOAuth2Register(
+    public JwtTokenResponse completeRegisterOAuth2(
             TemporaryUserDetails userDetails,
             UserOAuth2RegisterRequest registerRequest) {
         TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
@@ -179,7 +180,7 @@ public class AuthService {
         });
     }
 
-    public JwtTokenResponse verifyLocalPhoneNumber(VerifyPhoneRequest request) {
+    public JwtTokenResponse verifyPhoneNumberLocal(VerifyPhoneRequest request) {
         verifyPhoneService.verifyPhone(request);
         try {
             return transactionTemplate.execute(status -> {
@@ -195,7 +196,7 @@ public class AuthService {
                     });
                     return generateTokenByMember(member); // 로그인 후 사용할 아이디 비밀번호 입력창으로 넘어간다.
                 } else {
-                    return generateLocalRegisterToken(request); // 회원가입을 진행한다.
+                    return generateTemporaryTokenMemberLocal(request); // 회원가입을 진행한다.
                 }
             });
         } catch (IllegalStateException e) {
@@ -205,7 +206,7 @@ public class AuthService {
         }
     }
 
-    public JwtTokenResponse completeLocalRegister(
+    public JwtTokenResponse completeRegisterLocal(
             TemporaryUserDetails userDetails,
             UserLocalRegisterRequest request) {
         TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
@@ -241,13 +242,13 @@ public class AuthService {
         });
     }
 
-    private JwtTokenResponse generateLocalRegisterToken(VerifyPhoneRequest verifyPhoneRequest) {
+    private JwtTokenResponse generateTemporaryTokenMemberLocal(VerifyPhoneRequest verifyPhoneRequest) {
         GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
                 .credentialType(CredentialType.LOCAL.getKey())
                 .credentialId(null)
                 .build();
         return transactionTemplate.execute(state -> {
-            JwtTokenResponse jwtTokenResponse = tokenService.generateLocalRegisterToken(dto);
+            JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenLocal(dto);
             TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
                     .accessToken(jwtTokenResponse.getAccessToken())
                     .phone(verifyPhoneRequest.getPhoneNumber())
@@ -283,7 +284,7 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokenResponse loginLocal(UserLocalLoginRequest request) {
+    public JwtTokenResponse loginMemberLocal(UserLocalLoginRequest request) {
         Member member = authCredentialRepository.findMemberByIdentifierAndPasswordHash(request.getUsername(),
                         request.getPassword())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USERNAME_PASSWORD));
@@ -298,7 +299,7 @@ public class AuthService {
         return credentialType;
     }
 
-    public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest tokenRefreshRequest) {
+    public JwtTokenResponse regenerateAccessTokenMember(TokenRefreshRequest tokenRefreshRequest) {
         return tokenService.regenerateAccessToken(tokenRefreshRequest);
     }
 }
