@@ -6,7 +6,6 @@ import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,11 +37,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
-
-    // 이메일
-    @Email
-    @Column(unique = true, length = 255)
-    private String email;
 
     // 이름
     @Column(length = 100, nullable = false)
@@ -84,10 +78,9 @@ public class Member extends BaseEntity {
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
 
     @Builder
-    public Member(MemberRole role, String email, String name, String phoneNumber, String duplicationInformation,
+    public Member(MemberRole role, String name, String phoneNumber, String duplicationInformation,
                   Gender gender, LocalDate birthDate, String profileImageUrl, Address address, GeoPoint location) {
         this.role = role;
-        this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.duplicationInformation = duplicationInformation;
