@@ -122,15 +122,15 @@ public class AuthService {
         try {
             // TODO: add old access token to black list
             return transactionTemplate.execute(status -> {
-                String duplicationInformation = Member.makeDuplicationInformation(request.getName(),
-                        request.getBirthDate(), request.getPhoneNumber());
                 Optional<Member> byPhoneNumber = memberRepository.findByPhoneNumber(
                         request.getPhoneNumber());
                 if (byPhoneNumber.isPresent()) {
-                    if (!byPhoneNumber.get().getDuplicationInformation().equals(duplicationInformation)) {
+                    Member member = byPhoneNumber.get();
+                    String duplicationInformation = Member.makeDuplicationInformation(request.getName(),
+                            request.getBirthDate(), request.getPhoneNumber());
+                    if (!member.getDuplicationInformation().equals(duplicationInformation)) {
                         throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS);
                     }
-                    Member member = byPhoneNumber.get();
                     AuthCredential credential = AuthCredential.createSocialCredential(member,
                             findCredentialType(userDetails.getCredentialType()),
                             userDetails.getCredentialId());
