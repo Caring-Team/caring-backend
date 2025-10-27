@@ -25,7 +25,7 @@ public class AuthCredential extends BaseTimeEntity {
 
     // Member
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     public Member member;
 
     // credential type

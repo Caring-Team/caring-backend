@@ -34,7 +34,7 @@ public class Member extends BaseEntity {
     // Role -> TEMP_USER, USER
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MemberRole role = MemberRole.TEMP_USER;
+    private MemberRole role;
 
     // 이메일
     @Email
@@ -74,6 +74,7 @@ public class Member extends BaseEntity {
     @Builder
     public Member(String email, String name, String phoneNumber, Gender gender,
                   LocalDate birthDate, Address address, GeoPoint location) {
+        this.role = MemberRole.TEMP_USER;
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
