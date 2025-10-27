@@ -31,19 +31,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String header = request.getHeader("Authorization");
+            /*
             if (header == null || !header.startsWith("Bearer ")) {
                 throw new JwtAuthenticationException("Could not find JWT token");
             }
-            String accessToken = header.substring(7);
-            if (jwtUtils.isTokenExpired(accessToken)) {
-                throw new JwtAuthenticationException("Expired JWT token");
+            */
+            if (header != null && header.startsWith("Bearer ")) {
+                String accessToken = header.substring(7);
+                if (jwtUtils.isTokenExpired(accessToken)) {
+                    throw new JwtAuthenticationException("Expired JWT token");
+                }
+                JwtUserDetails jwtUserDetails = jwtUtils.decodeJwtUserDetails(accessToken);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        jwtUserDetails,
+                        null,
+                        jwtUserDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            JwtUserDetails jwtUserDetails = jwtUtils.decodeJwtUserDetails(accessToken);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    jwtUserDetails,
-                    null,
-                    jwtUserDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e) {
             jwtAuthenticationEntryPoint.commence(request, response, e);
             SecurityContextHolder.clearContext();
