@@ -14,6 +14,26 @@ spring:
                 format_sql: true
                 default_schema: public
         open-in-view: false
+oauth2:
+    providers:
+        google:
+          client-id: ${GOOGLE_CLIENT_ID}
+          client-secret: ${GOOGLE_CLIENT_SECRET}
+          redirect-uri: ${GOOGLE_REDIRECT_URI}
+          user-info-uri: ${GOOGLE_USERINFO_URI}
+          token-uri: ${GOOGLE_TOKEN_URI}
+        naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            user-info-uri: ${NAVER_USERINFO_URI}
+            token-uri: ${NAVER_TOKEN_URI}
+        kakao:
+            client-id: ${KAKAKO_CLIENT_ID}
+            client-secret: ${KAKAKO_CLIENT_SECRET}
+            redirect-uri: ${KAKAKO_REDIRECT_URI}
+            user-info-uri: ${KAKAKO_USERINFO_URI}
+            token-uri: ${KAKAKO_TOKEN_URI}
 
 
 # 📚 Swagger/OpenAPI 설정
