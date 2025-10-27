@@ -27,6 +27,7 @@ import com.caring.caringbackend.domain.user.guardian.repository.AuthCredentialRe
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
+import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.security.JwtUtils;
 import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
@@ -179,9 +180,12 @@ public class AuthService {
                     .name(temporaryUserInfo.getName())
                     .phoneNumber(temporaryUserInfo.getPhone())
                     .birthDate(temporaryUserInfo.getBirthDate())
+                    .gender(Gender.findEnumByCode(registerRequest.getGender()))
+                    .address(registerRequest.getAddress())
                     .duplicationInformation(duplicationInformation)
                     .role(MemberRole.USER)
                     .build();
+
             AuthCredential authCredential = AuthCredential.createSocialCredential(member,
                     findCredentialType(userDetails.getCredentialType()), userDetails.getCredentialId());
             memberRepository.save(member);
@@ -243,8 +247,10 @@ public class AuthService {
                     .name(temporaryUserInfo.getName())
                     .phoneNumber(temporaryUserInfo.getPhone())
                     .birthDate(temporaryUserInfo.getBirthDate())
-                    .role(MemberRole.USER)
+                    .gender(Gender.findEnumByCode(request.getGender()))
+                    .address(request.getAddress())
                     .duplicationInformation(duplicationInformation)
+                    .role(MemberRole.USER)
                     .build();
             AuthCredential credential = AuthCredential.createLocalCredential(member, request.getUsername(),
                     request.getPassword());
