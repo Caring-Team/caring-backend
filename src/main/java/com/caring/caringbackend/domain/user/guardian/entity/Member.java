@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
     // Role -> TEMP_USER, USER
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MemberRole role;
+    private MemberRole role = MemberRole.TEMP_USER;
 
     // 이름
     @Column(length = 100, nullable = false)
