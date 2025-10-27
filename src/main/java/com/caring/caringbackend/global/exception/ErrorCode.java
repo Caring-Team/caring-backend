@@ -69,7 +69,12 @@ public enum ErrorCode {
 
     // 🌐 External API Errors (EXT-xxx)
     EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EXT-001", "외부 API 호출 중 오류가 발생했습니다"),
-    EXTERNAL_API_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "EXT-002", "외부 API 호출 시간이 초과되었습니다");
+    EXTERNAL_API_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "EXT-002", "외부 API 호출 시간이 초과되었습니다"),
+
+    // 👵 Elderly Profile Errors (ELDERLY-xxx)
+    ELDERLY_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "ELDERLY-001", "어르신 프로필을 찾을 수 없습니다"),
+    ELDERLY_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ELDERLY-002", "해당 어르신 프로필에 접근할 수 없습니다"),
+    ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다");
 
     private final HttpStatus httpStatus;
     private final String code;
