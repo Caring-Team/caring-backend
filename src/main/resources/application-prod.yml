@@ -18,8 +18,9 @@ server:
 logging:
     level:
         root: INFO
-        com.caring: DEBUG
+        com.caring: INFO
         p6spy: WARN  # 운영 환경에서는 P6Spy 로그 최소화
+        com.caring.caringbackend.global.aop: WARN  # 운영 환경에서는 AOP 경고만
 
 # P6Spy 설정 - 운영 환경에서는 비활성화 또는 느린 쿼리만 로깅
 decorator:

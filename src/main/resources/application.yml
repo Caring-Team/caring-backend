@@ -16,6 +16,7 @@ logging:
     com.caring.caringbackend: INFO
     org.springframework.web: DEBUG
     p6spy: INFO  # P6Spy 로그 레벨
+    com.caring.caringbackend.global.aop: INFO  # AOP 로깅
 
 # P6Spy 설정
 decorator:
