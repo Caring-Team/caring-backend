@@ -15,3 +15,10 @@ logging:
   level:
     com.caring.caringbackend: INFO
     org.springframework.web: DEBUG
+    p6spy: INFO  # P6Spy 로그 레벨
+
+# P6Spy 설정
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true

@@ -19,3 +19,10 @@ logging:
     level:
         root: INFO
         com.caring: DEBUG
+        p6spy: WARN  # 운영 환경에서는 P6Spy 로그 최소화
+
+# P6Spy 설정 - 운영 환경에서는 비활성화 또는 느린 쿼리만 로깅
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false  # 운영 환경에서는 비활성화
