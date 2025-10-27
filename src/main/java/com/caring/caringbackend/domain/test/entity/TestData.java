@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.test;
+package com.caring.caringbackend.domain.test.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

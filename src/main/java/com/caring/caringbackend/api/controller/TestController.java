@@ -1,7 +1,7 @@
 package com.caring.caringbackend.api.controller;
 
-import com.caring.caringbackend.domain.test.TestData;
-import com.caring.caringbackend.domain.test.TestDataRepository;
+import com.caring.caringbackend.domain.test.entity.TestData;
+import com.caring.caringbackend.domain.test.service.TestDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,7 +31,7 @@ import java.util.List;
 @Tag(name = "🧪 Test", description = "테스트 API")
 public class TestController {
 
-    private final TestDataRepository testDataRepository;
+    private final TestDataService testDataService;
 
     /**
      * 🏃‍♂️ 서버 상태 테스트
@@ -62,38 +62,38 @@ public class TestController {
         log.info("🔄 테스트 데이터 초기화 시작");
 
         // 기존 데이터 삭제
-        testDataRepository.deleteAll();
+        testDataService.deleteAll();
 
         // 테스트 데이터 생성
-        testDataRepository.save(TestData.builder()
+        testDataService.save(TestData.builder()
                 .name("홍길동")
                 .description("P6Spy 테스트 데이터 1")
                 .age(25)
                 .email("hong@test.com")
                 .build());
 
-        testDataRepository.save(TestData.builder()
+        testDataService.save(TestData.builder()
                 .name("김철수")
                 .description("P6Spy 테스트 데이터 2")
                 .age(30)
                 .email("kim@test.com")
                 .build());
 
-        testDataRepository.save(TestData.builder()
+        testDataService.save(TestData.builder()
                 .name("이영희")
                 .description("P6Spy 테스트 데이터 3")
                 .age(28)
                 .email("lee@test.com")
                 .build());
 
-        testDataRepository.save(TestData.builder()
+        testDataService.save(TestData.builder()
                 .name("박민수")
                 .description("P6Spy 테스트 데이터 4")
                 .age(35)
                 .email("park@test.com")
                 .build());
 
-        testDataRepository.save(TestData.builder()
+        testDataService.save(TestData.builder()
                 .name("최지은")
                 .description("P6Spy 테스트 데이터 5")
                 .age(27)
@@ -114,7 +114,7 @@ public class TestController {
     @GetMapping("/data")
     public List<TestData> getAllTestData() {
         log.info("📋 전체 테스트 데이터 조회");
-        return testDataRepository.findAll();
+        return testDataService.findAll();
     }
 
     /**
@@ -127,8 +127,7 @@ public class TestController {
     @GetMapping("/data/{id}")
     public TestData getTestDataById(@PathVariable Long id) {
         log.info("🔍 테스트 데이터 조회 - ID: {}", id);
-        return testDataRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("데이터를 찾을 수 없습니다. ID: " + id));
+        return testDataService.findById(id);
     }
 
     /**
@@ -141,8 +140,7 @@ public class TestController {
     @GetMapping("/data/email/{email}")
     public TestData getTestDataByEmail(@PathVariable String email) {
         log.info("📧 테스트 데이터 조회 - Email: {}", email);
-        return testDataRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("데이터를 찾을 수 없습니다. Email: " + email));
+        return testDataService.findByEmail(email);
     }
 
     /**
@@ -155,7 +153,7 @@ public class TestController {
     @GetMapping("/data/search")
     public List<TestData> searchTestData(@RequestParam String name) {
         log.info("🔎 테스트 데이터 검색 - 이름: {}", name);
-        return testDataRepository.findByNameContaining(name);
+        return testDataService.searchByName(name);
     }
 
     /**
@@ -168,6 +166,6 @@ public class TestController {
     @GetMapping("/data/age")
     public List<TestData> getTestDataByAge(@RequestParam Integer minAge) {
         log.info("🎂 테스트 데이터 조회 - 최소 나이: {}", minAge);
-        return testDataRepository.findByAgeGreaterThan(minAge);
+        return testDataService.findByAgeGreaterThan(minAge);
     }
 }

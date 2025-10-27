@@ -1,5 +1,6 @@
-package com.caring.caringbackend.domain.test;
+package com.caring.caringbackend.domain.test.repository;
 
+import com.caring.caringbackend.domain.test.entity.TestData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
