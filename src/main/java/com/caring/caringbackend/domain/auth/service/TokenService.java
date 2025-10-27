@@ -7,6 +7,8 @@ import com.caring.caringbackend.domain.auth.dto.request.TokenRefreshRequest;
 import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.domain.auth.entity.RefreshToken;
 import com.caring.caringbackend.domain.auth.repository.RefreshTokenRepository;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
+import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
@@ -22,6 +24,7 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtils jwtUtils;
     private final MemberRepository memberRepository;
+    private final InstitutionAdminRepository institutionAdminRepository;
 
     @Transactional
     public JwtTokenResponse generateToken(GenerateTokenDto dto) {
@@ -37,6 +40,10 @@ public class TokenService {
 
     public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto dto) {
         return jwtUtils.generateTemporaryTokenLocal(dto);
+    }
+
+    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(GenerateTemporaryTokenDto dto) {
+        return jwtUtils.generateTemporaryTokenInstitutionAdmin(dto);
     }
 
     public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest request) {
@@ -56,6 +63,28 @@ public class TokenService {
         GenerateTokenDto dto = GenerateTokenDto.builder()
                 .id(member.getId())
                 .role(member.getRole().getKey())
+                .build();
+
+        return jwtUtils.regenerateAccessToken(dto);
+    }
+
+    public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest request) {
+        String refreshToken = request.getRequestToken();
+
+        if (jwtUtils.isTokenExpired(refreshToken)) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        }
+        if (refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken).isEmpty()) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        }
+        RefreshTokenPayloadDto refreshTokenPayloadDto = jwtUtils.decodeRefreshToken(refreshToken);
+
+        InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(refreshTokenPayloadDto.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        GenerateTokenDto dto = GenerateTokenDto.builder()
+                .id(institutionAdmin.getId())
+                .role(institutionAdmin.getRole().getKey())
                 .build();
 
         return jwtUtils.regenerateAccessToken(dto);
