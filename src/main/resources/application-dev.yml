@@ -34,11 +34,11 @@ oauth2:
             user-info-uri: ${NAVER_USERINFO_URI}
             token-uri: ${NAVER_TOKEN_URI}
         kakao:
-            client-id: ${KAKAKO_CLIENT_ID}
-            client-secret: ${KAKAKO_CLIENT_SECRET}
-            redirect-uri: ${KAKAKO_REDIRECT_URI}
-            user-info-uri: ${KAKAKO_USERINFO_URI}
-            token-uri: ${KAKAKO_TOKEN_URI}
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            user-info-uri: ${KAKAO_USERINFO_URI}
+            token-uri: ${KAKAO_TOKEN_URI}
 
 jwt:
     secret: ${JWT_SECRET}
