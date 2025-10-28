@@ -38,11 +38,6 @@ public class MemberResponse {
     private MemberRole role;
 
     /**
-     * 📧 이메일
-     */
-    private String email;
-
-    /**
      * 👤 이름
      */
     private String name;
@@ -114,7 +109,6 @@ public class MemberResponse {
         return MemberResponse.builder()
             .id(member.getId())
             .role(member.getRole())
-            .email(member.getEmail())
             .name(member.getName())
             .phoneNumber(member.getPhoneNumber())
             .gender(member.getGender())

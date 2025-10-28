@@ -90,6 +90,18 @@ public class Member extends BaseEntity {
         this.location = location;
     }
 
+    /**
+     * 회원 정보 수정
+     */
+    public void updateInfo(String name, String phoneNumber, Gender gender,
+                           LocalDate birthDate, Address address, GeoPoint location) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.location = location;
+    }
     // TODO: 필요한 도메인 로직 작성
 
     /**

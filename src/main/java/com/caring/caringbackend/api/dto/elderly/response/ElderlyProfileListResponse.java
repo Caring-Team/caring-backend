@@ -36,7 +36,7 @@ public class ElderlyProfileListResponse {
     private int totalCount;
 
     /**
-     * 📤 List<ElderlyProfile>을 ElderlyProfileListResponse로 변환
+     * List<ElderlyProfile>을 ElderlyProfileListResponse로 변환
      */
     public static ElderlyProfileListResponse from(List<ElderlyProfile> profiles) {
         List<ElderlyProfile> safeProfiles = Optional.ofNullable(profiles).orElse(Collections.emptyList());
@@ -47,6 +47,18 @@ public class ElderlyProfileListResponse {
                     .map(ElderlyProfileResponse::from)
                     .collect(Collectors.toList())
             )
+            .totalCount(safeProfiles.size())
+            .build();
+    }
+
+    /**
+     * List<ElderlyProfileResponse>를 받아서 ElderlyProfileListResponse로 변환
+     */
+    public static ElderlyProfileListResponse of(List<ElderlyProfileResponse> profiles) {
+        List<ElderlyProfileResponse> safeProfiles = Optional.ofNullable(profiles).orElse(Collections.emptyList());
+        
+        return ElderlyProfileListResponse.builder()
+            .profiles(safeProfiles)
             .totalCount(safeProfiles.size())
             .build();
     }

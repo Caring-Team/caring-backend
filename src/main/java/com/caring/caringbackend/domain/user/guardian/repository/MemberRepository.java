@@ -2,6 +2,8 @@ package com.caring.caringbackend.domain.user.guardian.repository;
 
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.entity.MemberRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,32 +28,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     public boolean existsByDuplicationInformation(String duplicationInformation);
 
     /**
-     * 📧 이메일로 회원 조회
-     * <p>
-     * 회원 가입 시 이메일 중복 체크 및 로그인 시 사용자 찾기에 활용됩니다.
-     *
-     * @param email 조회할 이메일
-     * @return Optional<Member> 이메일에 해당하는 회원 (없으면 empty)
+     * 회원 단건 조회 (삭제되지 않은 회원만)
      */
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findByIdAndDeletedFalse(Long id);
 
     /**
-     * 📧 이메일 존재 여부 확인
-     * <p>
-     * 회원 가입 시 이메일 중복 검증에 사용됩니다.
-     *
-     * @param email 확인할 이메일
-     * @return 이메일이 이미 존재하는지 여부
+     * 회원 목록 조회 (페이징, 삭제되지 않은 회원만)
      */
-    boolean existsByEmail(String email);
+    Page<Member> findByDeletedFalse(Pageable pageable);
 
     /**
-     * 👥 역할로 회원 목록 조회
-     * <p>
-     * 특정 역할(TEMP_USER, USER)의 회원 목록을 조회할 때 사용됩니다.
-     *
-     * @param role 조회할 회원 역할
-     * @return 해당 역할을 가진 회원 목록
+     * 역할로 회원 목록 조회 (삭제되지 않은 회원만)
      */
-    List<Member> findByRole(MemberRole role);
+    List<Member> findByRoleAndDeletedFalse(MemberRole role);
 }
