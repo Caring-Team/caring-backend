@@ -25,7 +25,7 @@ public interface ElderlyProfileRepository extends JpaRepository<ElderlyProfile, 
     List<ElderlyProfile> findByMemberIdAndDeletedFalse(Long memberId);
 
     /**
-     * 특정 어르신 프로필 조회 (소유자 검증 포함, 삭제되지 않은 프로필만)
+     * 특정 어르신 프로필 조회 (어르신 프로필의 보호자 접근 검증 포함, 삭제되지 않은 프로필만)
      */
     Optional<ElderlyProfile> findByIdAndMemberIdAndDeletedFalse(Long id, Long memberId);
 

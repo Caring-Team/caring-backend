@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * 👵 어르신 프로필(ElderlyProfile) 관리 Controller
  * 
  * 회원의 어르신 프로필 CRUD 기능을 제공하는 REST API 엔드포인트입니다.
- * 모든 엔드포인트는 회원 ID를 포함하여 소유자 검증을 수행합니다.
+ * 모든 엔드포인트는 회원 ID를 포함하여 어르신 프로필의 보호자 접근 검증을 수행합니다.
  * 
  * TODO: 인증 기능 적용 시, @PathVariable memberId 대신 @AuthenticationPrincipal MemberDetails 사용 예정
  * @author 윤다인
@@ -73,7 +73,7 @@ public class ElderlyProfileController {
      * 어르신 프로필 단건 조회
      *
      * 특정 어르신 프로필의 기본 정보를 조회합니다.
-     * 소유자 검증이 자동으로 수행됩니다.
+     * 어르신 프로필의 보호자 접근 검증이 자동으로 수행됩니다.
      */
     @GetMapping("/{profileId}")
     @Operation(summary = "어르신 프로필 조회", description = "특정 어르신 프로필의 기본 정보를 조회합니다.")
@@ -92,7 +92,7 @@ public class ElderlyProfileController {
      * 어르신 프로필 수정
      * 
      * 어르신 프로필의 정보를 수정합니다.
-     * 소유자 검증이 자동으로 수행됩니다.
+     * 어르신 프로필의 보호자 접근 검증이 자동으로 수행됩니다.
      */
     @PutMapping("/{profileId}")
     @Operation(summary = "어르신 프로필 수정", description = "어르신 프로필의 정보를 수정합니다.")

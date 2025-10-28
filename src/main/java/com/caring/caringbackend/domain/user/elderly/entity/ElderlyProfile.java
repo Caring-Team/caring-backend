@@ -60,9 +60,6 @@ public class ElderlyProfile extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CognitiveLevel cognitiveLevel;
 
-    // 선호 케어 타입
-    // TODO: Tagging 시스템 도입 후 수정
-
     // 특이사항
     @Column(length = 500)
     private String notes;

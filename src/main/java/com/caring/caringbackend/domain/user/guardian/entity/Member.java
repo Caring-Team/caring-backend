@@ -62,9 +62,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    // 프로필 사진 (TODO: 추후 구현 예정)
-    // private String profileImageUrl;
-
     // 주소
     @Embedded
     private Address address;
