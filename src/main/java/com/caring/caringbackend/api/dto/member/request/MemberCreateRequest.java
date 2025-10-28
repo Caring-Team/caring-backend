@@ -4,7 +4,6 @@ import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.model.GeoPoint;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,13 +26,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberCreateRequest {
-
-    /**
-     * 📧 이메일 (필수)
-     */
-    @NotBlank(message = "이메일은 필수입니다.")
-    @Email(message = "유효한 이메일 형식이 아닙니다.")
-    private String email;
 
     /**
      * 👤 이름 (필수)

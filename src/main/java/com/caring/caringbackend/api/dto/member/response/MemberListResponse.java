@@ -54,11 +54,11 @@ public class MemberListResponse {
     private boolean last;
 
     /**
-     * 📤 Page<MemberResponse>를 MemberListResponse로 변환
+     * List<MemberResponse>와 Page 정보를 받아서 MemberListResponse로 변환
      */
-    public static MemberListResponse from(Page<MemberResponse> page) {
+    public static MemberListResponse of(List<MemberResponse> members, Page<?> page) {
         return MemberListResponse.builder()
-            .content(page.getContent())
+            .content(members)
             .totalElements(page.getTotalElements())
             .totalPages(page.getTotalPages())
             .currentPage(page.getNumber())

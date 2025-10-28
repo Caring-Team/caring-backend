@@ -6,7 +6,6 @@ import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,11 +34,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
-
-    // 이메일
-    @Email
-    @Column(unique = true, nullable = false, length = 255)
-    private String email;
 
     // 이름
     @Column(nullable = false, length = 100)
@@ -72,10 +66,9 @@ public class Member extends BaseEntity {
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
 
     @Builder
-    public Member(String email, String name, String phoneNumber, Gender gender,
+    public Member(String name, String phoneNumber, Gender gender,
                   LocalDate birthDate, Address address, GeoPoint location) {
         this.role = MemberRole.TEMP_USER;
-        this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
@@ -84,5 +77,16 @@ public class Member extends BaseEntity {
         this.location = location;
     }
 
-    // TODO: 필요한 도메인 로직 작성
+    /**
+     * 회원 정보 수정
+     */
+    public void updateInfo(String name, String phoneNumber, Gender gender,
+                           LocalDate birthDate, Address address, GeoPoint location) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.location = location;
+    }
 }
