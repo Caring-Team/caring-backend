@@ -8,12 +8,16 @@ import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderTokenResp
 import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties.ProviderProperties;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @OAuth2Provider("naver")
 @Service
@@ -47,7 +51,10 @@ public class NaverOAuth2Service implements OAuth2Service {
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(tokenParams(request))
                 .retrieve()
-                // TODO: ON STATUS
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.BAD_REQUEST)))
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.EXTERNAL_API_ERROR)))
                 .bodyToMono(NaverTokenResponse.class)
                 .block();
     }
@@ -60,6 +67,10 @@ public class NaverOAuth2Service implements OAuth2Service {
                 .header("Authorization", "Bearer " + response.getAccessToken())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.BAD_REQUEST)))
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.EXTERNAL_API_ERROR)))
                 .bodyToMono(NaverUserInfoResponse.class)
                 .block();
     }

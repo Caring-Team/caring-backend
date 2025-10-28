@@ -8,11 +8,15 @@ import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderTokenResp
 import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties.ProviderProperties;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @OAuth2Provider("google")
 @Service
@@ -37,12 +41,17 @@ public class GoogleOAuth2Service implements OAuth2Service {
      */
     @Override
     public OAuth2ProviderTokenResponse getTokenFromProvider(UserOAuth2LoginRequest request) {
-        return webClient.post().uri(properties.getTokenUri())
+        return webClient
+                .post()
+                .uri(properties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(tokenParams(request))
                 .retrieve()
-                // TODO: ON STATUS
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.BAD_REQUEST)))
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.EXTERNAL_API_ERROR)))
                 .bodyToMono(GoogleTokenResponse.class)
                 .block();
     }
@@ -63,6 +72,10 @@ public class GoogleOAuth2Service implements OAuth2Service {
                 .header("Authorization", "Bearer " + response.getAccessToken())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.BAD_REQUEST)))
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new BusinessException(ErrorCode.EXTERNAL_API_ERROR)))
                 .bodyToMono(GoogleUserInfoResponse.class)
                 .block();
     }
