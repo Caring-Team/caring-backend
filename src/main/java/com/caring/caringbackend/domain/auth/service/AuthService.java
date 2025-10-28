@@ -159,7 +159,7 @@ public class AuthService {
         String duplicationInformation = Member.makeDuplicationInformation(temporaryUserInfo.getName(),
                 temporaryUserInfo.getBirthDate(), temporaryUserInfo.getPhone());
         if (memberRepository.existsByDuplicationInformation(duplicationInformation)) {
-            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
         }
 
         return transactionTemplate.execute(status -> {
@@ -197,10 +197,11 @@ public class AuthService {
                         throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS);
                     }
 
-                    authCredentialRepository.findAuthCredentialByMemberAndType(
-                            member, CredentialType.LOCAL).ifPresent((authCredential) -> {
-                        throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
-                    });
+                    authCredentialRepository
+                            .findAuthCredentialByMemberAndType(member, CredentialType.LOCAL)
+                            .ifPresent((authCredential) -> {
+                                throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
+                            });
                     return generateTokenByMember(member); // 로그인 후 사용할 아이디 비밀번호 입력창으로 넘어간다.
                 } else {
                     return generateTemporaryTokenMemberLocal(verifyPhoneRequest); // 회원가입을 진행한다.
@@ -217,19 +218,23 @@ public class AuthService {
             TemporaryUserDetails userDetails,
             UserLocalRegisterRequest userLocalRegisterRequest) {
 
-        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
-                        userDetails.getAccessToken())
+        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository
+                .findByAccessToken(userDetails.getAccessToken())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 도중 문제가 발생했습니다."));
 
-        String duplicationInformation = Member.makeDuplicationInformation(temporaryUserInfo.getName(),
-                temporaryUserInfo.getBirthDate(), temporaryUserInfo.getPhone());
-        if (memberRepository.existsByDuplicationInformation(duplicationInformation)) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 가입된 계정이 있습니다.");
-        }
+        String duplicationInformation = Member
+                .makeDuplicationInformation(
+                        temporaryUserInfo.getName(),
+                        temporaryUserInfo.getBirthDate(),
+                        temporaryUserInfo.getPhone());
 
         if (authCredentialRepository.existsByIdentifierAndType(userLocalRegisterRequest.getUsername(),
                 CredentialType.LOCAL)) {
             throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
+        }
+
+        if (memberRepository.existsByDuplicationInformation(duplicationInformation)) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
         }
 
         return transactionTemplate.execute(status -> {
@@ -278,8 +283,9 @@ public class AuthService {
 
         authCredentialRepository.findAuthCredentialByMemberAndType(member, CredentialType.LOCAL)
                 .ifPresent((authCredential) -> {
-                    throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 아이디, 비밀번호가 등록 되어있습니다.");
+                    throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
                 });
+
         if (authCredentialRepository.existsByIdentifierAndType(userLocalRegisterRequest.getUsername(),
                 CredentialType.LOCAL)) {
             throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
@@ -300,7 +306,7 @@ public class AuthService {
                         verifyPhoneRequest.getBirthDate(), verifyPhoneRequest.getPhoneNumber());
 
                 if (institutionAdminRepository.existsByDuplicationInformation(duplicationInformation)) {
-                    throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
+                    throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
                 }
 
                 return generateTemporaryTokenInstitution(verifyPhoneRequest); // 회원가입을 진행한다.
@@ -345,7 +351,7 @@ public class AuthService {
                         temporaryUserInfo.getPhone());
 
         if (institutionAdminRepository.existsByUsername(institutionLocalRegisterRequest.getUsername())) {
-            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
         }
 
         if (institutionAdminRepository.existsByDuplicationInformation(duplicationInformation)) {
