@@ -85,7 +85,7 @@ public class ElderlyProfileService {
      * 특정 어르신 프로필 조회
      */
     public ElderlyProfileResponse getProfile(Long memberId, Long profileId) {
-        // 소유자 검증 포함 조회 (삭제되지 않은 프로필만)
+        // 어르신 프로필의 보호자 접근 검증 포함 조회 (삭제되지 않은 프로필만)
         ElderlyProfile profile = elderlyProfileRepository.findByIdAndMemberIdAndDeletedFalse(profileId, memberId)
                 .orElseThrow(() -> new ElderlyProfileNotFoundException(profileId));
 
@@ -98,7 +98,7 @@ public class ElderlyProfileService {
     @Transactional
     public ElderlyProfileResponse updateProfile(Long memberId, Long profileId, 
                                                   ElderlyProfileUpdateRequest request) {
-        // 1. 프로필 조회 (소유자 검증, 삭제되지 않은 프로필만)
+        // 1. 프로필 조회 (어르신 프로필의 보호자 접근 검증, 삭제되지 않은 프로필만)
         ElderlyProfile profile = elderlyProfileRepository.findByIdAndMemberIdAndDeletedFalse(profileId, memberId)
                 .orElseThrow(() -> new ElderlyProfileNotFoundException(profileId));
 
@@ -125,7 +125,7 @@ public class ElderlyProfileService {
      */
     @Transactional
     public void deleteProfile(Long memberId, Long profileId) {
-        // 1. 프로필 조회 (소유자 검증, 삭제되지 않은 프로필만)
+        // 1. 프로필 조회 (어르신 프로필의 보호자 접근 검증, 삭제되지 않은 프로필만)
         ElderlyProfile profile = elderlyProfileRepository.findByIdAndMemberIdAndDeletedFalse(profileId, memberId)
                 .orElseThrow(() -> new ElderlyProfileNotFoundException(profileId));
 

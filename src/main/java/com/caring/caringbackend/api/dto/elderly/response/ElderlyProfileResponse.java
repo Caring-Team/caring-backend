@@ -35,7 +35,7 @@ public class ElderlyProfileResponse {
     private Long id;
 
     /**
-     * 🔢 회원 ID (소유자)
+     * 🔢 회원 ID (어르신 프로필의 보호자 접근)
      */
     private Long memberId;
 
