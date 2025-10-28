@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.auth.service;
 
 import com.caring.caringbackend.domain.auth.dto.GenerateTemporaryTokenDto;
 import com.caring.caringbackend.domain.auth.dto.GenerateTokenDto;
+import com.caring.caringbackend.domain.auth.dto.RefreshTokenPayloadDto;
 import com.caring.caringbackend.domain.auth.dto.request.institution.local.InstitutionLocalLoginRequest;
 import com.caring.caringbackend.domain.auth.dto.request.institution.local.InstitutionLocalRegisterRequest;
 import com.caring.caringbackend.domain.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
@@ -404,12 +405,28 @@ public class AuthService {
     }
 
     public JwtTokenResponse regenerateAccessTokenMember(TokenRefreshRequest tokenRefreshRequest) {
+        RefreshTokenPayloadDto refreshTokenPayloadDto = tokenService.decodeRefreshToken(tokenRefreshRequest);
 
-        return tokenService.regenerateAccessToken(tokenRefreshRequest);
+        Member member = memberRepository.findById(refreshTokenPayloadDto.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        GenerateTokenDto generateTokenDto = GenerateTokenDto.builder()
+                .id(member.getId())
+                .role(member.getRole().getKey())
+                .build();
+        return tokenService.regenerateAccessToken(generateTokenDto);
     }
 
     public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
+        RefreshTokenPayloadDto refreshTokenPayloadDto = tokenService.decodeRefreshToken(tokenRefreshRequest);
 
-        return tokenService.regenerateAccessTokenInstitutionAdmin(tokenRefreshRequest);
+        InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(refreshTokenPayloadDto.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        GenerateTokenDto generateTokenDto = GenerateTokenDto.builder()
+                .id(institutionAdmin.getId())
+                .role(institutionAdmin.getRole().getKey())
+                .build();
+        return tokenService.regenerateAccessToken(generateTokenDto);
     }
 }

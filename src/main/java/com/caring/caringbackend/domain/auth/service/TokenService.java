@@ -42,37 +42,12 @@ public class TokenService {
     }
 
 
-    public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest tokenRefreshRequest) {
+    public JwtTokenResponse regenerateAccessToken(GenerateTokenDto generateTokenDto) {
 
-        RefreshTokenPayloadDto refreshTokenPayloadDto = decodeRefreshToken(tokenRefreshRequest);
-
-        Member member = memberRepository.findById(refreshTokenPayloadDto.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        GenerateTokenDto dto = GenerateTokenDto.builder()
-                .id(member.getId())
-                .role(member.getRole().getKey())
-                .build();
-
-        return jwtUtils.regenerateAccessToken(dto);
+        return jwtUtils.regenerateAccessToken(generateTokenDto);
     }
 
-    public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
-
-        RefreshTokenPayloadDto refreshTokenPayloadDto = decodeRefreshToken(tokenRefreshRequest);
-
-        InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(refreshTokenPayloadDto.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        GenerateTokenDto dto = GenerateTokenDto.builder()
-                .id(institutionAdmin.getId())
-                .role(institutionAdmin.getRole().getKey())
-                .build();
-
-        return jwtUtils.regenerateAccessToken(dto);
-    }
-
-    private RefreshTokenPayloadDto decodeRefreshToken(TokenRefreshRequest tokenRefreshRequest) {
+    public RefreshTokenPayloadDto decodeRefreshToken(TokenRefreshRequest tokenRefreshRequest) {
         String refreshToken = tokenRefreshRequest.getRequestToken();
 
         if (jwtUtils.isTokenExpired(refreshToken)) {
