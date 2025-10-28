@@ -93,11 +93,9 @@ public class AuthService {
     private JwtTokenResponse generateTemporaryTokenOAuth2(
             OAuth2ProviderUserInfoResponse oAuth2ProviderUserInfoResponse) {
 
-        GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
-                .credentialType(oAuth2ProviderUserInfoResponse.getProviderType().getKey())
-                .credentialId(oAuth2ProviderUserInfoResponse.getUserId())
-                .build();
-        return tokenService.generateTemporaryTokenOAuth2(dto);
+        return tokenService.generateTemporaryToken(
+                GenerateTemporaryTokenDto.of(oAuth2ProviderUserInfoResponse.getProviderType(),
+                        oAuth2ProviderUserInfoResponse.getUserId(), MemberRole.TEMP_OAUTH));
     }
 
     public void sendCertificationCode(SendCertificationCodeRequest certificationCodeRequest) {
@@ -256,11 +254,9 @@ public class AuthService {
 
     private JwtTokenResponse generateTemporaryTokenMemberLocal(VerifyPhoneRequest verifyPhoneRequest) {
 
-        GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
-                .credentialType(CredentialType.LOCAL.getKey())
-                .credentialId(null)
-                .build();
-        JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenLocal(dto);
+        JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryToken(
+                GenerateTemporaryTokenDto.of(CredentialType.LOCAL, "", MemberRole.TEMP_LOCAL));
+
         TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
                 .accessToken(jwtTokenResponse.getAccessToken())
                 .phone(verifyPhoneRequest.getPhoneNumber())
@@ -268,6 +264,7 @@ public class AuthService {
                 .birthDate(verifyPhoneRequest.getBirthDate())
                 .expiresIn(jwtTokenResponse.getExpiresIn())
                 .build();
+
         temporaryUserInfoRepository.save(temporaryUserInfo);
         return jwtTokenResponse;
     }
@@ -316,11 +313,10 @@ public class AuthService {
 
     private JwtTokenResponse generateTemporaryTokenInstitution(VerifyPhoneRequest verifyPhoneRequest) {
 
-        GenerateTemporaryTokenDto dto = GenerateTemporaryTokenDto.builder()
-                .credentialType(CredentialType.LOCAL_INSTITUTION.getKey())
-                .credentialId(null)
-                .build();
-        JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenInstitutionAdmin(dto);
+        JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryToken(
+                GenerateTemporaryTokenDto.of(CredentialType.LOCAL_INSTITUTION, "",
+                        InstitutionAdminRole.TEMP_INSTITUTION));
+
         TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
                 .accessToken(jwtTokenResponse.getAccessToken())
                 .phone(verifyPhoneRequest.getPhoneNumber())
@@ -328,6 +324,7 @@ public class AuthService {
                 .birthDate(verifyPhoneRequest.getBirthDate())
                 .expiresIn(jwtTokenResponse.getExpiresIn())
                 .build();
+
         temporaryUserInfoRepository.save(temporaryUserInfo);
         return jwtTokenResponse;
     }

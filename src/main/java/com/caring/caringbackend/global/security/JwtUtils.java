@@ -101,39 +101,9 @@ public class JwtUtils {
                 .build();
     }
 
-    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto dto) {
+    public JwtTokenResponse generateTemporaryToken(GenerateTemporaryTokenDto dto) {
         String token = Jwts.builder()
-                .claim("role", MemberRole.TEMP_OAUTH.getKey())
-                .claim("credential_type", dto.getCredentialType())
-                .claim("credential_id", dto.getCredentialId())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
-                .signWith(secretKey)
-                .compact();
-        return JwtTokenResponse.builder()
-                .accessToken(token)
-                .expiresIn(accessTokenValidityInSeconds)
-                .build();
-    }
-
-    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto dto) {
-        String token = Jwts.builder()
-                .claim("role", MemberRole.TEMP_LOCAL.getKey())
-                .claim("credential_type", dto.getCredentialType())
-                .claim("credential_id", dto.getCredentialId())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
-                .signWith(secretKey)
-                .compact();
-        return JwtTokenResponse.builder()
-                .accessToken(token)
-                .expiresIn(accessTokenValidityInSeconds)
-                .build();
-    }
-
-    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(GenerateTemporaryTokenDto dto) {
-        String token = Jwts.builder()
-                .claim("role", InstitutionAdminRole.TEMP_INSTITUTION.getKey())
+                .claim("role", dto.getRole())
                 .claim("credential_type", dto.getCredentialType())
                 .claim("credential_id", dto.getCredentialId())
                 .issuedAt(new Date())

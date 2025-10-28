@@ -35,21 +35,12 @@ public class TokenService {
         return jwtTokenResponse;
     }
 
-    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto generateTemporaryTokenDto) {
 
-        return jwtUtils.generateTemporaryTokenOAuth2(generateTemporaryTokenDto);
+    public JwtTokenResponse generateTemporaryToken(GenerateTemporaryTokenDto generateTemporaryTokenDto) {
+
+        return jwtUtils.generateTemporaryToken(generateTemporaryTokenDto);
     }
 
-    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto generateTemporaryTokenDto) {
-
-        return jwtUtils.generateTemporaryTokenLocal(generateTemporaryTokenDto);
-    }
-
-    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(
-            GenerateTemporaryTokenDto generateTemporaryTokenDto) {
-
-        return jwtUtils.generateTemporaryTokenInstitutionAdmin(generateTemporaryTokenDto);
-    }
 
     public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest tokenRefreshRequest) {
 
