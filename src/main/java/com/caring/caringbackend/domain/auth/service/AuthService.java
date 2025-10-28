@@ -301,19 +301,20 @@ public class AuthService {
         return true;
     }
 
-    public JwtTokenResponse verifyPhoneInstitution(VerifyPhoneRequest request) {
-        verifyPhoneService.verifyPhone(request);
+    public JwtTokenResponse verifyPhoneInstitution(VerifyPhoneRequest verifyPhoneRequest) {
+
+        verifyPhoneService.verifyPhone(verifyPhoneRequest);
         try {
             return transactionTemplate.execute(status -> {
-                String duplicationInformation = InstitutionAdmin.makeDuplicationInformation(request.getName(),
-                        request.getBirthDate(), request.getPhoneNumber());
-                Optional<InstitutionAdmin> byDuplicationInformation = institutionAdminRepository.findByDuplicationInformation(
-                        duplicationInformation);
+                String duplicationInformation = InstitutionAdmin.makeDuplicationInformation(
+                        verifyPhoneRequest.getName(),
+                        verifyPhoneRequest.getBirthDate(), verifyPhoneRequest.getPhoneNumber());
 
-                byDuplicationInformation.ifPresent((institutionAdmin) -> {
+                if (institutionAdminRepository.existsByDuplicationInformation(duplicationInformation)) {
                     throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
-                });
-                return generateTemporaryTokenInstitution(request); // 회원가입을 진행한다.
+                }
+
+                return generateTemporaryTokenInstitution(verifyPhoneRequest); // 회원가입을 진행한다.
             });
         } catch (IllegalStateException e) {
             log.warn("Failed to save phone number", e);
@@ -327,18 +328,16 @@ public class AuthService {
                 .credentialType(CredentialType.LOCAL_INSTITUTION.getKey())
                 .credentialId(null)
                 .build();
-        return transactionTemplate.execute(state -> {
-            JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenInstitutionAdmin(dto);
-            TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
-                    .accessToken(jwtTokenResponse.getAccessToken())
-                    .phone(verifyPhoneRequest.getPhoneNumber())
-                    .name(verifyPhoneRequest.getName())
-                    .birthDate(verifyPhoneRequest.getBirthDate())
-                    .expiresIn(jwtTokenResponse.getExpiresIn())
-                    .build();
-            temporaryUserInfoRepository.save(temporaryUserInfo);
-            return jwtTokenResponse;
-        });
+        JwtTokenResponse jwtTokenResponse = tokenService.generateTemporaryTokenInstitutionAdmin(dto);
+        TemporaryUserInfo temporaryUserInfo = TemporaryUserInfo.builder()
+                .accessToken(jwtTokenResponse.getAccessToken())
+                .phone(verifyPhoneRequest.getPhoneNumber())
+                .name(verifyPhoneRequest.getName())
+                .birthDate(verifyPhoneRequest.getBirthDate())
+                .expiresIn(jwtTokenResponse.getExpiresIn())
+                .build();
+        temporaryUserInfoRepository.save(temporaryUserInfo);
+        return jwtTokenResponse;
     }
 
     public JwtTokenResponse completeRegisterInstitution(
@@ -348,14 +347,18 @@ public class AuthService {
                         userDetails.getAccessToken())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 도중 문제가 발생했습니다."));
 
-        String duplicationInformation = InstitutionAdmin.makeDuplicationInformation(temporaryUserInfo.getName(),
-                temporaryUserInfo.getBirthDate(), temporaryUserInfo.getPhone());
-        if (memberRepository.existsByDuplicationInformation(duplicationInformation)) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 가입된 계정이 있습니다.");
+        String duplicationInformation = InstitutionAdmin
+                .makeDuplicationInformation(
+                        temporaryUserInfo.getName(),
+                        temporaryUserInfo.getBirthDate(),
+                        temporaryUserInfo.getPhone());
+
+        if (institutionAdminRepository.existsByUsername(request.getUsername())) {
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
-        if (authCredentialRepository.existsByIdentifierAndType(request.getUsername(), CredentialType.LOCAL)) {
-            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS, "이미 사용중인 아이디 입니다.");
+        if (institutionAdminRepository.existsByDuplicationInformation(duplicationInformation)) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
         }
 
         // TODO: add old access token to black list
