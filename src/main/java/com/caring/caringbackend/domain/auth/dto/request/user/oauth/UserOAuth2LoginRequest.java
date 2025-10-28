@@ -1,11 +1,11 @@
-package com.caring.caringbackend.domain.auth.dto.request;
+package com.caring.caringbackend.domain.auth.dto.request.user.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class OAuthLoginRequest {
+public class UserOAuth2LoginRequest {
 
     @NotBlank
     @JsonProperty("authorization_code")

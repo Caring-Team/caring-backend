@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.auth.dto.request;
+package com.caring.caringbackend.domain.auth.dto.request.user.local;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

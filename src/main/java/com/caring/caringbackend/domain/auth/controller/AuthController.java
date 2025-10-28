@@ -1,12 +1,12 @@
 package com.caring.caringbackend.domain.auth.controller;
 
-import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalLoginRequest;
-import com.caring.caringbackend.domain.auth.dto.request.InstitutionLocalRegisterRequest;
-import com.caring.caringbackend.domain.auth.dto.request.OAuthLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.institution.local.InstitutionLocalLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.institution.local.InstitutionLocalRegisterRequest;
+import com.caring.caringbackend.domain.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
 import com.caring.caringbackend.domain.auth.dto.request.SendCertificationCodeRequest;
-import com.caring.caringbackend.domain.auth.dto.request.UserLocalLoginRequest;
-import com.caring.caringbackend.domain.auth.dto.request.UserLocalRegisterRequest;
-import com.caring.caringbackend.domain.auth.dto.request.UserOAuth2RegisterRequest;
+import com.caring.caringbackend.domain.auth.dto.request.user.local.UserLocalLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.user.local.UserLocalRegisterRequest;
+import com.caring.caringbackend.domain.auth.dto.request.user.oauth.UserOAuth2RegisterRequest;
 import com.caring.caringbackend.domain.auth.dto.request.VerifyPhoneRequest;
 import com.caring.caringbackend.domain.auth.dto.request.TokenRefreshRequest;
 import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
@@ -41,8 +41,8 @@ public class AuthController {
 
     @PostMapping("/token/refresh")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessTokenMember(
-            @Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
-        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessTokenMember(tokenRefreshRequest);
+            @Valid @RequestBody TokenRefreshRequest requestokenRefreshRequest) {
+        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessTokenMember(requestokenRefreshRequest);
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
@@ -52,59 +52,59 @@ public class AuthController {
      * OAuth2 로그인을 한다.
      *
      * @param provider google, naver, kakao
-     * @param request  authentication code
+     * @param userOAuth2LoginRequest  authentication code
      * @return 해당 Provider로 계정이 있는 경우: <code>Fully jwt</code>> 해당 Provider로 계정이 없는 경우: 임시 <code>Access token</code>
      */
     @PostMapping(value = "/oauth2/login/{provider}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberOAuth2(
             @PathVariable String provider,
-            @Valid @RequestBody OAuthLoginRequest request) {
-        JwtTokenResponse jwtTokenResponse = authService.oAuth2LoginOrGenerateTemporaryToken(provider, request);
+            @Valid @RequestBody UserOAuth2LoginRequest userOAuth2LoginRequest) {
+        JwtTokenResponse jwtTokenResponse = authService.oAuth2LoginOrGenerateTemporaryToken(provider, userOAuth2LoginRequest);
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
     /**
      * OAuth2 회원가입 흐름에서 전화번호에 인증번호를 보낸다.
      *
-     * @param certificationCodeRequest 이름, 생년월일, 전화번호
+     * @param sendCertificationCodeRequest 이름, 생년월일, 전화번호
      * @return true
      */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/certification-code")
     public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeOAuth2(
-            @Valid @RequestBody SendCertificationCodeRequest certificationCodeRequest) {
-        authService.sendCertificationCode(certificationCodeRequest);
+            @Valid @RequestBody SendCertificationCodeRequest sendCertificationCodeRequest) {
+        authService.sendCertificationCode(sendCertificationCodeRequest);
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
     /**
      * OAuth2 회원가입 흐름에서 전화번호를 인증한다.
      *
-     * @param request 이름, 생년월일, 전화번호, 인증번호
+     * @param verifyPhoneRequest 이름, 생년월일, 전화번호, 인증번호
      * @return 이미 계정이 존재하는 경우: 연동 후 <code>Fully jwt</code> <br> 계정이 존재하지 않은 경우: 기존 임시 <code>Access token</code>
      */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/verify-phone")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneOAuth2(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
-            @Valid @RequestBody VerifyPhoneRequest request) {
+            @Valid @RequestBody VerifyPhoneRequest verifyPhoneRequest) {
         return ApiResponse.success(
-                ResponseEntity.ok(authService.verifyPhoneOAuth2(temporaryUserDetails, request)));
+                ResponseEntity.ok(authService.verifyPhoneOAuth2(temporaryUserDetails, verifyPhoneRequest)));
     }
 
     /**
      * OAuth2 회원가입 흐름에서 기본 정보를 입력한다.
      *
-     * @param registerRequest 성별, 주소
+     * @param userOAuth2RegisterRequest 성별, 주소
      * @return <code>Fully jwt</code>
      */
     @PreAuthorize("hasRole('TEMP_OAUTH')")
     @PostMapping("/oauth2/register")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterOAuth2(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
-            @Valid @RequestBody UserOAuth2RegisterRequest registerRequest) {
+            @Valid @RequestBody UserOAuth2RegisterRequest userOAuth2RegisterRequest) {
         return ApiResponse.success(ResponseEntity.ok(
-                authService.completeRegisterOAuth2(temporaryUserDetails, registerRequest)));
+                authService.completeRegisterOAuth2(temporaryUserDetails, userOAuth2RegisterRequest)));
     }
 
     // LOCAL ENDPOINTS
@@ -112,111 +112,111 @@ public class AuthController {
     /**
      * local 로그인
      *
-     * @param request id, password
+     * @param userLocalLoginRequest id, password
      * @return <code>Fully jwt</code>
      */
     @PostMapping("/login")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberLocal(
-            @Valid @RequestBody UserLocalLoginRequest request) {
-        return ApiResponse.success(ResponseEntity.ok(authService.loginMemberLocal(request)));
+            @Valid @RequestBody UserLocalLoginRequest userLocalLoginRequest) {
+        return ApiResponse.success(ResponseEntity.ok(authService.loginMemberLocal(userLocalLoginRequest)));
     }
 
     /**
      * Local 회원가입 흐름에서 전화번호에 인증번호를 보낸다.
      *
-     * @param certificationCodeRequest 이름, 생년월일, 전화번호
+     * @param sendCertificationCodeRequest 이름, 생년월일, 전화번호
      * @return true
      */
     @PostMapping("/certification-code")
     public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeMemberLocal(
-            @Valid @RequestBody SendCertificationCodeRequest certificationCodeRequest) {
-        authService.sendCertificationCode(certificationCodeRequest);
+            @Valid @RequestBody SendCertificationCodeRequest sendCertificationCodeRequest) {
+        authService.sendCertificationCode(sendCertificationCodeRequest);
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
     /**
      * Local 회원가입 흐름에서 전화번호를 인증한다.
      *
-     * @param request 이름, 생년월일, 전화번호, 인증번호
+     * @param verifyPhoneRequest 이름, 생년월일, 전화번호, 인증번호
      * @return 기존 소셜 계정이 있는 경우: 해당 Member 권한의 <code>Fully jwt</code> <br>기존 소셜 계정이 없는 경우: 임시 <code>Access token</code>
      */
     @PostMapping("/verify-phone")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneMemberLocal(
-            @Valid @RequestBody VerifyPhoneRequest request) {
+            @Valid @RequestBody VerifyPhoneRequest verifyPhoneRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneNumberLocal(request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneNumberLocal(verifyPhoneRequest)));
     }
 
     /**
      * Local 회원가입을 완료한다
      *
-     * @param request ID, PW, 성별, 주소
+     * @param userLocalRegisterRequest ID, PW, 성별, 주소
      * @return <code>Fully jwt</code>
      */
     @PreAuthorize("hasRole('TEMP_LOCAL')")
     @PostMapping("/register")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterMemberLocal(
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
-            @Valid @RequestBody UserLocalRegisterRequest request) {
+            @Valid @RequestBody UserLocalRegisterRequest userLocalRegisterRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, userLocalRegisterRequest)));
     }
 
 
     /**
      * OAuth2로 이미 회원가입 된 유저의 ID/PW를 추가한다.
      *
-     * @param request id, pw
+     * @param userLocalRegisterRequest id, pw
      * @return ture
      */
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add-local")
     public ApiResponse<ResponseEntity<Boolean>> addLocalCredential(
             @AuthenticationPrincipal MemberDetails memberDetails,
-            @Valid @RequestBody UserLocalRegisterRequest request) {
+            @Valid @RequestBody UserLocalRegisterRequest userLocalRegisterRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.addLocalCredential(memberDetails, request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.addLocalCredential(memberDetails, userLocalRegisterRequest)));
     }
 
     // INSTITUTION ENDPOINTS
 
     @PostMapping("/institution/certification-code")
     public ApiResponse<ResponseEntity<Boolean>> sendCertificationCodeInstitutionAdmin(
-            @Valid @RequestBody SendCertificationCodeRequest request) {
+            @Valid @RequestBody SendCertificationCodeRequest sendCertificationCodeRequest) {
 
-        authService.sendCertificationCode(request);
+        authService.sendCertificationCode(sendCertificationCodeRequest);
         return ApiResponse.success(ResponseEntity.ok(true));
     }
 
     @PostMapping("/institution/verify-phone")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> verifyPhoneInstitutionAdmin(
-            @Valid @RequestBody VerifyPhoneRequest request) {
+            @Valid @RequestBody VerifyPhoneRequest verifyPhoneRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneInstitution(request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.verifyPhoneInstitution(verifyPhoneRequest)));
     }
 
     @PreAuthorize("hasRole('TEMP_INSTITUTION')")
     @PostMapping("/institution/register")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> completeRegisterInstitutionAdmin(
             @AuthenticationPrincipal TemporaryInstitutionAdminDetails temporaryInstitutionDetails,
-            @Valid @RequestBody InstitutionLocalRegisterRequest registerRequest) {
+            @Valid @RequestBody InstitutionLocalRegisterRequest institutionLocalRegisterRequest) {
 
         return ApiResponse.success(ResponseEntity.ok(
-                authService.completeRegisterInstitution(temporaryInstitutionDetails, registerRequest)));
+                authService.completeRegisterInstitution(temporaryInstitutionDetails, institutionLocalRegisterRequest)));
     }
 
     @PostMapping("/institution/login")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginInstitutionAdmin(
-            @Valid @RequestBody InstitutionLocalLoginRequest request) {
+            @Valid @RequestBody InstitutionLocalLoginRequest institutionLocalLoginRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.loginInstitutionAdmin(request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.loginInstitutionAdmin(institutionLocalLoginRequest)));
     }
 
     @PostMapping("/institution/token/refresh")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessTokenInstitutionAdmin(
-            @Valid @RequestBody TokenRefreshRequest request) {
+            @Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.regenerateAccessTokenInstitutionAdmin(request)));
+        return ApiResponse.success(ResponseEntity.ok(authService.regenerateAccessTokenInstitutionAdmin(tokenRefreshRequest)));
     }
 
     /*

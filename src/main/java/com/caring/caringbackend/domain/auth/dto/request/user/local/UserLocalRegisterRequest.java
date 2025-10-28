@@ -1,13 +1,19 @@
-package com.caring.caringbackend.domain.auth.dto.request;
+package com.caring.caringbackend.domain.auth.dto.request.user.local;
 
 import com.caring.caringbackend.global.model.Address;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class UserOAuth2RegisterRequest {
+public class UserLocalRegisterRequest {
 
+    @NotBlank
+    private String username;
+
+    @NotBlank
+    private String password;
 
     @NotNull
     private Integer gender;

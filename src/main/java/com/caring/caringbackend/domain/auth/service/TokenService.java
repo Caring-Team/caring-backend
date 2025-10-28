@@ -27,35 +27,33 @@ public class TokenService {
     private final InstitutionAdminRepository institutionAdminRepository;
 
     @Transactional
-    public JwtTokenResponse generateToken(GenerateTokenDto dto) {
-        JwtTokenResponse jwtTokenResponse = jwtUtils.generateToken(dto);
+    public JwtTokenResponse generateToken(GenerateTokenDto generateTokenDto) {
+
+        JwtTokenResponse jwtTokenResponse = jwtUtils.generateToken(generateTokenDto);
         saveRefreshToken(jwtTokenResponse.getRefreshToken(), jwtTokenResponse.getRefreshTokenExpiresIn());
 
         return jwtTokenResponse;
     }
 
-    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto dto) {
-        return jwtUtils.generateTemporaryTokenOAuth2(dto);
+    public JwtTokenResponse generateTemporaryTokenOAuth2(GenerateTemporaryTokenDto generateTemporaryTokenDto) {
+
+        return jwtUtils.generateTemporaryTokenOAuth2(generateTemporaryTokenDto);
     }
 
-    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto dto) {
-        return jwtUtils.generateTemporaryTokenLocal(dto);
+    public JwtTokenResponse generateTemporaryTokenLocal(GenerateTemporaryTokenDto generateTemporaryTokenDto) {
+
+        return jwtUtils.generateTemporaryTokenLocal(generateTemporaryTokenDto);
     }
 
-    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(GenerateTemporaryTokenDto dto) {
-        return jwtUtils.generateTemporaryTokenInstitutionAdmin(dto);
+    public JwtTokenResponse generateTemporaryTokenInstitutionAdmin(
+            GenerateTemporaryTokenDto generateTemporaryTokenDto) {
+
+        return jwtUtils.generateTemporaryTokenInstitutionAdmin(generateTemporaryTokenDto);
     }
 
-    public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest request) {
-        String refreshToken = request.getRequestToken();
+    public JwtTokenResponse regenerateAccessToken(TokenRefreshRequest tokenRefreshRequest) {
 
-        if (jwtUtils.isTokenExpired(refreshToken)) {
-            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
-        }
-        if (refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken).isEmpty()) {
-            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
-        }
-        RefreshTokenPayloadDto refreshTokenPayloadDto = jwtUtils.decodeRefreshToken(refreshToken);
+        RefreshTokenPayloadDto refreshTokenPayloadDto = decodeRefreshToken(tokenRefreshRequest);
 
         Member member = memberRepository.findById(refreshTokenPayloadDto.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -68,16 +66,9 @@ public class TokenService {
         return jwtUtils.regenerateAccessToken(dto);
     }
 
-    public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest request) {
-        String refreshToken = request.getRequestToken();
+    public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
 
-        if (jwtUtils.isTokenExpired(refreshToken)) {
-            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
-        }
-        if (refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken).isEmpty()) {
-            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
-        }
-        RefreshTokenPayloadDto refreshTokenPayloadDto = jwtUtils.decodeRefreshToken(refreshToken);
+        RefreshTokenPayloadDto refreshTokenPayloadDto = decodeRefreshToken(tokenRefreshRequest);
 
         InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(refreshTokenPayloadDto.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -90,7 +81,21 @@ public class TokenService {
         return jwtUtils.regenerateAccessToken(dto);
     }
 
+    private RefreshTokenPayloadDto decodeRefreshToken(TokenRefreshRequest tokenRefreshRequest) {
+        String refreshToken = tokenRefreshRequest.getRequestToken();
+
+        if (jwtUtils.isTokenExpired(refreshToken)) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        }
+        if (refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken).isEmpty()) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        }
+
+        return jwtUtils.decodeRefreshToken(refreshToken);
+    }
+
     private void saveRefreshToken(String refreshToken, Long expiresIn) {
+
         RefreshToken token = RefreshToken.builder()
                 .refreshToken(refreshToken)
                 .expiresIn(expiresIn)

@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.auth.service;
 
 import com.caring.caringbackend.domain.auth.annotation.OAuth2Provider;
-import com.caring.caringbackend.domain.auth.dto.request.OAuthLoginRequest;
+import com.caring.caringbackend.domain.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
 import com.caring.caringbackend.domain.auth.dto.response.NaverTokenResponse;
 import com.caring.caringbackend.domain.auth.dto.response.NaverUserInfoResponse;
 import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderTokenResponse;
@@ -41,7 +41,7 @@ public class NaverOAuth2Service implements OAuth2Service {
     }
      */
     @Override
-    public OAuth2ProviderTokenResponse getTokenFromProvider(OAuthLoginRequest request) {
+    public OAuth2ProviderTokenResponse getTokenFromProvider(UserOAuth2LoginRequest request) {
         return webClient.post().uri(properties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON)
@@ -64,7 +64,7 @@ public class NaverOAuth2Service implements OAuth2Service {
                 .block();
     }
 
-    private MultiValueMap<String, String> tokenParams(OAuthLoginRequest request) {
+    private MultiValueMap<String, String> tokenParams(UserOAuth2LoginRequest request) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", request.getAuthorizationCode());
         params.add("state", request.getState());
