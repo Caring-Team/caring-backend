@@ -1,188 +1,73 @@
-# CodeRabbit Configuration
-# AI 기반 자동 코드 리뷰 설정
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
-language: ko
+# CodeRabbit 설정 파일
+# 한글 리뷰 및 develop 브랜치 지원
+
+language: ko-KR
+early_access: false
+enable_free_tier: true
 
 reviews:
-    # 자동 리뷰 설정
-    auto_review:
-        enabled: true
-        drafts: false
-
-    # 대상 브랜치 설정 (main, develop 브랜치만)
-    base_branches:
-        - main
-        - develop
-
-    # 리뷰 우선순위
+    profile: chill
+    request_changes_workflow: false
     high_level_summary: true
     poem: false
     review_status: true
     collapse_walkthrough: false
+    auto_review:
+        enabled: true
+        ignore_title_keywords:
+            - "WIP"
+            - "DO NOT REVIEW"
+        drafts: false
+        base_branches:
+            - main
+            - develop
 
-    # 리뷰 범위
     path_filters:
         - "!**/*.md"
-        - "!**/*.txt"
         - "!**/build/**"
         - "!**/gradle/**"
         - "!**/.gradle/**"
-        - "!**/bin/**"
-        - "!**/out/**"
+        - "!**/gradlew"
+        - "!**/gradlew.bat"
 
-    # 리뷰 포커스
-    request_changes_workflow: false
-    auto_title_placeholder: "CodeRabbit 자동 리뷰"
+    path_instructions:
+        - path: "src/main/java/**/controller/**"
+          instructions: |
+              - REST API 규칙 준수 확인
+              - HTTP 상태 코드 적절성 검토
+              - DTO validation 확인
+              - 예외 처리 검토
 
-# 채팅 기능
+        - path: "src/main/java/**/service/**"
+          instructions: |
+              - 비즈니스 로직 복잡도 확인
+              - 트랜잭션 경계 검토
+              - 예외 처리 적절성 확인
+              - 코드 중복 확인
+
+        - path: "src/main/java/**/repository/**"
+          instructions: |
+              - JPA 쿼리 최적화 확인
+              - N+1 문제 체크
+              - 인덱스 사용 검토
+
+        - path: "src/main/java/**/entity/**"
+          instructions: |
+              - JPA 엔티티 관계 설정 확인
+              - Lazy/Eager 로딩 전략 검토
+              - 양방향 관계 관리 확인
+
 chat:
     auto_reply: true
 
-# 언어별 설정
-language_settings:
-    java:
-        # Java 코드 스타일
-        style_guide: "google"
-        # 최소 Java 버전
-        min_version: 17
-        # 체크 항목
-        checks:
-            - "null-safety"
-            - "exception-handling"
-            - "resource-management"
-            - "security"
-            - "performance"
-            - "code-smell"
-
-# Spring Boot 프로젝트 특화 설정
-spring_boot:
-    # JPA/Hibernate 체크
-    jpa_checks: true
-    # REST API 베스트 프랙티스
-    rest_api_checks: true
-    # 시큐리티 체크
-    security_checks: true
-    # 트랜잭션 관리 체크
-    transaction_checks: true
-
-# 리뷰 포커스 영역
-focus_areas:
-    -   name: "보안"
-        patterns:
-            - "**/security/**"
-            - "**/auth/**"
-            - "**/*Controller.java"
-        priority: high
-        checks:
-            - "input-validation"
-            - "sql-injection"
-            - "xss-prevention"
-            - "authentication"
-            - "authorization"
-
-    -   name: "데이터베이스"
-        patterns:
-            - "**/entity/**"
-            - "**/repository/**"
-            - "**/*Entity.java"
-        priority: high
-        checks:
-            - "jpa-best-practices"
-            - "n-plus-one"
-            - "index-usage"
-            - "transaction-boundary"
-
-    -   name: "비즈니스 로직"
-        patterns:
-            - "**/service/**"
-            - "**/domain/**"
-        priority: high
-        checks:
-            - "code-complexity"
-            - "error-handling"
-            - "business-logic-validation"
-
-    -   name: "API"
-        patterns:
-            - "**/controller/**"
-            - "**/api/**"
-        priority: medium
-        checks:
-            - "rest-conventions"
-            - "dto-validation"
-            - "response-format"
-            - "http-status-codes"
-
-# 커스텀 규칙
-
-# 코드 품질 기준
-quality_standards:
-    # 코드 복잡도
-    max_complexity: 10
-    # 메서드 최대 라인 수
-    max_method_lines: 50
-    # 클래스 최대 라인 수
-    max_class_lines: 300
-    # 최대 파라미터 개수
-    max_parameters: 5
-
-# 제외 항목
-exclude:
-    - "**/test/**"
-    - "**/*Test.java"
-    - "**/*Tests.java"
-    - "**/build/**"
-    - "**/gradle/**"
-    - "**/.gradle/**"
-    - "**/gradlew"
-    - "**/gradlew.bat"
-    - "**/*.md"
-    - "**/*.yml"
-    - "**/*.yaml"
-    - "**/*.properties"
-
-# 자동 수정 제안
-auto_suggestions:
-    enabled: true
-    # 자동으로 제안할 항목
-    types:
-        - "formatting"
-        - "imports"
-        - "naming"
-        - "simplification"
-
-# 코멘트 설정
-comments:
-    # 인라인 코멘트 활성화
-    inline: true
-    # 코드 블록 인용
-    quote_code: true
-    # 이슈 연결
-    link_issues: true
-
-# 알림 설정
-notifications:
-    # PR 생성 시
-    on_pr_open: true
-    # PR 업데이트 시
-    on_pr_update: true
-    # 리뷰 완료 시
-    on_review_complete: true
-
-# 성능 모니터링
-performance:
-    # 느린 쿼리 감지
-    slow_query_threshold: 1000
-    # N+1 문제 감지
-    detect_n_plus_one: true
-    # 메모리 누수 감지
-    detect_memory_leaks: true
-
-# 리포트 생성
-reports:
-    # 주간 리포트
-    weekly_summary: true
-    # 메트릭 추적
-    track_metrics: true
-    # 개선 제안
-    improvement_suggestions: true
+tools:
+    ruff:
+        enabled: true
+    markdownlint:
+        enabled: false
+    languagetool:
+        enabled: false
+        enabled_only: false
+        level: default
