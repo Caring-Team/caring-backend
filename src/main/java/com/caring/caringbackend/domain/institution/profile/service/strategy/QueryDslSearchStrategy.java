@@ -28,10 +28,7 @@ public class QueryDslSearchStrategy implements InstitutionSearchStrategy {
 
         return filter.getName() != null
                 || filter.getInstitutionType() != null
-                || filter.getApprovalStatus() != null
                 || filter.getCity() != null
-                || filter.getMinBedCount() != null
-                || filter.getMaxBedCount() != null
                 || filter.getMaxMonthlyFee() != null;
     }
 
