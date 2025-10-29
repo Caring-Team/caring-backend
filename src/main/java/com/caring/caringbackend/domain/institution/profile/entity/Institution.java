@@ -1,5 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.model.BaseEntity;
@@ -139,12 +141,12 @@ public class Institution extends BaseEntity {
     private void validate(String phoneNumber, Integer bedCount) {
         // 전화번호 길이 검증 (형식은 DTO에서, 길이는 도메인 규칙)
         if (phoneNumber.replaceAll("-", "").length() < 9) {
-            throw new IllegalArgumentException("전화번호는 최소 9자리 이상이어야 합니다.");
+            throw new BusinessException(ErrorCode.INVALID_PHONE_NUMBER, "전화번호는 최소 9자리 이상이어야 합니다.");
         }
 
-        // 병상 수 최대값 검증 (비즈니스 규칙 예시)
+        // 병상 수 최대값 검증 (비즈니스 규칙) TODO: 요구사항에 따라 수정
         if (bedCount != null && bedCount > 1000) {
-            throw new IllegalArgumentException("병상 수는 1000개를 초과할 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_BED_COUNT, "병상 수는 1000개를 초과할 수 없습니다.");
         }
     }
 
