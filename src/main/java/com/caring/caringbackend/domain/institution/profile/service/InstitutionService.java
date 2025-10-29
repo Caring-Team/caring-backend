@@ -37,4 +37,11 @@ public interface InstitutionService {
      * @param institutionId 기관 ID
      */
     void approveInstitution(Long institutionId);
+
+    /**
+     * 기관 삭제 (Soft Delete)
+     *
+     * @param institutionId 기관 ID
+     */
+    void deleteInstitution(Long institutionId);
 }

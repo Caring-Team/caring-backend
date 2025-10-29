@@ -109,6 +109,17 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     /**
      * 기관 조회
+    /**
+     * 기관 삭제 (Soft Delete)
+     * @param institutionId 기관 ID
+     */
+    @Override
+    @Transactional
+    public void deleteInstitution(Long institutionId) {
+        Institution institution = findInstitutionById(institutionId);
+        institution.deleteInstitution();
+        log.info("기관 삭제 완료: id={}, name={}", institution.getId(), institution.getName());
+    }
      *
      * @param institutionId 기관 ID
      * @return Institution 엔티티

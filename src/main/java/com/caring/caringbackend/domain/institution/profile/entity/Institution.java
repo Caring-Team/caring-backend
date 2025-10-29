@@ -223,4 +223,21 @@ public class Institution extends BaseEntity {
             this.isAdmissionAvailable = isAdmissionAvailable;
         }
     }
+
+    /**
+     * 기관 삭제 (Soft Delete)
+     *
+     * 논리적 삭제를 수행합니다.
+     * 입소 가능 여부를 false로 변경
+     */
+    public void deleteInstitution() {
+        if (!isActive()) {
+            throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_DELETED);
+        }
+
+        // 삭제 시 입소 불가능으로 변경
+        this.isAdmissionAvailable = false;
+        softDelete();
+    }
+
 }

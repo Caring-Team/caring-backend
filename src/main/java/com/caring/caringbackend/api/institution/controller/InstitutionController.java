@@ -93,5 +93,17 @@ public class InstitutionController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 기관 삭제 (Soft Delete)
+     */
+    @DeleteMapping("/{institutionId}")
+    @Operation(summary = "기관 삭제", description = "기관을 논리적으로 삭제합니다. 입소 가능 여부가 자동으로 false로 변경됩니다.")
+    public ResponseEntity<Void> deleteInstitution(
+            @PathVariable Long institutionId
+    ) {
+        // TODO: OWNER 또는 관리자 권한 체크
 
+        institutionService.deleteInstitution(institutionId);
+        return ResponseEntity.ok().build();
+    }
 }
