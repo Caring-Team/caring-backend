@@ -1,13 +1,23 @@
 package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +29,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/profile")
+@Tag(name = "Institution Profile", description = "기관 프로필 관리 API")
 public class InstitutionController {
     private final InstitutionService institutionService;
 
     /**
      * 기관 등록 요청
+     *
+     * @param institutionCreateRequestDto 기관 생성 요청 DTO
      */
     @PostMapping("/register")
     @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다.")
@@ -34,10 +47,41 @@ public class InstitutionController {
         return ResponseEntity.ok().build();
     }
 
-
     /**
-     * 목록 조회 (검색, 필터링, 페이징)
+     * 기관 목록 조회 (검색, 필터링, 페이징, 정렬)
      */
+    @GetMapping
+    @Operation(
+            summary = "기관 목록 조회",
+            description = """
+                    기관 목록을 조회합니다.
+                    
+                    ### 지원 기능
+                    - **페이징**: page (0부터 시작), size (기본 20)
+                    - **정렬**: sort (예: sort=name,asc)
+                    - **검색**: 이름, 도시, 기관 유형
+                    - **필터링**: 승인 상태, 입소 가능 여부, 가격 범위, 병상 수
+                    - **거리 기반 검색**: 위도/경도/반경 (km)
+                    
+                    ### 요청 예시
+                    ```
+                    GET /api/v1/institutions/profile?page=0&size=10
+                    GET /api/v1/institutions/profile?name=서울&city=강남구
+                    GET /api/v1/institutions/profile?latitude=37.5665&longitude=126.9780&radiusKm=5.0
+                    ```
+                    """
+    )
+    public ResponseEntity<Page<InstitutionProfileResponseDto>> getInstitutions(
+            @ParameterObject @PageableDefault(size = 20, page = 0)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable,
+            @ParameterObject @ModelAttribute InstitutionSearchFilter filter
+    ) {
+        Page<InstitutionProfileResponseDto> institutions = institutionService.getInstitutions(pageable, filter);
+        return ResponseEntity.ok(institutions);
+    }
 
 
     /**
