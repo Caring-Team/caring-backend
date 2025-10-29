@@ -41,3 +41,6 @@ src/main/resources/application-dev.yml
 
 # docs
 docs/
+
+# QueryDSL
+src/main/generated/
