@@ -62,6 +62,15 @@ public class InstitutionController {
     /**
      * 기관 입소 가능 여부 변경
      */
+    @PatchMapping("/{institutionId}/admission-availability")
+    @Operation(summary = "기관 입소 가능 여부 변경", description = "기관의 입소 가능 여부를 변경합니다.")
+    public ResponseEntity<Void> changeAdmissionAvailability(
+            @PathVariable Long institutionId,
+            @RequestParam Boolean isAdmissionAvailable
+    ) {
+        institutionService.changeAdmissionAvailability(institutionId, isAdmissionAvailable);
+        return ResponseEntity.ok().build();
+    }
 
 
     /**
