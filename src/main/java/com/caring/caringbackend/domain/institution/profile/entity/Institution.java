@@ -82,10 +82,10 @@ public class Institution extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Institution(String name, InstitutionType institutionType,
-                       String phoneNumber, Address address, GeoPoint location,
-                       ApprovalStatus approvalStatus, Integer bedCount,
-                       Boolean isAdmissionAvailable,
-                       PriceInfo priceInfo, String openingHours) {
+                        String phoneNumber, Address address, GeoPoint location,
+                        ApprovalStatus approvalStatus, Integer bedCount,
+                        Boolean isAdmissionAvailable,
+                        PriceInfo priceInfo, String openingHours) {
 
         // 도메인 비즈니스 규칙 검증
         validate(phoneNumber, bedCount);
@@ -163,5 +163,12 @@ public class Institution extends BaseEntity {
      */
     public void addAdmin(InstitutionAdmin admin) {
         this.admins.add(admin);
+    }
+
+    /**
+     * 기관 승인 처리 메서드
+     */
+    public void approveInstitution() {
+        this.approvalStatus = ApprovalStatus.APPROVED;
     }
 }

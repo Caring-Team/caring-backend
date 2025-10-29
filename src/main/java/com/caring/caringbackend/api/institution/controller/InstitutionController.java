@@ -2,14 +2,12 @@ package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 기관 프로필 관련 컨트롤러
@@ -26,6 +24,7 @@ public class InstitutionController {
      * 기관 등록 요청
      */
     @PostMapping("/register")
+    @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다.")
     public ResponseEntity<Void> registerInstitution(
             @Valid @RequestBody InstitutionCreateRequestDto institutionCreateRequestDto
     ) {
@@ -42,6 +41,7 @@ public class InstitutionController {
     /**
      * 기관 상세 조회
      */
+
 
 
     /**
@@ -62,6 +62,17 @@ public class InstitutionController {
     /**
      * 기관 승인 처리 (관리자 전용)
      */
+    @PutMapping("/{institutionId}/approve")
+    @Operation(summary = "기관 승인 처리", description = "관리자가 기관 등록 요청을 승인합니다.")
+    public ResponseEntity<Void> approveInstitution(
+            @PathVariable Long institutionId
+    ) {
+        // TODO: 관리자 여부 검증 로직 필요
+
+        // 기관 승인 처리 로직 호출
+        institutionService.approveInstitution(institutionId);
+        return ResponseEntity.ok().build();
+    }
 
 
 }

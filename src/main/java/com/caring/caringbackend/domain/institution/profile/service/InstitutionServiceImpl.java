@@ -2,10 +2,13 @@ package com.caring.caringbackend.domain.institution.profile.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
@@ -77,5 +80,15 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Transactional
     public void updateInstitution(InstitutionUpdateRequestDto requestDto) {
         // TODO: 기관 정보 수정 구현
+    }
+
+    @Override
+    @Transactional
+    public void approveInstitution(Long institutionId) {
+        Institution institution = institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+
+        institution.approveInstitution();
+        institutionRepository.save(institution);
     }
 }

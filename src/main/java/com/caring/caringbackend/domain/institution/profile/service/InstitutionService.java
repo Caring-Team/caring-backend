@@ -23,4 +23,6 @@ public interface InstitutionService {
      * @param requestDto 기관 수정 요청 DTO
      */
     void updateInstitution(InstitutionUpdateRequestDto requestDto);
+
+    void approveInstitution(Long institutionId);
 }
