@@ -1,8 +1,7 @@
 package com.caring.caringbackend.api.institution.dto.request;
 
 import com.caring.caringbackend.domain.institution.profile.entity.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +20,7 @@ public class InstitutionCreateRequestDto {
 
     // 기관 이름
     @NotBlank(message = "기관 이름은 필수입니다")
+    @Size(max = 100, message = "기관 이름은 100자를 초과할 수 없습니다")
     private String name;
 
     // 기관 유형
@@ -28,6 +28,8 @@ public class InstitutionCreateRequestDto {
     private InstitutionType institutionType;
 
     // 연락처
+    @NotBlank(message = "연락처는 필수입니다")
+    @Pattern(regexp = "^[0-9-]+$", message = "전화번호는 숫자와 하이픈만 입력 가능합니다")
     private String phoneNumber;
 
     // 주소 정보
@@ -40,6 +42,7 @@ public class InstitutionCreateRequestDto {
     private String zipCode;
 
     // 병상수
+    @Min(value = 0, message = "병상 수는 0 이상이어야 합니다")
     private Integer bedCount;
 
     // 입소 가능 여부
@@ -48,13 +51,17 @@ public class InstitutionCreateRequestDto {
     // 전문 질환 목록 (질환 코드 리스트)
     private List<String> specializedConditionCodes;
 
-    // 관련 태그
-
     // 가격 정보
-    private Integer monthlyBaseFee;      // 월 기본 요금
-    private Integer admissionFee;        // 입소 비용
-    private Integer monthlyMealCost;     // 식비 (월)
-    private String priceNotes;           // 가격 비고
+    @Min(value = 0, message = "월 기본 요금은 0 이상이어야 합니다")
+    private Integer monthlyBaseFee;
+
+    @Min(value = 0, message = "입소 비용은 0 이상이어야 합니다")
+    private Integer admissionFee;
+
+    @Min(value = 0, message = "월 식비는 0 이상이어야 합니다")
+    private Integer monthlyMealCost;
+
+    private String priceNotes;
 
     // 운영 시간
     private String openingHours;
