@@ -17,6 +17,11 @@ public interface InstitutionService {
      */
     void getInstitutions();
 
+    /**
+     * 기관 상세 조회
+     * @param institutionId 기관 ID
+     */
+    InstitutionDetailResponseDto getInstitutionDetail(Long institutionId);
 
     /**
      * 기관 정보 수정
@@ -34,6 +39,7 @@ public interface InstitutionService {
 
     /**
      * 기관 승인 처리
+     *
      * @param institutionId 기관 ID
      */
     void approveInstitution(Long institutionId);

@@ -168,6 +168,13 @@ public class Institution extends BaseEntity {
     }
 
     /**
+     * 승인 여부 체크 메서드
+     */
+    public boolean isApproved() {
+        return this.approvalStatus == ApprovalStatus.APPROVED;
+    }
+
+    /**
      * 기관 승인 처리 메서드
      */
     public void approveInstitution() {
@@ -228,7 +235,7 @@ public class Institution extends BaseEntity {
 
     /**
      * 기관 삭제 (Soft Delete)
-     *
+     * <p>
      * 논리적 삭제를 수행합니다.
      * 입소 가능 여부를 false로 변경
      */

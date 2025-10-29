@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -41,8 +42,18 @@ public class InstitutionController {
 
     /**
      * 기관 상세 조회
+     *
+     * @param institutionId 기관 ID
+     * @return 기관 상세 응답 DTO
      */
-
+    @GetMapping("/{institutionId}")
+    @Operation(summary = "기관 상세 조회", description = "기관의 상세 정보를 조회합니다.")
+    public ResponseEntity<InstitutionDetailResponseDto> getInstitutionDetail(
+            @PathVariable Long institutionId
+    ) {
+        InstitutionDetailResponseDto institutionDetail = institutionService.getInstitutionDetail(institutionId);
+        return ResponseEntity.ok().body(institutionDetail);
+    }
 
 
     /**
