@@ -74,21 +74,14 @@ public class InstitutionController {
 
 
     /**
-     * 기관 삭제
-     */
-
-
-    /**
      * 기관 승인 처리 (관리자 전용)
      */
-    @PutMapping("/{institutionId}/approve")
-    @Operation(summary = "기관 승인 처리", description = "관리자가 기관 등록 요청을 승인합니다.")
+    @PatchMapping("/{institutionId}/approval")
+    @Operation(summary = "기관 승인", description = "관리자가 기관 등록 요청을 승인합니다.")
     public ResponseEntity<Void> approveInstitution(
             @PathVariable Long institutionId
     ) {
-        // TODO: 관리자 여부 검증 로직 필요
-
-        // 기관 승인 처리 로직 호출
+        // TODO: 관리자 권한 체크
         institutionService.approveInstitution(institutionId);
         return ResponseEntity.ok().build();
     }
