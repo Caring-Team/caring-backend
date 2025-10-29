@@ -171,4 +171,56 @@ public class Institution extends BaseEntity {
     public void approveInstitution() {
         this.approvalStatus = ApprovalStatus.APPROVED;
     }
+
+    /**
+     * 기관 정보 수정 메서드
+     */
+    public void updateInstitution(
+            String name,
+            String phoneNumber,
+            Address address,
+            GeoPoint location,
+            Integer bedCount,
+            Boolean isAdmissionAvailable,
+            PriceInfo priceInfo,
+            String openingHours) {
+
+        // 비즈니스 규칙 검증
+        if (phoneNumber != null) {
+            validate(phoneNumber, bedCount);
+        }
+
+        // 수정 가능한 필드만 업데이트
+        if (name != null) {
+            this.name = name;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        if (address != null) {
+            this.address = address;
+            this.location = location; // 주소 변경 시 위치도 함께 업데이트
+        }
+        if (bedCount != null) {
+            this.bedCount = bedCount;
+        }
+        if (isAdmissionAvailable != null) {
+            this.isAdmissionAvailable = isAdmissionAvailable;
+        }
+        if (priceInfo != null) {
+            this.priceInfo = priceInfo;
+        }
+        if (openingHours != null) {
+            this.openingHours = openingHours;
+        }
+    }
+
+    /**
+     * 입소 가능 여부 변경 메서드
+     */
+    public void changeAdmissionAvailability(Boolean isAdmissionAvailable) {
+        if (isAdmissionAvailable != null) {
+            this.isAdmissionAvailable = isAdmissionAvailable;
+        }
+    }
 }

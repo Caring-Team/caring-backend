@@ -20,9 +20,21 @@ public interface InstitutionService {
 
     /**
      * 기관 정보 수정
-     * @param requestDto 기관 수정 요청 DTO
+     * @param institutionId 기관 ID
+     * @param requestDto    기관 수정 요청 DTO
      */
-    void updateInstitution(InstitutionUpdateRequestDto requestDto);
+    void updateInstitution(Long institutionId, InstitutionUpdateRequestDto requestDto);
 
+    /**
+     * 입소 가능 여부 변경
+     * @param institutionId         기관 ID
+     * @param isAdmissionAvailable  입소 가능 여부
+     */
+    void changeAdmissionAvailability(Long institutionId, Boolean isAdmissionAvailable);
+
+    /**
+     * 기관 승인 처리
+     * @param institutionId 기관 ID
+     */
     void approveInstitution(Long institutionId);
 }

@@ -1,6 +1,7 @@
 package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -47,6 +48,15 @@ public class InstitutionController {
     /**
      * 기관 정보 수정
      */
+    @PutMapping("/{institutionId}")
+    @Operation(summary = "기관 정보 수정", description = "기관의 정보를 수정합니다.")
+    public ResponseEntity<Void> updateInstitution(
+            @PathVariable Long institutionId,
+            @Valid @RequestBody InstitutionUpdateRequestDto institutionUpdateRequestDto
+    ) {
+        institutionService.updateInstitution(institutionId, institutionUpdateRequestDto);
+        return ResponseEntity.ok().build();
+    }
 
 
     /**
