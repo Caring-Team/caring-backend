@@ -77,7 +77,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     /**
-     * 기관 정보 수정 (PATCH - 선택적 업데이트)
+     * 기관 정보 수정 (PATCH)
      *
      * @param institutionId 기관 ID
      * @param requestDto    기관 수정 요청 DTO
@@ -85,56 +85,141 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void updateInstitution(Long institutionId, InstitutionUpdateRequestDto requestDto) {
-        // 기관 조회
-        Institution institution = institutionRepository.findById(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+        Institution institution = findInstitutionById(institutionId);
 
-        Address updatedAddress = null;
-        GeoPoint updatedLocation = null;
-        PriceInfo updatedPriceInfo = null;
+        Address updatedAddress = buildUpdatedAddress(requestDto, institution);
+        GeoPoint updatedLocation = calculateUpdatedLocation(requestDto, updatedAddress);
+        PriceInfo updatedPriceInfo = buildUpdatedPriceInfo(requestDto, institution);
 
-        // 주소 및 위치 업데이트 처리
-        if (hasAddressUpdate(requestDto)) {
-            updatedAddress = Address.builder()
-                    .city(requestDto.getCity() != null ? requestDto.getCity() : institution.getAddress().getCity())
-                    .street(requestDto.getStreet() != null ? requestDto.getStreet() : institution.getAddress().getStreet())
-                    .zipCode(requestDto.getZipCode() != null ? requestDto.getZipCode() : institution.getAddress().getZipCode())
-                    .build();
-
-            // 위,경도 재계산
-            updatedLocation = geocodingService.convertAddressToGeoPoint(updatedAddress);
-        }
-
-        // 가격 정보 업데이트 처리
-        if (hasPriceInfoUpdate(requestDto)) {
-            PriceInfo currentPrice = institution.getPriceInfo();
-            updatedPriceInfo = PriceInfo.builder()
-                    .monthlyBaseFee(requestDto.getMonthlyBaseFee() != null ? requestDto.getMonthlyBaseFee() :
-                            (currentPrice != null ? currentPrice.getMonthlyBaseFee() : null))
-                    .admissionFee(requestDto.getAdmissionFee() != null ? requestDto.getAdmissionFee() :
-                            (currentPrice != null ? currentPrice.getAdmissionFee() : null))
-                    .monthlyMealCost(requestDto.getMonthlyMealCost() != null ? requestDto.getMonthlyMealCost() :
-                            (currentPrice != null ? currentPrice.getMonthlyMealCost() : null))
-                    .priceNotes(requestDto.getPriceNotes() != null ? requestDto.getPriceNotes() :
-                            (currentPrice != null ? currentPrice.getPriceNotes() : null))
-                    .build();
-        }
-
-        // Institution 엔티티 업데이트
         institution.updateInstitution(
                 requestDto.getName(),
                 requestDto.getPhoneNumber(),
-                updatedAddress,     // 주소
-                updatedLocation,    // 위치
+                updatedAddress,
+                updatedLocation,
                 requestDto.getBedCount(),
                 requestDto.getIsAdmissionAvailable(),
-                updatedPriceInfo,   // 가격
+                updatedPriceInfo,
                 requestDto.getOpeningHours()
         );
 
-        institutionRepository.save(institution);
-        
+        log.info("기관 정보 수정 완료: id={}, name={}", institution.getId(), institution.getName());
+
         // TODO: 전문 질환 목록(specializedConditionCodes) 처리
+    }
+
+    /**
+     * 기관 조회
+     *
+     * @param institutionId 기관 ID
+     * @return Institution 엔티티
+     */
+    private Institution findInstitutionById(Long institutionId) {
+        return institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+    }
+
+    /**
+     * 업데이트된 Address 객체 생성
+     * 주소 관련 필드가 있으면 기존 값과 병합하여 새 Address 반환
+     *
+     * @param requestDto  수정 요청 DTO
+     * @param institution 기존 기관 엔티티
+     * @return 업데이트된 Address (변경 없으면 null)
+     */
+    private Address buildUpdatedAddress(InstitutionUpdateRequestDto requestDto, Institution institution) {
+        if (!hasAddressUpdate(requestDto)) {
+            return null;
+        }
+
+        Address currentAddress = institution.getAddress();
+        return Address.builder()
+                .city(requestDto.getCity() != null ? requestDto.getCity() : currentAddress.getCity())
+                .street(requestDto.getStreet() != null ? requestDto.getStreet() : currentAddress.getStreet())
+                .zipCode(requestDto.getZipCode() != null ? requestDto.getZipCode() : currentAddress.getZipCode())
+                .build();
+    }
+
+    /**
+     * 업데이트된 위치(위도/경도) 계산
+     * 주소가 변경된 경우 Geocoding API 호출
+     *
+     * @param requestDto      수정 요청 DTO
+     * @param updatedAddress  업데이트된 Address
+     * @return 업데이트된 GeoPoint (변경 없으면 null)
+     */
+    private GeoPoint calculateUpdatedLocation(InstitutionUpdateRequestDto requestDto, Address updatedAddress) {
+        if (!hasAddressUpdate(requestDto) || updatedAddress == null) {
+            return null;
+        }
+
+        GeoPoint location = geocodingService.convertAddressToGeoPoint(updatedAddress);
+        log.info("주소 변경으로 인한 위치 업데이트: {}", location);
+        return location;
+    }
+
+    /**
+     * 업데이트된 PriceInfo 객체 생성
+     * 가격 관련 필드가 있으면 기존 값과 병합하여 새 PriceInfo 반환
+     *
+     * @param requestDto  수정 요청 DTO
+     * @param institution 기존 기관 엔티티
+     * @return 업데이트된 PriceInfo (변경 없으면 null)
+     */
+    private PriceInfo buildUpdatedPriceInfo(InstitutionUpdateRequestDto requestDto, Institution institution) {
+        if (!hasPriceInfoUpdate(requestDto)) {
+            return null;
+        }
+
+        PriceInfo currentPrice = institution.getPriceInfo();
+        return PriceInfo.builder()
+                .monthlyBaseFee(getValueOrDefault(requestDto.getMonthlyBaseFee(), currentPrice, PriceInfo::getMonthlyBaseFee))
+                .admissionFee(getValueOrDefault(requestDto.getAdmissionFee(), currentPrice, PriceInfo::getAdmissionFee))
+                .monthlyMealCost(getValueOrDefault(requestDto.getMonthlyMealCost(), currentPrice, PriceInfo::getMonthlyMealCost))
+                .priceNotes(getValueOrDefault(requestDto.getPriceNotes(), currentPrice, PriceInfo::getPriceNotes))
+                .build();
+    }
+
+    /**
+     * 새 값이 있으면 새 값 반환, 없으면 기존 값 반환
+     *
+     * @param newValue      새로운 값
+     * @param currentPrice  현재 가격 정보
+     * @param getter        getter 함수
+     * @return 최종 값
+     */
+    private <T> T getValueOrDefault(T newValue, PriceInfo currentPrice,
+                                     Function<PriceInfo, T> getter) {
+        if (newValue != null) {
+            return newValue;
+        }
+        return currentPrice != null ? getter.apply(currentPrice) : null;
+    }
+
+    /**
+     * 기관 승인 처리
+     *
+     * @param institutionId 기관 ID
+     */
+    @Override
+    @Transactional
+    public void approveInstitution(Long institutionId) {
+        Institution institution = findInstitutionById(institutionId);
+        institution.approveInstitution();
+        log.info("기관 승인 완료: id={}, name={}", institution.getId(), institution.getName());
+    }
+
+    /**
+     * 입소 가능 여부 변경 (별도 API)
+     *
+     * @param institutionId        기관 ID
+     * @param isAdmissionAvailable 입소 가능 여부
+     */
+    @Override
+    @Transactional
+    public void changeAdmissionAvailability(Long institutionId, Boolean isAdmissionAvailable) {
+        Institution institution = findInstitutionById(institutionId);
+        institution.changeAdmissionAvailability(isAdmissionAvailable);
+        log.info("입소 가능 여부 변경: id={}, isAdmissionAvailable={}", institution.getId(), isAdmissionAvailable);
     }
 
     /**
@@ -154,36 +239,5 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getAdmissionFee() != null ||
                 requestDto.getMonthlyMealCost() != null ||
                 requestDto.getPriceNotes() != null;
-    }
-
-    /**
-     * 기관 승인 처리
-     *
-     * @param institutionId 기관 ID
-     */
-    @Override
-    @Transactional
-    public void approveInstitution(Long institutionId) {
-        Institution institution = institutionRepository.findById(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
-
-        institution.approveInstitution();
-        institutionRepository.save(institution);
-    }
-
-    /**
-     * 입소 가능 여부 변경 (별도 API)
-     *
-     * @param institutionId        기관 ID
-     * @param isAdmissionAvailable 입소 가능 여부
-     */
-    @Override
-    @Transactional
-    public void changeAdmissionAvailability(Long institutionId, Boolean isAdmissionAvailable) {
-        Institution institution = institutionRepository.findById(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
-
-        institution.changeAdmissionAvailability(isAdmissionAvailable);
-        institutionRepository.save(institution);
     }
 }
