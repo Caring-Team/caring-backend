@@ -31,10 +31,6 @@ public class Institution extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    // 기관장 (OWNER 역할을 가진 InstitutionAdmin)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private InstitutionAdmin owner;
 
     // 기관 유형
     @Enumerated(EnumType.STRING)
@@ -66,6 +62,14 @@ public class Institution extends BaseEntity {
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstitutionSpecializedCondition> specializedConditions = new ArrayList<>();
 
+    // 기관 계정 목록 (OWNER, ADMIN, STAFF 포함) -> 기관장은 Role로 확인
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstitutionAdmin> admins = new ArrayList<>();
+
+    // 요양사 목록
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CareGiver> careGivers = new ArrayList<>();
+
     // 가격표
     @Embedded
     private PriceInfo priceInfo;
@@ -75,13 +79,13 @@ public class Institution extends BaseEntity {
     private String openingHours;
 
     @Builder
-    public Institution(String name, InstitutionAdmin owner, InstitutionType institutionType,
+    public Institution(String name, InstitutionType institutionType,
                        String phoneNumber, Address address, GeoPoint location,
                        ApprovalStatus approvalStatus, Integer bedCount,
                        Boolean isAdmissionAvailable,
                        PriceInfo priceInfo, String openingHours) {
         this.name = name;
-        this.owner = owner;
+        this.admins = new ArrayList<>();
         this.institutionType = institutionType;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -95,4 +99,21 @@ public class Institution extends BaseEntity {
     }
 
     // TODO: 필요한 도메인 추가
+
+    /**
+     * 기관장(OWNER) 조회 메서드
+     */
+    public InstitutionAdmin getOwner() {
+        return admins.stream()
+                .filter(InstitutionAdmin::isOwner)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 관리자 추가 편의 메서드
+     */
+    public void addAdmin(InstitutionAdmin admin) {
+        this.admins.add(admin);
+    }
 }

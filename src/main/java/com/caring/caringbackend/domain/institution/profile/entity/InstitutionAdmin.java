@@ -44,6 +44,7 @@ public class InstitutionAdmin extends BaseEntity {
     private LocalDate birthDate;
 
     // 역할
+    // 역할 (ADMIN, STAFF)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private InstitutionAdminRole role;
@@ -68,5 +69,12 @@ public class InstitutionAdmin extends BaseEntity {
     // TODO: 필요한 도메인 로직 작성
     public static String makeDuplicationInformation(String name, LocalDate brithDate, String phoneNumber) {
         return name + brithDate + phoneNumber;
+    }
+
+    /**
+     * OWNER 여부 확인
+     */
+    public boolean isOwner() {
+        return role == InstitutionAdminRole.OWNER;
     }
 }
