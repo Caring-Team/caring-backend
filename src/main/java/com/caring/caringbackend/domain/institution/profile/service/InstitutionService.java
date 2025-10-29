@@ -1,7 +1,12 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface InstitutionService {
 
@@ -11,11 +16,14 @@ public interface InstitutionService {
      */
     void registerInstitution(InstitutionCreateRequestDto requestDto);
 
-
     /**
-     * 기관 목록 조회
+     * 기관 목록 조회 (페이징, 검색, 필터링)
+     *
+     * @param pageable 페이징 및 정렬 정보
+     * @param filter 검색 필터
+     * @return 기관 프로필 응답 DTO 페이지
      */
-    void getInstitutions();
+    Page<InstitutionProfileResponseDto> getInstitutions(Pageable pageable, InstitutionSearchFilter filter);
 
     /**
      * 기관 상세 조회

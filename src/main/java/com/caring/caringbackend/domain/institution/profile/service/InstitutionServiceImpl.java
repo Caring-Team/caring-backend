@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
@@ -14,9 +15,13 @@ import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 
 @Slf4j
@@ -26,6 +31,7 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     private final InstitutionRepository institutionRepository;
     private final GeocodingService geocodingService;
+    private final List<InstitutionSearchStrategy> searchStrategies;
 
     /**
      * 기관 등록
@@ -73,10 +79,30 @@ public class InstitutionServiceImpl implements InstitutionService {
         // TODO: 전문 질환 목록(specializedConditionCodes) 처리
     }
 
+    /**
+     * 기관 목록 조회 (페이징, 검색, 필터링)
+     */
     @Override
     @Transactional(readOnly = true)
-    public void getInstitutions() {
-        // TODO: 기관 목록 조회 구현
+    public Page<InstitutionProfileResponseDto> getInstitutions(Pageable pageable, InstitutionSearchFilter filter) {
+        // 적용 가능한 검색 전략 선택 (우선순위 순)
+        InstitutionSearchStrategy strategy = searchStrategies.stream()
+                .filter(s -> s.isApplicable(filter))
+                .min(Comparator.comparingInt(InstitutionSearchStrategy::getPriority))
+                .orElseThrow(() -> new IllegalStateException("검색 전략을 찾을 수 없습니다."));
+
+        // 검색 실행
+        Page<Institution> institutionPage = strategy.search(filter, pageable);
+
+        log.info("기관 목록 조회 완료: total={}, page={}, size={}",
+                institutionPage.getTotalElements(),
+                institutionPage.getNumber(),
+                institutionPage.getSize());
+
+        // Entity -> DTO 변환
+        return institutionPage.map(InstitutionProfileResponseDto::from);
+    }
+
     /**
      * 기관 상세 조회
      *
