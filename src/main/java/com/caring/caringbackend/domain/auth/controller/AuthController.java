@@ -41,8 +41,8 @@ public class AuthController {
 
     @PostMapping("/token/refresh")
     public ApiResponse<ResponseEntity<JwtTokenResponse>> refreshAccessTokenMember(
-            @Valid @RequestBody TokenRefreshRequest requestokenRefreshRequest) {
-        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessTokenMember(requestokenRefreshRequest);
+            @Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
+        JwtTokenResponse jwtTokenResponse = authService.regenerateAccessTokenMember(tokenRefreshRequest);
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
@@ -51,15 +51,16 @@ public class AuthController {
     /**
      * OAuth2 로그인을 한다.
      *
-     * @param provider google, naver, kakao
-     * @param userOAuth2LoginRequest  authentication code
+     * @param provider               google, naver, kakao
+     * @param userOAuth2LoginRequest authentication code
      * @return 해당 Provider로 계정이 있는 경우: <code>Fully jwt</code>> 해당 Provider로 계정이 없는 경우: 임시 <code>Access token</code>
      */
     @PostMapping(value = "/oauth2/login/{provider}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<ResponseEntity<JwtTokenResponse>> loginMemberOAuth2(
             @PathVariable String provider,
             @Valid @RequestBody UserOAuth2LoginRequest userOAuth2LoginRequest) {
-        JwtTokenResponse jwtTokenResponse = authService.oAuth2LoginOrGenerateTemporaryToken(provider, userOAuth2LoginRequest);
+        JwtTokenResponse jwtTokenResponse = authService.
+                oAuth2LoginOrGenerateTemporaryToken(provider, userOAuth2LoginRequest);
         return ApiResponse.success(ResponseEntity.ok(jwtTokenResponse));
     }
 
@@ -159,7 +160,8 @@ public class AuthController {
             @AuthenticationPrincipal TemporaryUserDetails temporaryUserDetails,
             @Valid @RequestBody UserLocalRegisterRequest userLocalRegisterRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, userLocalRegisterRequest)));
+        return ApiResponse.success(
+                ResponseEntity.ok(authService.completeRegisterLocal(temporaryUserDetails, userLocalRegisterRequest)));
     }
 
 
@@ -175,7 +177,8 @@ public class AuthController {
             @AuthenticationPrincipal MemberDetails memberDetails,
             @Valid @RequestBody UserLocalRegisterRequest userLocalRegisterRequest) {
 
-        return ApiResponse.success(ResponseEntity.ok(authService.addLocalCredential(memberDetails, userLocalRegisterRequest)));
+        return ApiResponse.success(
+                ResponseEntity.ok(authService.addLocalCredential(memberDetails, userLocalRegisterRequest)));
     }
 
     // INSTITUTION ENDPOINTS
