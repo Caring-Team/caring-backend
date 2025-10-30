@@ -24,8 +24,7 @@ import reactor.core.publisher.Mono;
 public class NaverOAuth2Service implements OAuth2Service {
     private final ProviderProperties properties;
     private final WebClient webClient;
-
-    @Autowired
+    
     public NaverOAuth2Service(OAuth2ProviderProperties properties, WebClient webClient) {
         this.properties = properties.getProviders().get("naver");
         this.webClient = webClient;
@@ -62,7 +61,6 @@ public class NaverOAuth2Service implements OAuth2Service {
     @Override
     public OAuth2ProviderUserInfoResponse getUserInfoFromProvider(
             OAuth2ProviderTokenResponse response) {
-        System.out.println(response.getAccessToken());
         return webClient.post().uri(properties.getUserInfoUri())
                 .header("Authorization", "Bearer " + response.getAccessToken())
                 .accept(MediaType.APPLICATION_JSON)

@@ -77,7 +77,7 @@ public class JwtUtils {
                     .accessToken(token)
                     .build();
         }
-        return null;
+        throw new IllegalArgumentException("Unsupported role: " + role);
     }
 
     public RefreshTokenPayloadDto decodeRefreshToken(String token) {
@@ -154,7 +154,11 @@ public class JwtUtils {
     }
 
     public Long getTokenRemainTime(String token) {
-        return (Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                .getPayload().getExpiration().getTime() - System.currentTimeMillis()) / 1000;
+        try {
+            return (Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
+                    .getPayload().getExpiration().getTime() - System.currentTimeMillis()) / 1000;
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 }

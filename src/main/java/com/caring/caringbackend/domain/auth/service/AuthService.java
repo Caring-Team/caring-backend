@@ -152,8 +152,8 @@ public class AuthService {
             TemporaryUserDetails userDetails,
             UserOAuth2RegisterRequest userOAuth2RegisterRequest) {
 
-        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
-                        userDetails.getAccessToken())
+        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository
+                .findByAccessToken(userDetails.getAccessToken())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 도중 문제가 발생했습니다."));
 
         String duplicationInformation = Member.makeDuplicationInformation(temporaryUserInfo.getName(),
@@ -340,8 +340,8 @@ public class AuthService {
             TemporaryInstitutionAdminDetails userDetails,
             InstitutionLocalRegisterRequest institutionLocalRegisterRequest) {
 
-        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository.findByAccessToken(
-                        userDetails.getAccessToken())
+        TemporaryUserInfo temporaryUserInfo = temporaryUserInfoRepository
+                .findByAccessToken(userDetails.getAccessToken())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "회원가입 도중 문제가 발생했습니다."));
 
         String duplicationInformation = InstitutionAdmin
@@ -358,7 +358,6 @@ public class AuthService {
             throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "이미 가입된 계정이 있습니다.");
         }
 
-        // TODO: add old access token to black list
         return transactionTemplate.execute(status -> {
             InstitutionAdmin institutionAdmin = InstitutionAdmin.builder()
                     .name(temporaryUserInfo.getName())
