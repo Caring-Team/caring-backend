@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ex.getErrorCode();
 
-        log.warn("🚨 BusinessException occurred: {} at {}",
+        log.warn("BusinessException occurred: {} at {}",
                 errorCode.getCode(), request.getRequestURI(), ex);
 
         ApiResponse<Object> response = ApiResponse.<Object>builder()

@@ -31,7 +31,7 @@ public class Review extends BaseEntity {
 
     // 사용자
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // 기관

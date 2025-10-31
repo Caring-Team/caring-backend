@@ -30,7 +30,7 @@ public class ElderlyProfile extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // 이름
@@ -59,9 +59,6 @@ public class ElderlyProfile extends BaseEntity {
     // 인지 수준
     @Enumerated(EnumType.STRING)
     private CognitiveLevel cognitiveLevel;
-
-    // 선호 케어 타입
-    // TODO: Tagging 시스템 도입 후 수정
 
     // 특이사항
     @Column(length = 500)
@@ -93,5 +90,22 @@ public class ElderlyProfile extends BaseEntity {
         this.location = location;
     }
 
-    // TODO: 필요한 도메인 로직 작성
+    /**
+     * 어르신 프로필 정보 수정
+     */
+    public void updateInfo(String name, Gender gender, LocalDate birthDate,
+                           BloodType bloodType, String phoneNumber,
+                           ActivityLevel activityLevel, CognitiveLevel cognitiveLevel,
+                           String notes, Address address, GeoPoint location) {
+        this.name = name;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.bloodType = bloodType;
+        this.phoneNumber = phoneNumber;
+        this.activityLevel = activityLevel;
+        this.cognitiveLevel = cognitiveLevel;
+        this.notes = notes;
+        this.address = address;
+        this.location = location;
+    }
 }

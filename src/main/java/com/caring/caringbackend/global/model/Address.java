@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 public class Address {
     // 도시
     @NotBlank
@@ -25,6 +24,7 @@ public class Address {
     @NotBlank
     private String zipCode;
 
+    @Builder
     public Address(String city, String street, String zipCode) {
         this.city = city;
         this.street = street;
