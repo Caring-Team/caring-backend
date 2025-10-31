@@ -1,5 +1,6 @@
 package com.caring.caringbackend.global.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,5 +30,10 @@ public class Address {
         this.city = city;
         this.street = street;
         this.zipCode = zipCode;
+    }
+
+    @Override
+    public String toString() {
+        return city + " " + street;
     }
 }

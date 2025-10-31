@@ -31,8 +31,8 @@ public class PriceInfo {
 
     @Builder
     public PriceInfo(Integer monthlyBaseFee, Integer admissionFee,
-                     Integer monthlyMealCost, Integer monthlySnackCost,
-                     Integer additionalCost, String priceNotes) {
+                     Integer monthlyMealCost, String priceNotes) {
+
         this.monthlyBaseFee = monthlyBaseFee;
         this.admissionFee = admissionFee;
         this.monthlyMealCost = monthlyMealCost;

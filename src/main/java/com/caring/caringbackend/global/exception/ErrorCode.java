@@ -50,6 +50,12 @@ public enum ErrorCode {
     INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-001", "기관을 찾을 수 없습니다"),
     INSTITUTION_ALREADY_EXISTS(HttpStatus.CONFLICT, "INST-002", "이미 존재하는 기관입니다"),
     INSTITUTION_INACTIVE(HttpStatus.FORBIDDEN, "INST-003", "비활성화된 기관입니다"),
+    INSTITUTION_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "INST-004", "이미 삭제된 기관입니다"),
+    INSTITUTION_NOT_DELETED(HttpStatus.BAD_REQUEST, "INST-005", "삭제되지 않은 기관입니다"),
+    INSTITUTION_ALREADY_APPROVED(HttpStatus.BAD_REQUEST, "INST-006", "이미 승인된 기관입니다"),
+    INSTITUTION_APPROVAL_PENDING(HttpStatus.BAD_REQUEST, "INST-007", "승인 대기 중인 기관입니다"),
+    INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "INST-008", "유효하지 않은 전화번호입니다"),
+    INVALID_BED_COUNT(HttpStatus.BAD_REQUEST, "INST-009", "유효하지 않은 병상 수입니다"),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
