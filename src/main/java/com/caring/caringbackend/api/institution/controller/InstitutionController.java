@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/profile")
-@Tag(name = "Institution Profile", description = "기관 프로필 관리 API")
+@Tag(name = "🏥 Institution Profile", description = "기관 프로필 관리 API")
 public class InstitutionController {
     private final InstitutionService institutionService;
 

@@ -15,6 +15,7 @@ import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdmi
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.security.details.MemberDetails;
 import com.caring.caringbackend.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 @RestController
+@Tag(name= "🔐 Auth", description = "인증 및 인가 API")
 public class AuthController {
 
     private final AuthService authService;
