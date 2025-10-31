@@ -8,10 +8,10 @@ spring:
     jpa:
         hibernate:
             ddl-auto: create
-        show-sql: true
+        show-sql: false  # P6Spy를 사용하므로 비활성화
         properties:
             hibernate:
-                format_sql: true
+                format_sql: false  # P6Spy에서 포맷팅하므로 비활성화
                 default_schema: public
         open-in-view: false
     data:
@@ -58,6 +58,13 @@ springdoc:
         tags-sorter: alpha
         operations-sorter: alpha
     packages-to-scan: com.caring.caringbackend
+
+# 로깅 설정
+logging:
+    level:
+        root: INFO
+        com.caring: DEBUG
+        com.caring.caringbackend.global.aop: TRACE  # AOP 로깅 레벨
 
 server:
     port: 8080
