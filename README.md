@@ -340,6 +340,85 @@ logging:
 | `DATASOURCE_USERNAME` | DB 사용자명 | `caring_user` |
 | `DATASOURCE_PASSWORD` | DB 비밀번호 | `secure_password` |
 | `JWT_SECRET`          | JWT 서명 키 | `your-secret-key` |
+| `KAKAO_API_KEY`       | Kakao Map API 키 | `your-kakao-api-key` |
+
+### 🗺️ Kakao Geocoding API 설정
+
+기관 등록 시 주소를 위도/경도로 자동 변환하기 위해 Kakao Map API를 사용합니다.
+
+#### 1️⃣ Kakao Developers 설정
+
+1. [Kakao Developers](https://developers.kakao.com/) 접속
+2. 애플리케이션 생성
+3. **REST API 키** 복사
+4. **플랫폼 설정** → Web 플랫폼 추가 (도메인 등록)
+
+#### 2️⃣ 환경변수 설정
+
+**개발 환경 (로컬)**
+```bash
+# .env 파일 또는 환경변수
+export KAKAO_API_KEY=your-kakao-rest-api-key
+```
+
+**운영 환경 (EC2)**
+```bash
+# EC2 인스턴스에서 환경변수 설정
+sudo vi /etc/environment
+# 또는 Docker 실행 시 -e 옵션 사용
+docker run -e KAKAO_API_KEY=your-kakao-rest-api-key ...
+```
+
+**application.yml**
+```yaml
+kakao:
+  api:
+    key: ${KAKAO_API_KEY:dummy-key}  # 환경변수로 주입
+```
+
+#### 3️⃣ Geocoding 서비스 사용
+
+```java
+@Service
+@RequiredArgsConstructor
+public class InstitutionService {
+    
+    private final GeocodingService geocodingService;
+    
+    public void registerInstitution(InstitutionCreateRequestDto dto) {
+        // 주소 생성
+        Address address = Address.builder()
+            .city(dto.getCity())
+            .street(dto.getStreet())
+            .zipCode(dto.getZipCode())
+            .build();
+        
+        // 주소 → 위도/경도 자동 변환
+        GeoPoint location = geocodingService.convertAddressToGeoPoint(address);
+        
+        // Institution 저장 (위도/경도 포함)
+        // ...
+    }
+}
+```
+
+#### 4️⃣ API 응답 예시
+
+**요청 주소**: `서울시 강남구 테헤란로 123`
+
+**변환 결과**:
+```json
+{
+  "latitude": 37.5012345,
+  "longitude": 127.0398765
+}
+```
+
+#### ⚠️ 주의사항
+
+- **API 호출 제한**: Kakao Map API는 무료 플랜 기준 일일 300,000건 제한
+- **에러 처리**: API 호출 실패 시에도 기관 등록은 진행 (location = null)
+- **로깅**: Geocoding 성공/실패 여부가 로그에 기록됨
 
 ---
 

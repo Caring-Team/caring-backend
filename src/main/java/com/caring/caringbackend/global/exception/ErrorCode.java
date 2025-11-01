@@ -34,9 +34,10 @@ public enum ErrorCode {
     // 👤 Member Domain Errors (USER-xxx)
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "사용자를 찾을 수 없습니다"),
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-002", "이미 존재하는 사용자입니다"),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "USER-003", "잘못된 비밀번호입니다"),
-    PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-004", "이미 사용 중인 전화번호입니다"),
-    USER_INACTIVE(HttpStatus.FORBIDDEN, "USER-005", "비활성화된 사용자입니다"),
+    INVALID_USERNAME_PASSWORD(HttpStatus.BAD_REQUEST, "USER-003", "잘못된 아이디 또는 비밀번호입니다"),
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-004", "이미 사용 중인 아이디입니다"),
+    PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-005", "해당 전화번호로 이미 계정이 존재합니다. 고객센터에 문의해주세요."),
+    USER_INACTIVE(HttpStatus.FORBIDDEN, "USER-006", "비활성화된 사용자입니다"),
 
     // 🔐 Authentication & Authorization Errors (AUTH-xxx)
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH-001", "유효하지 않은 토큰입니다"),
@@ -49,6 +50,12 @@ public enum ErrorCode {
     INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-001", "기관을 찾을 수 없습니다"),
     INSTITUTION_ALREADY_EXISTS(HttpStatus.CONFLICT, "INST-002", "이미 존재하는 기관입니다"),
     INSTITUTION_INACTIVE(HttpStatus.FORBIDDEN, "INST-003", "비활성화된 기관입니다"),
+    INSTITUTION_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "INST-004", "이미 삭제된 기관입니다"),
+    INSTITUTION_NOT_DELETED(HttpStatus.BAD_REQUEST, "INST-005", "삭제되지 않은 기관입니다"),
+    INSTITUTION_ALREADY_APPROVED(HttpStatus.BAD_REQUEST, "INST-006", "이미 승인된 기관입니다"),
+    INSTITUTION_APPROVAL_PENDING(HttpStatus.BAD_REQUEST, "INST-007", "승인 대기 중인 기관입니다"),
+    INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "INST-008", "유효하지 않은 전화번호입니다"),
+    INVALID_BED_COUNT(HttpStatus.BAD_REQUEST, "INST-009", "유효하지 않은 병상 수입니다"),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),

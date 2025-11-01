@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * 인증 정보 엔티티
@@ -24,6 +26,7 @@ public class AuthCredential extends BaseTimeEntity {
     private Long id;
 
     // Member
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     public Member member;
@@ -33,7 +36,7 @@ public class AuthCredential extends BaseTimeEntity {
     @Column(nullable = false)
     private CredentialType type;
 
-    // credential identifier 로컬이면 email, 소셜이면 provider_id
+    // credential identifier 로컬이면 username, 소셜이면 provider_id
     @Column(nullable = false)
     private String identifier;
 
@@ -43,7 +46,7 @@ public class AuthCredential extends BaseTimeEntity {
 
     @Builder
     private AuthCredential(Member member, CredentialType type, String identifier,
-                           String passwordHash, Boolean isVerifiedByPhone) {
+                           String passwordHash) {
         this.member = member;
         this.type = type;
         this.identifier = identifier;
@@ -58,7 +61,6 @@ public class AuthCredential extends BaseTimeEntity {
                 .type(CredentialType.LOCAL)
                 .identifier(email)
                 .passwordHash(passwordHash)
-                .isVerifiedByPhone(false)
                 .build();
     }
 
@@ -69,7 +71,6 @@ public class AuthCredential extends BaseTimeEntity {
                 .type(type)
                 .identifier(providerId)
                 .passwordHash(null)
-                .isVerifiedByPhone(false)
                 .build();
     }
 

@@ -22,6 +22,10 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
+    public Optional<Member> findByPhoneNumber(String phone);
+    public Optional<Member> findByDuplicationInformation(String duplicationInformation);
+    public boolean existsByDuplicationInformation(String duplicationInformation);
+
     /**
      * 회원 단건 조회 (삭제되지 않은 회원만)
      */
