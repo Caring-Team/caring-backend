@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.controller;
+package com.caring.caringbackend.api.user.controller;
 
 import com.caring.caringbackend.domain.test.entity.TestData;
 import com.caring.caringbackend.domain.test.service.TestDataService;

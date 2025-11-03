@@ -50,7 +50,7 @@ public class Reservation extends BaseTimeEntity {
 
     // Member
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // 어르신
