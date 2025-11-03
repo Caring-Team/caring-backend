@@ -27,7 +27,7 @@ services:
             - ./files:/app/files
         depends_on:
             - redis
-        restart: unless-stopped
+        restart: no
         logging:
             driver: "json-file"
             options:
