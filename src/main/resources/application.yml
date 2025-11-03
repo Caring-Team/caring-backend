@@ -21,7 +21,7 @@ logging:
 # Kakao Map API
 kakao:
   api:
-    key: ${KAKAO_API_KEY}  # 환경 변수로 설정 권장
+    key: ${KAKAO_API_KEY}
 
 # P6Spy 설정
 decorator:
