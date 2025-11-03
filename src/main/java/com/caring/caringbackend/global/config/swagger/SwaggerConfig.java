@@ -11,7 +11,6 @@ import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
@@ -19,12 +18,10 @@ import java.util.List;
  * 📚 Swagger/OpenAPI 설정
  *
  * API 문서화를 위한 Swagger UI 설정
- * dev 프로필에서만 활성화
  *
  * @author caring-team
  */
 @Configuration
-@Profile("dev") // 개발 환경에서만 활성화
 public class SwaggerConfig {
 
     @Value("${server.port:8080}")
