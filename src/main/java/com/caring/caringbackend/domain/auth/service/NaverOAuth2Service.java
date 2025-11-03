@@ -1,16 +1,15 @@
 package com.caring.caringbackend.domain.auth.service;
 
 import com.caring.caringbackend.domain.auth.annotation.OAuth2Provider;
-import com.caring.caringbackend.domain.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
-import com.caring.caringbackend.domain.auth.dto.response.NaverTokenResponse;
-import com.caring.caringbackend.domain.auth.dto.response.NaverUserInfoResponse;
-import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderTokenResponse;
-import com.caring.caringbackend.domain.auth.dto.response.OAuth2ProviderUserInfoResponse;
+import com.caring.caringbackend.api.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
+import com.caring.caringbackend.api.auth.dto.response.NaverTokenResponse;
+import com.caring.caringbackend.api.auth.dto.response.NaverUserInfoResponse;
+import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderTokenResponse;
+import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties.ProviderProperties;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;

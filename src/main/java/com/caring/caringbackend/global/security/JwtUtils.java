@@ -1,9 +1,9 @@
 package com.caring.caringbackend.global.security;
 
-import com.caring.caringbackend.domain.auth.dto.GenerateTemporaryTokenDto;
-import com.caring.caringbackend.domain.auth.dto.GenerateTokenDto;
-import com.caring.caringbackend.domain.auth.dto.RefreshTokenPayloadDto;
-import com.caring.caringbackend.domain.auth.dto.response.JwtTokenResponse;
+import com.caring.caringbackend.api.auth.dto.GenerateTemporaryTokenDto;
+import com.caring.caringbackend.api.auth.dto.GenerateTokenDto;
+import com.caring.caringbackend.api.auth.dto.RefreshTokenPayloadDto;
+import com.caring.caringbackend.api.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdminRole;
 import com.caring.caringbackend.domain.user.guardian.entity.MemberRole;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
