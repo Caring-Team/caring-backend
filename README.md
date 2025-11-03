@@ -8,7 +8,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Latest-blue.svg)](https://www.docker.com/)
 [![AWS](https://img.shields.io/badge/AWS-ECR%20%7C%20EC2%20%7C%20RDS-orange.svg)](https://aws.amazon.com/)
 
-
 ## 📋 목차
 
 1. [🏗️ 프로젝트 개요](#️-프로젝트-개요)
