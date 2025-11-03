@@ -1,23 +1,21 @@
 package com.caring.caringbackend.global.config.web;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * 🌐 웹 설정 (개발 환경용)
+ * 🌐 웹 설정
  *
- * 개발 환경에서의 CORS 설정 등을 관리
+ * CORS 설정 등을 관리
  *
  * @author caring-team
  */
 @Configuration
-@Profile("dev")
 public class WebConfig implements WebMvcConfigurer {
 
     /**
-     * 🔓 CORS 설정 (개발 환경용)
+     * 🔓 CORS 설정
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
