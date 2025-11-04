@@ -1,9 +1,9 @@
 package com.caring.caringbackend.domain.user.elderly.service;
 
-import com.caring.caringbackend.api.dto.elderly.request.ElderlyProfileCreateRequest;
-import com.caring.caringbackend.api.dto.elderly.request.ElderlyProfileUpdateRequest;
-import com.caring.caringbackend.api.dto.elderly.response.ElderlyProfileListResponse;
-import com.caring.caringbackend.api.dto.elderly.response.ElderlyProfileResponse;
+import com.caring.caringbackend.api.user.dto.elderly.request.ElderlyProfileCreateRequest;
+import com.caring.caringbackend.api.user.dto.elderly.request.ElderlyProfileUpdateRequest;
+import com.caring.caringbackend.api.user.dto.elderly.response.ElderlyProfileListResponse;
+import com.caring.caringbackend.api.user.dto.elderly.response.ElderlyProfileResponse;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;

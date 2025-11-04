@@ -1,9 +1,9 @@
 package com.caring.caringbackend.domain.user.guardian.service;
 
-import com.caring.caringbackend.api.dto.member.request.MemberUpdateRequest;
-import com.caring.caringbackend.api.dto.member.response.MemberDetailResponse;
-import com.caring.caringbackend.api.dto.member.response.MemberListResponse;
-import com.caring.caringbackend.api.dto.member.response.MemberResponse;
+import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
+import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.MemberNotFoundException;

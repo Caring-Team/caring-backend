@@ -1,9 +1,10 @@
 spring:
     datasource:
-        driver-class-name: org.postgresql.Driver
         url: ${DATASOURCE_URL}
         username: ${DATASOURCE_USERNAME}
         password: ${DATASOURCE_PASSWORD}
+        driver-class-name: org.postgresql.Driver
+
     jpa:
         hibernate:
             ddl-auto: update
@@ -11,6 +12,58 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+                default_schema: public
+        open-in-view: false
+
+    data:
+        redis:
+            host: ${REDIS_URL:localhost}
+            port: ${REDIS_PORT:6379}
+            timeout: 2000ms
+            # Redis 없이도 실행 가능하도록 설정
+            lettuce:
+                shutdown-timeout: 100ms
+
+oauth2:
+    providers:
+        google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            user-info-uri: ${GOOGLE_USERINFO_URI}
+            token-uri: ${GOOGLE_TOKEN_URI}
+        naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            user-info-uri: ${NAVER_USERINFO_URI}
+            token-uri: ${NAVER_TOKEN_URI}
+        kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            user-info-uri: ${KAKAO_USERINFO_URI}
+            token-uri: ${KAKAO_TOKEN_URI}
+
+jwt:
+    secret: ${JWT_SECRET}
+    access-token-validity: ${JWT_ACCESS_TOKEN_VALIDITY}
+    refresh-token-validity: ${JWT_REFRESH_TOKEN_VALIDITY}
+
+verify-phone:
+    expires-in: ${VERIFY_PHONE_EXPIRES_IN:300}
+
+# Swagger/OpenAPI 설정
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+        enabled: true
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+        tags-sorter: alpha
+        operations-sorter: alpha
+    packages-to-scan: com.caring.caringbackend
 
 server:
     port: 8080
@@ -19,11 +72,11 @@ logging:
     level:
         root: INFO
         com.caring: INFO
-        p6spy: WARN  # 운영 환경에서는 P6Spy 로그 최소화
-        com.caring.caringbackend.global.aop: WARN  # 운영 환경에서는 AOP 경고만
+        p6spy: WARN
+        com.caring.caringbackend.global.aop: WARN
 
-# P6Spy 설정 - 운영 환경에서는 비활성화 또는 느린 쿼리만 로깅
+# P6Spy 설정 - 운영 환경에서는 비활성화
 decorator:
-  datasource:
-    p6spy:
-      enable-logging: false  # 운영 환경에서는 비활성화
+    datasource:
+        p6spy:
+            enable-logging: false
