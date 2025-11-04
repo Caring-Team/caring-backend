@@ -39,6 +39,9 @@ build/
 # application-dev.yml
 src/main/resources/application-dev.yml
 
+# .env (환경변수 파일)
+.env
+
 # docs
 docs/
 

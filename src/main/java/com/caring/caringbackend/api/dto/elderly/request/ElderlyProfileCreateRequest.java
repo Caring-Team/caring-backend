@@ -5,7 +5,6 @@ import com.caring.caringbackend.domain.user.elderly.entity.BloodType;
 import com.caring.caringbackend.domain.user.elderly.entity.CognitiveLevel;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
-import com.caring.caringbackend.global.model.GeoPoint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -73,16 +72,13 @@ public class ElderlyProfileCreateRequest {
     private String notes;
 
     /**
-     * 🏠 주소 정보
+     * 🏠 주소 정보 (필수)
+     * <p>
+     * 주소 입력 시 서버에서 Geocoding API를 통해 자동으로 위경도를 계산합니다.
      */
     @Valid
+    @NotNull(message = "주소는 필수입니다.")
     private AddressDto address;
-
-    /**
-     * 📍 위치 정보 (위도/경도)
-     */
-    @Valid
-    private GeoPointDto location;
 
     /**
      * 🏠 주소 내부 클래스
@@ -98,18 +94,6 @@ public class ElderlyProfileCreateRequest {
     }
 
     /**
-     * 📍 위치 정보 내부 클래스
-     */
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GeoPointDto {
-        private Double latitude;
-        private Double longitude;
-    }
-
-    /**
      * 🏠 주소 DTO를 Address 엔티티로 변환
      */
     public Address toAddress() {
@@ -120,19 +104,6 @@ public class ElderlyProfileCreateRequest {
             address.city,
             address.street,
             address.zipCode
-        );
-    }
-
-    /**
-     * 📍 위치 DTO를 GeoPoint 엔티티로 변환
-     */
-    public GeoPoint toGeoPoint() {
-        if (location == null) {
-            return null;
-        }
-        return new GeoPoint(
-            location.latitude,
-            location.longitude
         );
     }
 }

@@ -10,7 +10,11 @@ import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.ElderlyProfileNotFoundException;
 import com.caring.caringbackend.global.exception.MemberNotFoundException;
+import com.caring.caringbackend.global.model.Address;
+import com.caring.caringbackend.global.model.GeoPoint;
+import com.caring.caringbackend.global.service.GeocodingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
  * @author 윤다인
  * @since 2025-10-28
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +35,7 @@ public class ElderlyProfileService {
 
     private final ElderlyProfileRepository elderlyProfileRepository;
     private final MemberRepository memberRepository;
+    private final GeocodingService geocodingService;
 
     /**
      * 어르신 프로필 등록
@@ -40,7 +46,13 @@ public class ElderlyProfileService {
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        // 2. ElderlyProfile 엔티티 생성
+        // 2. 주소 → 위경도 변환 (주소 필수이므로 null 체크 불필요)
+        Address address = request.toAddress();
+        GeoPoint location = geocodingService.convertAddressToGeoPoint(address);
+        log.info("어르신 프로필 생성 시 위치 자동 계산: memberId={}, profileName={}, location={}", 
+                memberId, request.getName(), location);
+
+        // 3. ElderlyProfile 엔티티 생성
         ElderlyProfile profile = ElderlyProfile.builder()
                 .member(member)
                 .name(request.getName())
@@ -51,14 +63,14 @@ public class ElderlyProfileService {
                 .activityLevel(request.getActivityLevel())
                 .cognitiveLevel(request.getCognitiveLevel())
                 .notes(request.getNotes())
-                .address(request.toAddress())
-                .location(request.toGeoPoint())
+                .address(address)
+                .location(location)
                 .build();
 
-        // 3. DB 저장
+        // 4. DB 저장
         ElderlyProfile savedProfile = elderlyProfileRepository.save(profile);
 
-        // 4. 응답 반환
+        // 5. 응답 반환
         return ElderlyProfileResponse.from(savedProfile);
     }
 
@@ -102,7 +114,11 @@ public class ElderlyProfileService {
         ElderlyProfile profile = elderlyProfileRepository.findByIdAndMemberIdAndDeletedFalse(profileId, memberId)
                 .orElseThrow(() -> new ElderlyProfileNotFoundException(profileId));
 
-        // 2. 프로필 정보 업데이트 (JPA 변경 감지로 자동 저장)
+        // 2. 주소 → 위경도 변환 (주소 변경 시에만)
+        Address updatedAddress = request.toAddress();
+        GeoPoint updatedLocation = calculateUpdatedLocation(updatedAddress, profileId);
+
+        // 3. 프로필 정보 업데이트 (JPA 변경 감지로 자동 저장)
         profile.updateInfo(
             request.getName(),
             request.getGender(),
@@ -112,11 +128,11 @@ public class ElderlyProfileService {
             request.getActivityLevel(),
             request.getCognitiveLevel(),
             request.getNotes(),
-            request.toAddress(),
-            request.toGeoPoint()
+            updatedAddress,
+            updatedLocation
         );
         
-        // 3. 응답 반환
+        // 4. 응답 반환
         return ElderlyProfileResponse.from(profile);
     }
 
@@ -131,6 +147,24 @@ public class ElderlyProfileService {
 
         // 2. 소프트 삭제
         profile.softDelete();
+    }
+
+    /**
+     * 업데이트된 위치(위도/경도) 계산
+     * 주소가 변경된 경우 Geocoding API 호출
+     *
+     * @param updatedAddress 업데이트된 Address
+     * @param profileId 프로필 ID
+     * @return 업데이트된 GeoPoint (변경 없으면 null)
+     */
+    private GeoPoint calculateUpdatedLocation(Address updatedAddress, Long profileId) {
+        if (updatedAddress == null) {
+            return null;
+        }
+
+        GeoPoint location = geocodingService.convertAddressToGeoPoint(updatedAddress);
+        log.info("어르신 프로필 주소 변경으로 인한 위치 업데이트: profileId={}, location={}", profileId, location);
+        return location;
     }
 }
 

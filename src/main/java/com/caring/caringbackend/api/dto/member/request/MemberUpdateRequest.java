@@ -1,7 +1,6 @@
 package com.caring.caringbackend.api.dto.member.request;
 
 import com.caring.caringbackend.global.model.Address;
-import com.caring.caringbackend.global.model.GeoPoint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -49,15 +48,11 @@ public class MemberUpdateRequest {
 
     /**
      * 🏠 주소 정보
+     * <p>
+     * 주소 입력 시 서버에서 Geocoding API를 통해 자동으로 위경도를 계산합니다.
      */
     @Valid
     private AddressDto address;
-
-    /**
-     * 📍 위치 정보 (위도/경도)
-     */
-    @Valid
-    private GeoPointDto location;
 
     /**
      * 🏠 주소 내부 클래스
@@ -73,18 +68,6 @@ public class MemberUpdateRequest {
     }
 
     /**
-     * 📍 위치 정보 내부 클래스
-     */
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GeoPointDto {
-        private Double latitude;
-        private Double longitude;
-    }
-
-    /**
      * 🏠 주소 DTO를 Address 엔티티로 변환
      */
     public Address toAddress() {
@@ -95,19 +78,6 @@ public class MemberUpdateRequest {
             address.city,
             address.street,
             address.zipCode
-        );
-    }
-
-    /**
-     * 📍 위치 DTO를 GeoPoint 엔티티로 변환
-     */
-    public GeoPoint toGeoPoint() {
-        if (location == null) {
-            return null;
-        }
-        return new GeoPoint(
-            location.latitude,
-            location.longitude
         );
     }
 }
