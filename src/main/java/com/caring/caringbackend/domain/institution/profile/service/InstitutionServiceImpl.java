@@ -86,9 +86,13 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         // Institution 저장
         institutionRepository.save(institution);
-        log.info("기관 등록 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
 
-        // TODO: Admin과 Institution 연결 로직 추가 필요
+        // Admin과 Institution 양방향 연결 (admin에 institution 설정 + institution의 admins 리스트에 추가)
+        admin.linkInstitution(institution);
+
+        log.info("기관 등록 완료 및 관리자 연결: adminId={}, institutionId={}, institutionName={}, role={}",
+                adminId, institution.getId(), institution.getName(), admin.getRole());
+
         // TODO: 전문 질환 목록(specializedConditionCodes) 처리
     }
 
