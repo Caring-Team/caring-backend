@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
 import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.CareGiver;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
@@ -11,6 +12,7 @@ import com.caring.caringbackend.domain.institution.profile.repository.Institutio
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +71,35 @@ public class CareGiverServiceImpl implements CareGiverService {
         return CareGiverResponseDto.from(careGiver);
     }
 
+
+
+    @Override
+    public void updateCareGiver(Long adminId, Long institutionId, Long careGiverId,
+                                CareGiverUpdateRequestDto requestDto) {
+
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(institutionId, admin);
+
+        // 2. 요양보호사 조회 (기관 소속 확인)
+        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
+
+        // 3. 정보 수정 (null이 아닌 값만)
+        careGiver.updateCareGiver(
+                requestDto.name(),
+                requestDto.email(),
+                requestDto.phoneNumber(),
+                requestDto.gender(),
+                requestDto.birthDate(),
+                requestDto.experienceDetails()
+        );
+
+        log.info("요양보호사 정보 수정 완료: institutionId={}, careGiverId={}", institutionId, careGiverId);
+    }
+    private CareGiver getCareGiver(Long institutionId, Long careGiverId) {
+        return careGiverRepository
+                .findByIdAndInstitutionId(careGiverId, institutionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CAREGIVER_NOT_FOUND));
+    }
 
     private void validate(Long institutionId, InstitutionAdmin admin) {
         if (!admin.hasInstitution()) {

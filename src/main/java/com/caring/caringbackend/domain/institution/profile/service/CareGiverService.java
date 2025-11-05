@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.institution.profile.service;
 
 
 import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
 
 import java.util.List;
@@ -22,5 +23,10 @@ public interface CareGiverService {
      * 요양보호사 상세 조회
      */
     CareGiverResponseDto getCareGiverDetail(Long institutionId, Long careGiverId);
+
+    /**
+     * 요양보호사 정보 수정
+     */
+    void updateCareGiver(Long adminId, Long institutionId, Long careGiverId, CareGiverUpdateRequestDto requestDto);
 
 }

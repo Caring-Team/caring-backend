@@ -58,10 +58,24 @@ public class CareGiverController {
             @PathVariable Long institutionId,
             @PathVariable Long careGiverId) {
 
-    // 요양 보호사 정보 수정
+        CareGiverResponseDto careGiver = careGiverService.getCareGiverDetail(institutionId, careGiverId);
+        return ApiResponse.success(careGiver);
+    }
 
+    /**
+     * 요양보호사 정보 수정
+     */
+    @PutMapping("/{careGiverId}")
+    @Operation(summary = "요양보호사 정보 수정", description = "요양보호사의 정보를 수정합니다. (OWNER/MANAGER 권한 필요)")
+    public ApiResponse<Void> updateCareGiver(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @PathVariable Long careGiverId,
+            @Valid @RequestBody CareGiverUpdateRequestDto requestDto) {
 
-    // 요양 보호사 활성 상태 변경
+        careGiverService.updateCareGiver(adminDetails.getId(), institutionId, careGiverId, requestDto);
+        return ApiResponse.success();
+    }
 
 
     // 요양 보호사 삭제

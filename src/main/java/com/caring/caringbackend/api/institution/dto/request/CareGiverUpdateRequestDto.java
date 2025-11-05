@@ -1,7 +1,31 @@
 package com.caring.caringbackend.api.institution.dto.request;
 
+import com.caring.caringbackend.global.model.Gender;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+
+import java.time.LocalDate;
+
 /**
- * 요양사 수정 요청 DTO
+ * 요양보호사 수정 요청 DTO
+ * 모든 필드 선택적 (null이 아닌 값만 수정)
  */
-public class CareGiverUpdateRequestDto {
+public record CareGiverUpdateRequestDto(
+        String name,
+
+        @Email(message = "올바른 이메일 형식이 아닙니다")
+        String email,
+
+        String phoneNumber,
+
+        Gender gender,
+
+        @Past(message = "생년월일은 과거 날짜여야 합니다")
+        LocalDate birthDate,
+
+        String experienceDetails
+) {
 }
+
