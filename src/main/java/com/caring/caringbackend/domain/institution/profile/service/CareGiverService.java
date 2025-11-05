@@ -1,6 +1,5 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-
 import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
@@ -29,4 +28,8 @@ public interface CareGiverService {
      */
     void updateCareGiver(Long adminId, Long institutionId, Long careGiverId, CareGiverUpdateRequestDto requestDto);
 
+    /**
+     * 요양보호사 삭제 (Soft Delete)
+     */
+    void deleteCareGiver(Long adminId, Long institutionId, Long careGiverId);
 }

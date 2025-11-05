@@ -95,6 +95,17 @@ public class CareGiverServiceImpl implements CareGiverService {
 
         log.info("요양보호사 정보 수정 완료: institutionId={}, careGiverId={}", institutionId, careGiverId);
     }
+
+    @Override
+    public void deleteCareGiver(Long adminId, Long institutionId, Long careGiverId) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(institutionId, admin);
+        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
+        careGiver.softDelete();
+
+        log.info("요양보호사 삭제 완료: institutionId={}, careGiverId={}", institutionId, careGiverId);
+    }
+
     private CareGiver getCareGiver(Long institutionId, Long careGiverId) {
         return careGiverRepository
                 .findByIdAndInstitutionId(careGiverId, institutionId)

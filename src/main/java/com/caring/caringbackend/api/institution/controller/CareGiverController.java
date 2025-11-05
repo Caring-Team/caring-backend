@@ -77,6 +77,17 @@ public class CareGiverController {
         return ApiResponse.success();
     }
 
+    /**
+     * 요양보호사 삭제
+     */
+    @DeleteMapping("/{careGiverId}")
+    @Operation(summary = "요양보호사 삭제", description = "요양보호사를 삭제합니다. Soft Delete로 처리됩니다. (OWNER 권한 필요)")
+    public ApiResponse<Void> deleteCareGiver(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @PathVariable Long careGiverId) {
 
-    // 요양 보호사 삭제
+        careGiverService.deleteCareGiver(adminDetails.getId(), institutionId, careGiverId);
+        return ApiResponse.success();
+    }
 }
