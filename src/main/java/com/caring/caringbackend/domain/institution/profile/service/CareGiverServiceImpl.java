@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
 import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.CareGiver;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
@@ -13,6 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -44,6 +49,26 @@ public class CareGiverServiceImpl implements CareGiverService {
         institution.addCareGiver(careGiver);
         careGiverRepository.save(careGiver);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CareGiverResponseDto> getCareGiversByInstitution(Long institutionId) {
+
+        findInstitutionById(institutionId);
+        List<CareGiver> careGivers = careGiverRepository.findByInstitutionIdOrderByCreatedAtDesc(institutionId);
+
+        return careGivers.stream()
+                .map(CareGiverResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CareGiverResponseDto getCareGiverDetail(Long institutionId, Long careGiverId) {
+        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
+        return CareGiverResponseDto.from(careGiver);
+    }
+
 
     private void validate(Long institutionId, InstitutionAdmin admin) {
         if (!admin.hasInstitution()) {

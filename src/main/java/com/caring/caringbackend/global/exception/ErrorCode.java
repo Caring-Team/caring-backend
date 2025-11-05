@@ -66,6 +66,7 @@ public enum ErrorCode {
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
     CARE_REQUEST_ALREADY_PROCESSED(HttpStatus.CONFLICT, "CARE-002", "이미 처리된 케어 요청입니다"),
     INVALID_CARE_STATUS(HttpStatus.BAD_REQUEST, "CARE-003", "유효하지 않은 케어 상태입니다"),
+    CAREGIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-004", "요양보호사를 찾을 수 없습니다"),
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
