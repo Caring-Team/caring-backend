@@ -7,7 +7,7 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: create
+            ddl-auto: update
         show-sql: false  # P6Spy를 사용하므로 비활성화
         properties:
             hibernate:
