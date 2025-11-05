@@ -12,9 +12,10 @@ public interface InstitutionService {
 
     /**
      * 기관 등록
+     * @param adminId 관리자 ID
      * @param requestDto 기관 생성 요청 DTO
      */
-    void registerInstitution(InstitutionCreateRequestDto requestDto);
+    void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto);
 
     /**
      * 기관 목록 조회 (페이징, 검색, 필터링)
@@ -33,17 +34,19 @@ public interface InstitutionService {
 
     /**
      * 기관 정보 수정
+     * @param adminId 관리자 ID
      * @param institutionId 기관 ID
      * @param requestDto    기관 수정 요청 DTO
      */
-    void updateInstitution(Long institutionId, InstitutionUpdateRequestDto requestDto);
+    void updateInstitution(Long adminId, Long institutionId, InstitutionUpdateRequestDto requestDto);
 
     /**
      * 입소 가능 여부 변경
+     * @param adminId 관리자 ID
      * @param institutionId         기관 ID
      * @param isAdmissionAvailable  입소 가능 여부
      */
-    void changeAdmissionAvailability(Long institutionId, Boolean isAdmissionAvailable);
+    void changeAdmissionAvailability(Long adminId, Long institutionId, Boolean isAdmissionAvailable);
 
     /**
      * 기관 승인 처리
@@ -55,7 +58,8 @@ public interface InstitutionService {
     /**
      * 기관 삭제 (Soft Delete)
      *
+     * @param adminId 관리자 ID
      * @param institutionId 기관 ID
      */
-    void deleteInstitution(Long institutionId);
+    void deleteInstitution(Long adminId, Long institutionId);
 }

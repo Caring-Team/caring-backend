@@ -6,7 +6,9 @@ import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateReq
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
+import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
@@ -30,17 +32,27 @@ import java.util.function.Function;
 public class InstitutionServiceImpl implements InstitutionService {
 
     private final InstitutionRepository institutionRepository;
+    private final InstitutionAdminRepository institutionAdminRepository;
     private final GeocodingService geocodingService;
     private final List<InstitutionSearchStrategy> searchStrategies;
 
     /**
      * 기관 등록
      *
+     * @param adminId 관리자 ID
      * @param requestDto 기관 생성 요청 DTO
      */
     @Override
     @Transactional
-    public void registerInstitution(InstitutionCreateRequestDto requestDto) {
+    public void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto) {
+        // 관리자 조회
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 이미 기관이 등록되어 있는지 확인
+        if (admin.getInstitution() != null) {
+            throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_REGISTERED);
+        }
+
         // Address 생성
         Address address = Address.builder()
                 .city(requestDto.getCity())
@@ -74,8 +86,9 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         // Institution 저장
         institutionRepository.save(institution);
-        log.info("기관 등록 완료: id={}, name={}", institution.getId(), institution.getName());
+        log.info("기관 등록 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
 
+        // TODO: Admin과 Institution 연결 로직 추가 필요
         // TODO: 전문 질환 목록(specializedConditionCodes) 처리
     }
 
@@ -124,13 +137,18 @@ public class InstitutionServiceImpl implements InstitutionService {
     /**
      * 기관 정보 수정 (PATCH)
      *
+     * @param adminId 관리자 ID
      * @param institutionId 기관 ID
      * @param requestDto    기관 수정 요청 DTO
      */
     @Override
     @Transactional
-    public void updateInstitution(Long institutionId, InstitutionUpdateRequestDto requestDto) {
+    public void updateInstitution(Long adminId, Long institutionId, InstitutionUpdateRequestDto requestDto) {
         Institution institution = findInstitutionById(institutionId);
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 권한 체크: 해당 기관의 OWNER만 수정 가능
+        validateAdminAuthorization(admin, institution, true);
 
         Address updatedAddress = buildUpdatedAddress(requestDto, institution);
         GeoPoint updatedLocation = calculateUpdatedLocation(requestDto, updatedAddress);
@@ -147,7 +165,7 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getOpeningHours()
         );
 
-        log.info("기관 정보 수정 완료: id={}, name={}", institution.getId(), institution.getName());
+        log.info("기관 정보 수정 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
 
         // TODO: 전문 질환 목록(specializedConditionCodes) 처리
     }
@@ -168,27 +186,39 @@ public class InstitutionServiceImpl implements InstitutionService {
     /**
      * 입소 가능 여부 변경 (별도 API)
      *
+     * @param adminId 관리자 ID
      * @param institutionId        기관 ID
      * @param isAdmissionAvailable 입소 가능 여부
      */
     @Override
     @Transactional
-    public void changeAdmissionAvailability(Long institutionId, Boolean isAdmissionAvailable) {
+    public void changeAdmissionAvailability(Long adminId, Long institutionId, Boolean isAdmissionAvailable) {
         Institution institution = findInstitutionById(institutionId);
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 권한 체크: 해당 기관의 OWNER 또는 STAFF 모두 가능
+        validateAdminAuthorization(admin, institution, false);
+
         institution.changeAdmissionAvailability(isAdmissionAvailable);
-        log.info("입소 가능 여부 변경: id={}, isAdmissionAvailable={}", institution.getId(), isAdmissionAvailable);
+        log.info("입소 가능 여부 변경: adminId={}, id={}, isAdmissionAvailable={}", adminId, institution.getId(), isAdmissionAvailable);
     }
 
     /**
      * 기관 삭제 (Soft Delete)
+     * @param adminId 관리자 ID
      * @param institutionId 기관 ID
      */
     @Override
     @Transactional
-    public void deleteInstitution(Long institutionId) {
+    public void deleteInstitution(Long adminId, Long institutionId) {
         Institution institution = findInstitutionById(institutionId);
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 권한 체크: 해당 기관의 OWNER만 삭제 가능
+        validateAdminAuthorization(admin, institution, true);
+
         institution.deleteInstitution();
-        log.info("기관 삭제 완료: id={}, name={}", institution.getId(), institution.getName());
+        log.info("기관 삭제 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
     }
 
 
@@ -201,6 +231,36 @@ public class InstitutionServiceImpl implements InstitutionService {
     private Institution findInstitutionById(Long institutionId) {
         return institutionRepository.findById(institutionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+    }
+
+    /**
+     * 기관 관리자 조회 내부 메서드
+     *
+     * @param adminId 관리자 ID
+     * @return InstitutionAdmin 엔티티
+     */
+    private InstitutionAdmin findInstitutionAdminById(Long adminId) {
+        return institutionAdminRepository.findById(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
+    }
+
+    /**
+     * 관리자 권한 검증
+     *
+     * @param admin 관리자
+     * @param institution 기관
+     * @param ownerOnly true이면 OWNER만 허용, false이면 OWNER/STAFF 모두 허용
+     */
+    private void validateAdminAuthorization(InstitutionAdmin admin, Institution institution, boolean ownerOnly) {
+        // 해당 기관의 관리자인지 확인
+        if (admin.getInstitution() == null || !admin.getInstitution().getId().equals(institution.getId())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
+        }
+
+        // OWNER만 허용하는 경우
+        if (ownerOnly && !admin.isOwner()) {
+            throw new BusinessException(ErrorCode.OWNER_PERMISSION_REQUIRED);
+        }
     }
 
     private static void validateIsActive(Institution institution) {
