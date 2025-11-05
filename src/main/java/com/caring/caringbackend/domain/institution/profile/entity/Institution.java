@@ -167,6 +167,11 @@ public class Institution extends BaseEntity {
         this.admins.add(admin);
     }
 
+    public void addCareGiver(CareGiver careGiver) {
+        this.careGivers.add(careGiver);
+    }
+
+
     /**
      * 승인 여부 체크 메서드
      */
