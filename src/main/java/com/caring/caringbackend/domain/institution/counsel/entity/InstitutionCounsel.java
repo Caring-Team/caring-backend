@@ -35,11 +35,22 @@ public class InstitutionCounsel extends BaseEntity {
     @Column(length = 500)
     private String description;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     public InstitutionCounsel(Institution institution, String title, String description) {
         this.institution = institution;
         this.title = title;
         this.description = description;
+    }
+
+    public static InstitutionCounsel createInstitutionCounsel(Institution institution, String title, String description) {
+        InstitutionCounsel counsel = InstitutionCounsel.builder()
+                .institution(institution)
+                .title(title)
+                .description(description)
+                .build();
+
+        institution.addCounsel(counsel);
+        return counsel;
     }
 
     // TODO: 필요한 도메인 로직 작성

@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
@@ -73,6 +74,10 @@ public class Institution extends BaseEntity {
     // 요양사 목록
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGiver> careGivers = new ArrayList<>();
+
+    // 상담 목록
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstitutionCounsel> counsels = new ArrayList<>();
 
     // 가격표
     @Embedded
@@ -167,10 +172,19 @@ public class Institution extends BaseEntity {
         this.admins.add(admin);
     }
 
+    /**
+     * 요양보호사 추가 편의 메서드
+     */
     public void addCareGiver(CareGiver careGiver) {
         this.careGivers.add(careGiver);
     }
 
+    /**
+     * 상담 추가 편의 메서드
+     */
+    public void addCounsel(InstitutionCounsel counsel) {
+        this.counsels.add(counsel);
+    }
 
     /**
      * 승인 여부 체크 메서드
