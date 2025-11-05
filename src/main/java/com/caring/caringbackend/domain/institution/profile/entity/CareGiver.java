@@ -56,7 +56,7 @@ public class CareGiver extends BaseEntity {
     @Column(length = 255)
     private String photoUrl;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     public CareGiver(Institution institution, String name, String email,
                      String phoneNumber, Gender gender, LocalDate birthDate,
                      String experienceDetails, String photoUrl) {
@@ -68,6 +68,28 @@ public class CareGiver extends BaseEntity {
         this.birthDate = birthDate;
         this.experienceDetails = experienceDetails;
         this.photoUrl = photoUrl;
+    }
+
+    /**
+     * 요양보호사 생성 정적 팩토리 메서드
+     * 양방향 연관관계 자동 설정
+     */
+    public static CareGiver createCareGiver(Institution institution, String name, String email,
+                                           String phoneNumber, Gender gender, LocalDate birthDate,
+                                           String experienceDetails) {
+        CareGiver careGiver = CareGiver.builder()
+                .institution(institution)
+                .name(name)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .birthDate(birthDate)
+                .experienceDetails(experienceDetails)
+                .build();
+
+        // 양방향 연관관계 설정
+        institution.addCareGiver(careGiver);
+        return careGiver;
     }
 
     // TODO: 필요한 도메인 로직 작성
