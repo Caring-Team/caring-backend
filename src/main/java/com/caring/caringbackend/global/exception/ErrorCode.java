@@ -60,6 +60,7 @@ public enum ErrorCode {
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-011", "기관 관리자를 찾을 수 없습니다"),
     UNAUTHORIZED_INSTITUTION_ACCESS(HttpStatus.FORBIDDEN, "INST-012", "해당 기관에 대한 접근 권한이 없습니다"),
     OWNER_PERMISSION_REQUIRED(HttpStatus.FORBIDDEN, "INST-013", "기관장(OWNER) 권한이 필요합니다"),
+    ADMIN_HAS_NO_INSTITUTION(HttpStatus.BAD_REQUEST, "INST-014", "기관에 소속되어 있지 않습니다. 먼저 기관을 등록해주세요"),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
@@ -84,7 +85,8 @@ public enum ErrorCode {
     // 👵 Elderly Profile Errors (ELDERLY-xxx)
     ELDERLY_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "ELDERLY-001", "어르신 프로필을 찾을 수 없습니다"),
     ELDERLY_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ELDERLY-002", "해당 어르신 프로필에 접근할 수 없습니다"),
-    ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다");
+    ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다"),
+    ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
