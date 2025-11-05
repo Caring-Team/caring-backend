@@ -56,6 +56,10 @@ public enum ErrorCode {
     INSTITUTION_APPROVAL_PENDING(HttpStatus.BAD_REQUEST, "INST-007", "승인 대기 중인 기관입니다"),
     INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "INST-008", "유효하지 않은 전화번호입니다"),
     INVALID_BED_COUNT(HttpStatus.BAD_REQUEST, "INST-009", "유효하지 않은 병상 수입니다"),
+    INSTITUTION_ALREADY_REGISTERED(HttpStatus.CONFLICT, "INST-010", "이미 기관이 등록되어 있습니다"),
+    ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-011", "기관 관리자를 찾을 수 없습니다"),
+    UNAUTHORIZED_INSTITUTION_ACCESS(HttpStatus.FORBIDDEN, "INST-012", "해당 기관에 대한 접근 권한이 없습니다"),
+    OWNER_PERMISSION_REQUIRED(HttpStatus.FORBIDDEN, "INST-013", "기관장(OWNER) 권한이 필요합니다"),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
