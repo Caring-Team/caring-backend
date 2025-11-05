@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.user.dto.member.request;
 
 import com.caring.caringbackend.global.model.Address;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +35,7 @@ public class MemberUpdateRequest {
     /**
      * 📱 전화번호
      */
+    @Pattern(regexp = "^[0-9-]+$", message = "전화번호는 숫자와 하이픈만 입력 가능합니다")
     private String phoneNumber;
 
     /**

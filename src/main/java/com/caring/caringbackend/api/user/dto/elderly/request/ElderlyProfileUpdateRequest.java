@@ -7,6 +7,7 @@ import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +53,7 @@ public class ElderlyProfileUpdateRequest {
     /**
      * 📱 전화번호
      */
+    @Pattern(regexp = "^[0-9-]+$", message = "전화번호는 숫자와 하이픈만 입력 가능합니다")
     private String phoneNumber;
 
     /**
