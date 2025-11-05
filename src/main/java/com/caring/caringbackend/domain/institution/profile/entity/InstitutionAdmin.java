@@ -77,4 +77,47 @@ public class InstitutionAdmin extends BaseEntity {
     public boolean isOwner() {
         return role == InstitutionAdminRole.OWNER;
     }
+
+    /**
+     * 특정 기관의 관리자인지 확인
+     *
+     * @param institutionId 확인할 기관 ID
+     * @return 해당 기관의 관리자인 경우 true
+     */
+    public boolean belongsToInstitution(Long institutionId) {
+        if (this.institution == null || institutionId == null) {
+            return false;
+        }
+        return this.institution.getId().equals(institutionId);
+    }
+
+    /**
+     * 기관에 소속되어 있는지 확인
+     *
+     * @return 기관에 소속된 경우 true
+     */
+    public boolean hasInstitution() {
+        return this.institution != null;
+    }
+
+
+    /**
+     * 기관 연결
+     * 회원가입 후 기관 등록 시 호출
+     * 양방향 연관관계 설정
+     *
+     * @param institution 연결할 기관
+     */
+    public void linkInstitution(Institution institution) {
+        if (this.institution != null) {
+            throw new IllegalStateException("이미 기관이 연결되어 있습니다.");
+        }
+
+        // 양방향 연관관계 설정
+        this.institution = institution;
+        institution.addAdmin(this);
+
+        // 기관 등록 시 자동으로 OWNER로 역할 변경
+        this.role = InstitutionAdminRole.OWNER;
+    }
 }
