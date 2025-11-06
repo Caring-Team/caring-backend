@@ -35,6 +35,11 @@ public class InstitutionCounsel extends BaseEntity {
     @Column(length = 500)
     private String description;
 
+    // 상태 enum 추가 가능 (예: ACTIVE, INACTIVE)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CounselStatus status = CounselStatus.ACTIVE;
+
     @Builder(access = AccessLevel.PRIVATE)
     public InstitutionCounsel(Institution institution, String title, String description) {
         this.institution = institution;
