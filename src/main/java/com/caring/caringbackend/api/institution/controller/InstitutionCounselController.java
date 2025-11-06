@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
+import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselDetailService;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.global.response.ApiResponse;
@@ -50,6 +51,15 @@ public class InstitutionCounselController {
 
     // 상담 서비스 제공 여부 변경
     @PatchMapping("/{counselId}/status")
+    public ApiResponse<CounselStatus> toggleInstitutionCounselStatus(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @PathVariable Long counselId) {
+        CounselStatus currentStatus = institutionCounselService.toggleInstitutionCounselStatus(
+                adminDetails.getId(), institutionId, counselId);
+
+        return ApiResponse.success(currentStatus);
+    }
 
 
     // 상담 서비스 삭제 (soft delete)

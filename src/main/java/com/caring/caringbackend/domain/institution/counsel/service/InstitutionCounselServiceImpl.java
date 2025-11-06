@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.institution.counsel.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
+import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselDetailRepository;
@@ -66,6 +67,20 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         return counsels.stream()
                 .map(InstitutionCounselResponseDto::from)
                 .toList();
+    }
+
+    @Override
+    public CounselStatus toggleInstitutionCounselStatus(Long adminId, Long institutionId, Long counselId) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(institutionId, admin);
+
+        InstitutionCounsel counsel = findInstitutionCounselByID(counselId);
+        return counsel.toggleStatus();
+    }
+
+    private InstitutionCounsel findInstitutionCounselByID(Long counselId) {
+        return institutionCounselRepository.findById(counselId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUNSEL_NOT_FOUND));
     }
 
     /**

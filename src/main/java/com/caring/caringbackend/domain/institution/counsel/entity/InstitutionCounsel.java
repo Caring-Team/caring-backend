@@ -58,5 +58,18 @@ public class InstitutionCounsel extends BaseEntity {
         return counsel;
     }
 
+    public CounselStatus toggleStatus() {
+        if (status == CounselStatus.ACTIVE) {
+            status = CounselStatus.INACTIVE;
+            return status;
+        }
+
+        if (status == CounselStatus.INACTIVE) {
+            status = CounselStatus.ACTIVE;
+            return status;
+        }
+        return status;
+    }
+
     // TODO: 필요한 도메인 로직 작성
 }
