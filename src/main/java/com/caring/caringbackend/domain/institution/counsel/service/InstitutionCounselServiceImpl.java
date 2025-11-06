@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.counsel.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselDetailRepository;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -39,26 +41,31 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
      */
     @Override
     public void createInstitutionCounsel(Long adminId, Long institutionId, InstitutionCounselCreateRequestDto requestDto) {
-        // 1. 권한 검증
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validate(institutionId, admin);
 
-        // 2. 기관 조회
         Institution institution = findInstitutionById(institutionId);
 
-        // 3. 상담 서비스 생성
         InstitutionCounsel counsel = InstitutionCounsel.createInstitutionCounsel(
                 institution,
                 requestDto.getTitle(),
                 requestDto.getDescription()
         );
 
-        // 4. 저장
         institutionCounselRepository.save(counsel);
 
-        // ✅ Detail은 생성하지 않음 (Lazy Loading 방식)
+        // Detail은 생성하지 않음 (Lazy Loading 방식)
         log.info("상담 서비스 등록 완료: institutionId={}, counselId={}, title={}",
                  institutionId, counsel.getId(), counsel.getTitle());
+    }
+
+    @Override
+    public List<InstitutionCounselResponseDto> getInstitutionCounsels(Long institutionId) {
+        List<InstitutionCounsel> counsels = institutionCounselRepository.findByInstitutionId(institutionId);
+
+        return counsels.stream()
+                .map(InstitutionCounselResponseDto::from)
+                .toList();
     }
 
     /**
