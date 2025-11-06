@@ -68,6 +68,9 @@ public enum ErrorCode {
     INVALID_CARE_STATUS(HttpStatus.BAD_REQUEST, "CARE-003", "유효하지 않은 케어 상태입니다"),
     CAREGIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-004", "요양보호사를 찾을 수 없습니다"),
 
+    // 💬 Counsel Domain Errors (COUNSEL-xxx)
+    COUNSEL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-001", "상담 서비스를 찾을 수 없습니다"),
+
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-002", "파일 업로드에 실패했습니다"),
