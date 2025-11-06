@@ -12,11 +12,14 @@ import com.caring.caringbackend.api.auth.dto.request.user.local.UserLocalLoginRe
 import com.caring.caringbackend.api.auth.dto.request.user.local.UserLocalRegisterRequest;
 import com.caring.caringbackend.api.auth.dto.request.user.oauth.UserOAuth2RegisterRequest;
 import com.caring.caringbackend.api.auth.dto.request.VerifyPhoneRequest;
+import com.caring.caringbackend.api.auth.dto.response.InstitutionAdminMeResponse;
+import com.caring.caringbackend.api.auth.dto.response.InstitutionAdminMeResponse.InstitutionAdminMeResponseBuilder;
 import com.caring.caringbackend.api.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderTokenResponse;
 import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.entity.TemporaryUserInfo;
 import com.caring.caringbackend.domain.auth.repository.TemporaryUserInfoRepository;
+import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdminRole;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
@@ -28,8 +31,10 @@ import com.caring.caringbackend.domain.user.guardian.repository.AuthCredentialRe
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
+import com.caring.caringbackend.global.exception.MemberNotFoundException;
 import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.security.JwtUtils;
+import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryInstitutionAdminDetails;
 import com.caring.caringbackend.global.security.details.TemporaryUserDetails;
 import com.caring.caringbackend.global.security.details.MemberDetails;
@@ -423,15 +428,33 @@ public class AuthService {
     }
 
     public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
-        RefreshTokenPayloadDto refreshTokenPayloadDto = tokenService.decodeRefreshToken(tokenRefreshRequest);
+        if (tokenRefreshRequest.getRequestToken() == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
 
+        RefreshTokenPayloadDto refreshTokenPayloadDto = tokenService.decodeRefreshToken(tokenRefreshRequest);
         InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(refreshTokenPayloadDto.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(MemberNotFoundException::new);
 
         GenerateTokenDto generateTokenDto = GenerateTokenDto.builder()
                 .id(institutionAdmin.getId())
                 .role(institutionAdmin.getRole().getKey())
                 .build();
         return tokenService.regenerateAccessToken(generateTokenDto);
+    }
+
+    public InstitutionAdminMeResponse getInstitutionAdminInformation(InstitutionAdminDetails institutionAdminDetails) {
+        InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(institutionAdminDetails.getId())
+                .orElseThrow(MemberNotFoundException::new);
+
+        Institution institution = institutionAdmin.getInstitution();
+        InstitutionAdminMeResponseBuilder builder = InstitutionAdminMeResponse.builder()
+                .name(institutionAdmin.getName())
+                .role(institutionAdmin.getRole().name());
+        if (institution != null) {
+            builder.institutionId(institution.getId())
+                    .institutionName(institution.getName());
+        }
+        return builder.build();
     }
 }
