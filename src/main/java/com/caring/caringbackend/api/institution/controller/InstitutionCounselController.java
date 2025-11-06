@@ -27,6 +27,7 @@ public class InstitutionCounselController {
 
     // 기관 상담 서비스 등록
     @PostMapping
+    @Operation(summary = "기관 상담 서비스 등록")
     public ApiResponse<Void> createInstitutionCounsel(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId,
@@ -37,6 +38,7 @@ public class InstitutionCounselController {
 
     // 기관 상담 서비스 목록 조회
     @GetMapping
+    @Operation(summary = "기관 상담 서비스 목록 조회")
     public ApiResponse<List<InstitutionCounselResponseDto>> getInstitutionCounsels(
             @PathVariable Long institutionId) {
         List<InstitutionCounselResponseDto> responseDto = institutionCounselService.getInstitutionCounsels(institutionId);
@@ -63,6 +65,7 @@ public class InstitutionCounselController {
 
     // 상담 서비스 제공 여부 변경
     @PatchMapping("/{counselId}/status")
+    @Operation(summary = "상담 서비스 제공 여부 토글")
     public ApiResponse<CounselStatus> toggleInstitutionCounselStatus(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId,
@@ -76,6 +79,7 @@ public class InstitutionCounselController {
 
     // 상담 서비스 삭제 (soft delete)
     @DeleteMapping("/{counselId}")
+    @Operation(summary = "상담 서비스 삭제 (soft delete)")
     public ApiResponse<Void> deleteInstitutionCounsel(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId,
