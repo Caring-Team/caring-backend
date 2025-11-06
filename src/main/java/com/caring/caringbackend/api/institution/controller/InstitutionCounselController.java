@@ -1,18 +1,20 @@
 package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
-import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselDetailService;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,6 @@ import java.util.List;
 public class InstitutionCounselController {
 
     private final InstitutionCounselService institutionCounselService;
-    private final InstitutionCounselDetailService institutionCounselDetailService;
 
     // 기관 상담 서비스 등록
     @PostMapping
@@ -44,6 +45,17 @@ public class InstitutionCounselController {
 
 
     // 기관 상담 서비스 상세 조회 -> 상담 예약 가능 시간 데이터 중요
+    // 상담을 통해 세부 정보를 누를때 detail 동적 생성
+    @GetMapping("/{counselId}")
+    @Operation(summary = "상담 예약 가능 시간 조회")
+    public ApiResponse<InstitutionCounselDetailResponseDto> getInstitutionCounselDetail(
+            @PathVariable Long institutionId,
+            @PathVariable Long counselId,
+            @RequestParam("date") LocalDate date
+    ) {
+        InstitutionCounselDetailResponseDto responseDto = institutionCounselService.getOrCreateCounselDetail(counselId, date);
+        return ApiResponse.success(responseDto);
+    }
 
 
     // 상담 서비스 정보 수정

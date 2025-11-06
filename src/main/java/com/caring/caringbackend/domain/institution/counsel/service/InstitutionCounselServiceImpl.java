@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.counsel.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
@@ -34,11 +35,8 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
 
     /**
      * 기관 상담 서비스 등록
-     *
-     * Note: InstitutionCounselDetail(예약 가능 시간)은 미리 생성하지 않음
+     * InstitutionCounselDetail 생성하지 않음
      * - 사용자가 예약 가능 날짜 조회 시 동적으로 생성 (Lazy Loading)
-     * - 네이버 예약 시스템과 동일한 방식
-     * - 스토리지 효율적, 사용하지 않는 날짜는 DB에 저장 안 됨
      */
     @Override
     public void createInstitutionCounsel(Long adminId, Long institutionId, InstitutionCounselCreateRequestDto requestDto) {
@@ -54,10 +52,6 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         );
 
         institutionCounselRepository.save(counsel);
-
-        // Detail은 생성하지 않음 (Lazy Loading 방식)
-        log.info("상담 서비스 등록 완료: institutionId={}, counselId={}, title={}",
-                 institutionId, counsel.getId(), counsel.getTitle());
     }
 
     @Override
@@ -87,65 +81,62 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         counsel.delete();
     }
 
-    private InstitutionCounsel findInstitutionCounselById(Long counselId) {
-        return institutionCounselRepository.findById(counselId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COUNSEL_NOT_FOUND));
-    }
-
     /**
      * 예약 가능 시간 조회 (Lazy Loading)
      * Detail이 없으면 자동 생성
      *
      * @param counselId 상담 서비스 ID
-     * @param date 조회할 날짜
+     * @param date      조회할 날짜
      * @return 해당 날짜의 예약 가능 시간 Detail
      */
-    @Transactional
-    public InstitutionCounselDetail getOrCreateCounselDetail(Long counselId, LocalDate date) {
-        return counselDetailRepository
+    @Override
+    public InstitutionCounselDetailResponseDto getOrCreateCounselDetail(Long counselId, LocalDate date) {
+        InstitutionCounselDetail counselDetail = counselDetailRepository
                 .findByCounselIdAndServiceDate(counselId, date)
-                .orElseGet(() -> {
-                    log.info("예약 가능 시간 Detail 자동 생성: counselId={}, date={}", counselId, date);
+                .orElseGet(() -> createNewCounselDetail(counselId, date));
 
-                    InstitutionCounsel counsel = institutionCounselRepository
-                            .findById(counselId)
-                            .orElseThrow(() -> new BusinessException(ErrorCode.COUNSEL_NOT_FOUND));
-
-                    // 초기 상태: 모든 시간대 예약 가능 (48비트 모두 1)
-                    // 0시~23시 30분 단위 = 48슬롯
-                    long allAvailable = 0xFFFFFFFFFFFFL; // 48비트 모두 1
-
-                    InstitutionCounselDetail detail = InstitutionCounselDetail.create(
-                            counsel, date, allAvailable
-                    );
-
-                    return counselDetailRepository.save(detail);
-                });
+        return InstitutionCounselDetailResponseDto.from(counselDetail);
     }
 
     /**
-     * 특정 시간대 예약 처리
-     * 비트마스크에서 해당 시간 비트를 0으로 설정
+     * 새로운 상담 예약 가능 시간 Detail 생성
+     * 초기 상태: 모든 시간대 예약 가능 (48비트 모두 1)
+     *
+     * @param counselId 상담 서비스 ID
+     * @param date      서비스 날짜
+     * @return 생성된 CounselDetail
      */
-    @Transactional
-    public void reserveTimeSlot(Long counselId, LocalDate date, int slotIndex) {
-        InstitutionCounselDetail detail = getOrCreateCounselDetail(counselId, date);
+    private InstitutionCounselDetail createNewCounselDetail(Long counselId, LocalDate date) {
+        InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        // 0시~23시 30분 단위 = 48슬롯, 모든 시간대 예약 가능
+        Long allAvailable = initializeAllAvailableTimeSlots();
+        InstitutionCounselDetail detail = InstitutionCounselDetail.create(
+                counsel, date, allAvailable);
 
-        // 해당 슬롯 비트를 0으로 설정 (예약됨)
-        long currentBitmask = detail.getTimeSlotsBitmask();
-        long updatedBitmask = currentBitmask & ~(1L << slotIndex);
+        return counselDetailRepository.save(detail);
+    }
 
-        detail.updateTimeSlotsBitmask(updatedBitmask);
+    /**
+     * 모든 시간대를 예약 가능 상태로 초기화
+     * 48비트 모두 1로 설정 (0시~23시 30분 단위)
+     *
+     * @return 초기 비트마스크 값
+     */
+    private Long initializeAllAvailableTimeSlots() {
+        return 0xFFFFFFFFFFFFL; // 48비트 모두 1
+    }
 
-        log.info("시간대 예약 완료: counselId={}, date={}, slot={}", counselId, date, slotIndex);
+    private InstitutionCounsel findInstitutionCounselById(Long counselId) {
+        return institutionCounselRepository.findById(counselId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUNSEL_NOT_FOUND));
     }
 
     private void validate(Long institutionId, InstitutionAdmin admin) {
-        if(!admin.hasInstitution()) {
+        if (!admin.hasInstitution()) {
             throw new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION);
         }
 
-        if(!admin.belongsToInstitution(institutionId)) {
+        if (!admin.belongsToInstitution(institutionId)) {
             throw new BusinessException(ErrorCode.ADMIN_INSTITUTION_MISMATCH);
         }
     }

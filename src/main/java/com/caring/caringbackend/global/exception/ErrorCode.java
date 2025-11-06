@@ -71,6 +71,9 @@ public enum ErrorCode {
     // 💬 Counsel Domain Errors (COUNSEL-xxx)
     COUNSEL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-001", "상담 서비스를 찾을 수 없습니다"),
     COUNSEL_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "COUNSEL-002", "이미 삭제된 상담 서비스입니다"),
+    INVALID_TIME_SLOT(HttpStatus.BAD_REQUEST, "COUNSEL-003", "유효하지 않은 시간대입니다 (0~47 범위)"),
+    TIME_SLOT_ALREADY_RESERVED(HttpStatus.CONFLICT, "COUNSEL-004", "이미 예약된 시간대입니다"),
+    CONCURRENT_RESERVATION_CONFLICT(HttpStatus.CONFLICT, "COUNSEL-005", "동시 예약 충돌이 발생했습니다. 다시 시도해주세요"),
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
