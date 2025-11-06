@@ -12,4 +12,6 @@ public interface InstitutionCounselService {
     List<InstitutionCounselResponseDto> getInstitutionCounsels(Long institutionId);
 
     CounselStatus toggleInstitutionCounselStatus(Long adminId, Long institutionId, Long counselId);
+
+    void deleteCounselByCouncelId(Long adminId, Long institutionId, Long counselId);
 }

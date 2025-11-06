@@ -74,11 +74,20 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validate(institutionId, admin);
 
-        InstitutionCounsel counsel = findInstitutionCounselByID(counselId);
+        InstitutionCounsel counsel = findInstitutionCounselById(counselId);
         return counsel.toggleStatus();
     }
 
-    private InstitutionCounsel findInstitutionCounselByID(Long counselId) {
+    @Override
+    public void deleteCounselByCouncelId(Long adminId, Long institutionId, Long counselId) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(institutionId, admin);
+
+        InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        counsel.delete();
+    }
+
+    private InstitutionCounsel findInstitutionCounselById(Long counselId) {
         return institutionCounselRepository.findById(counselId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUNSEL_NOT_FOUND));
     }

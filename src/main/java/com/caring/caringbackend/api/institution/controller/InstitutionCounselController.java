@@ -46,7 +46,7 @@ public class InstitutionCounselController {
     // 기관 상담 서비스 상세 조회 -> 상담 예약 가능 시간 데이터 중요
 
 
-    // 상담 서비스 수정
+    // 상담 서비스 정보 수정
 
 
     // 상담 서비스 제공 여부 변경
@@ -63,5 +63,12 @@ public class InstitutionCounselController {
 
 
     // 상담 서비스 삭제 (soft delete)
-
+    @DeleteMapping("/{counselId}")
+    public ApiResponse<Void> deleteInstitutionCounsel(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @PathVariable Long counselId) {
+        institutionCounselService.deleteCounselByCouncelId(adminDetails.getId(), institutionId, counselId);
+        return ApiResponse.success();
+    }
 }

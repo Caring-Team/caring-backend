@@ -70,6 +70,7 @@ public enum ErrorCode {
 
     // 💬 Counsel Domain Errors (COUNSEL-xxx)
     COUNSEL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-001", "상담 서비스를 찾을 수 없습니다"),
+    COUNSEL_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "COUNSEL-002", "이미 삭제된 상담 서비스입니다"),
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),

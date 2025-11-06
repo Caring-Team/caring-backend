@@ -1,6 +1,8 @@
 package com.caring.caringbackend.domain.institution.counsel.entity;
 
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -71,5 +73,14 @@ public class InstitutionCounsel extends BaseEntity {
         return status;
     }
 
-    // TODO: 필요한 도메인 로직 작성
+    // 상담 서비스 soft delete
+    public void delete() {
+        this.status = CounselStatus.INACTIVE;
+
+        if(this.isDeleted()) {
+            throw new BusinessException(ErrorCode.COUNSEL_ALREADY_DELETED);
+        }
+
+        this.softDelete();
+    }
 }
