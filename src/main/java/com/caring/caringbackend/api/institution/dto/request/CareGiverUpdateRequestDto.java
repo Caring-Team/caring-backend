@@ -22,10 +22,8 @@ public record CareGiverUpdateRequestDto(
 
         Gender gender,
 
-        @Past(message = "생년월일은 과거 날짜여야 합니다")
         LocalDate birthDate,
 
         String experienceDetails
-) {
-}
+) { }
 

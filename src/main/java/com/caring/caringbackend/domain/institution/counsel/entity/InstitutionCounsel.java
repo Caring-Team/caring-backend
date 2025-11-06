@@ -83,4 +83,14 @@ public class InstitutionCounsel extends BaseEntity {
 
         this.softDelete();
     }
+
+    public void updateInfo(String title, String description) {
+        // null이 아닌 값만 업데이트
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+    }
 }

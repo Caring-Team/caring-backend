@@ -1,6 +1,7 @@
 package com.caring.caringbackend.api.institution.controller;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
@@ -61,7 +62,19 @@ public class InstitutionCounselController {
 
 
     // 상담 서비스 정보 수정
+    @PatchMapping("/{counselId}")
+    @Operation(summary = "상담 서비스 정보 수정")
+    public ApiResponse<Void> updateInstitutionCounsel(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @PathVariable Long counselId,
+            @Valid @RequestBody InstitutionCounselUpdateRequestDto requestDto) {
 
+        institutionCounselService.updateInstitutionCounsel(
+                adminDetails.getId(), institutionId, counselId, requestDto);
+
+        return ApiResponse.success();
+    }
 
     // 상담 서비스 제공 여부 변경
     @PatchMapping("/{counselId}/status")

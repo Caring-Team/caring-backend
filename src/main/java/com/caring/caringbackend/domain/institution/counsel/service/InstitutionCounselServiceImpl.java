@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.counsel.service;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
@@ -96,6 +97,16 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
                 .orElseGet(() -> createNewCounselDetail(counselId, date));
 
         return InstitutionCounselDetailResponseDto.from(counselDetail);
+    }
+
+    @Override
+    public void updateInstitutionCounsel(Long adminId, Long institutionId, Long counselId,
+                                         InstitutionCounselUpdateRequestDto requestDto) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(institutionId, admin);
+
+        InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        counsel.updateInfo(requestDto.getTitle(), requestDto.getDescription());
     }
 
     /**
