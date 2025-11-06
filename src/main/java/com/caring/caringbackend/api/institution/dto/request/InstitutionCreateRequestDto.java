@@ -29,7 +29,7 @@ public class InstitutionCreateRequestDto {
 
     // 연락처
     @NotBlank(message = "연락처는 필수입니다")
-    @Pattern(regexp = "^[0-9-]+$", message = "전화번호는 숫자와 하이픈만 입력 가능합니다")
+    @Pattern(regexp = "^\\+?[0-9\\-]{7,15}$", message = "유효한 연락처 형식이 아닙니다")
     private String phoneNumber;
 
     // 주소 정보
@@ -43,6 +43,7 @@ public class InstitutionCreateRequestDto {
 
     // 병상수
     @Min(value = 0, message = "병상 수는 0 이상이어야 합니다")
+    @Max(value = 10000, message = "병상 수는 10000 이하이어야 합니다")
     private Integer bedCount;
 
     // 입소 가능 여부
