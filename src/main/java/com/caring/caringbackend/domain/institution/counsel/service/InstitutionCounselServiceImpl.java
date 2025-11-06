@@ -118,9 +118,11 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
      * @return 생성된 CounselDetail
      */
     private InstitutionCounselDetail createNewCounselDetail(Long counselId, LocalDate date) {
+        log.info("예약 가능 시간 Detail 자동 생성: counselId={}, date={}", counselId, date);
+
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
-        // 0시~23시 30분 단위 = 48슬롯, 모든 시간대 예약 가능
-        Long allAvailable = initializeAllAvailableTimeSlots();
+        // 0시~23시 30분 단위 = 48슬롯, 모든 시간대 예약 가능 (16진수 문자열)
+        String allAvailable = initializeAllAvailableTimeSlots();
         InstitutionCounselDetail detail = InstitutionCounselDetail.create(
                 counsel, date, allAvailable);
 
@@ -131,10 +133,10 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
      * 모든 시간대를 예약 가능 상태로 초기화
      * 48비트 모두 1로 설정 (0시~23시 30분 단위)
      *
-     * @return 초기 비트마스크 값
+     * @return 초기 비트마스크 값 (이진수 문자열 48개의 1)
      */
-    private Long initializeAllAvailableTimeSlots() {
-        return 0xFFFFFFFFFFFFL; // 48비트 모두 1
+    private String initializeAllAvailableTimeSlots() {
+        return "1".repeat(48);
     }
 
     private InstitutionCounsel findInstitutionCounselById(Long counselId) {
