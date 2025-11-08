@@ -1,9 +1,8 @@
 package com.caring.caringbackend.domain.reservation.service;
 
-import com.caring.caringbackend.api.reservation.dto.MemberReservationCreateRequestDto;
+import com.caring.caringbackend.api.reservation.dto.request.MemberReservationCreateRequestDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselDetailRepository;
-import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselRepository;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;

@@ -1,6 +1,6 @@
 package com.caring.caringbackend.api.reservation.controller;
 
-import com.caring.caringbackend.api.reservation.dto.MemberReservationCreateRequestDto;
+import com.caring.caringbackend.api.reservation.dto.request.MemberReservationCreateRequestDto;
 import com.caring.caringbackend.domain.reservation.service.MemberReservationService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;

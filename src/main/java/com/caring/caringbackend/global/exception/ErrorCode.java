@@ -98,7 +98,9 @@ public enum ErrorCode {
     ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
 
     // 📅 Reservation Errors (RES-xxx)
-    RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다");
+    RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다"),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RES-002", "예약을 찾을 수 없습니다"),
+    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다");
 
 
     private final HttpStatus httpStatus;
