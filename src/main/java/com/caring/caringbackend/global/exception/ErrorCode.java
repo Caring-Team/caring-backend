@@ -74,6 +74,7 @@ public enum ErrorCode {
     INVALID_TIME_SLOT(HttpStatus.BAD_REQUEST, "COUNSEL-003", "유효하지 않은 시간대입니다 (0~47 범위)"),
     TIME_SLOT_ALREADY_RESERVED(HttpStatus.CONFLICT, "COUNSEL-004", "이미 예약된 시간대입니다"),
     CONCURRENT_RESERVATION_CONFLICT(HttpStatus.CONFLICT, "COUNSEL-005", "동시 예약 충돌이 발생했습니다. 다시 시도해주세요"),
+    INSTITUTION_COUNSEL_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-006", "기관 상담 상세 정보를 찾을 수 없습니다"),
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
@@ -94,7 +95,11 @@ public enum ErrorCode {
     ELDERLY_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "ELDERLY-001", "어르신 프로필을 찾을 수 없습니다"),
     ELDERLY_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ELDERLY-002", "해당 어르신 프로필에 접근할 수 없습니다"),
     ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다"),
-    ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다");
+    ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
+
+    // 📅 Reservation Errors (RES-xxx)
+    RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다");
+
 
     private final HttpStatus httpStatus;
     private final String code;
