@@ -68,3 +68,20 @@ public class InstitutionReservationController {
         return ApiResponse.success(response);
     }
 
+    @PatchMapping("/{reservationId}/status")
+    @Operation(summary = "내 기관 예약 상태 변경")
+    public ApiResponse<InstitutionReservationDetailResponseDto> updateMyInstitutionReservationStatus(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+
+            @Parameter(description = "예약 ID", example = "1")
+            @PathVariable Long reservationId,
+
+            @Parameter(description = "변경할 상태", example = "COMPLETED")
+            @RequestParam ReservationStatus status
+    ) {
+        InstitutionReservationDetailResponseDto response = institutionReservationService
+                .updateMyInstitutionReservationStatus(adminDetails.getId(), reservationId, status);
+
+        return ApiResponse.success(response);
+    }
+}

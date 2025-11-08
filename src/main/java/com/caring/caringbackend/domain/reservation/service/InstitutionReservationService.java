@@ -43,3 +43,17 @@ public interface InstitutionReservationService {
             Long reservationId
     );
 
+    /**
+     * 내 기관 예약 상태 변경
+     *
+     * @param adminId 기관 관리자 ID
+     * @param reservationId 예약 ID
+     * @param status 변경할 상태
+     * @return 변경된 예약 정보
+     */
+    InstitutionReservationDetailResponseDto updateMyInstitutionReservationStatus(
+            Long adminId,
+            Long reservationId,
+            ReservationStatus status
+    );
+}

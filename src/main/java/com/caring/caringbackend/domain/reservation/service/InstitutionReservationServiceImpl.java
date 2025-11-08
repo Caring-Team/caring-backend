@@ -63,6 +63,23 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
         return InstitutionReservationDetailResponseDto.from(reservation);
     }
 
+    @Override
+    @Transactional
+    public InstitutionReservationDetailResponseDto updateMyInstitutionReservationStatus(
+            Long adminId,
+            Long reservationId,
+            ReservationStatus status) {
+
+        // adminId로 institutionId 조회
+        Long institutionId = getInstitutionIdByAdminId(adminId);
+        Reservation reservation = getReservation(reservationId);
+
+        // 기관 소유 확인
+        validateInstitutionOwnership(reservation, institutionId);
+        reservation.updateStatus(status);
+
+        return InstitutionReservationDetailResponseDto.from(reservation);
+    }
 
     /**
      * adminId로 institutionId 가져오기

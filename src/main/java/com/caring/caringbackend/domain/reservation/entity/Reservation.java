@@ -1,6 +1,5 @@
 package com.caring.caringbackend.domain.reservation.entity;
 
-import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
@@ -11,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
@@ -84,5 +82,12 @@ public class Reservation extends BaseTimeEntity {
                 .elderlyProfile(elderlyProfile)
                 .reservationTime(reservationTime)
                 .build();
+    }
+
+    /**
+     * 예약 상태 변경
+     */
+    public void updateStatus(ReservationStatus newStatus) {
+        this.status = newStatus;
     }
 }
