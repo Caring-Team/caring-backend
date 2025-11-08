@@ -1,3 +1,4 @@
+package com.caring.caringbackend.domain.reservation.service;
 
 import com.caring.caringbackend.api.reservation.dto.response.InstitutionReservationDetailResponseDto;
 import com.caring.caringbackend.api.reservation.dto.response.InstitutionReservationResponseDto;
@@ -29,3 +30,16 @@ public interface InstitutionReservationService {
             LocalDate endDate,
             Pageable pageable
     );
+
+    /**
+     * 내 기관 예약 상세 조회
+     *
+     * @param adminId 기관 관리자 ID
+     * @param reservationId 예약 ID
+     * @return 예약 상세 정보
+     */
+    InstitutionReservationDetailResponseDto getMyInstitutionReservationDetail(
+            Long adminId,
+            Long reservationId
+    );
+

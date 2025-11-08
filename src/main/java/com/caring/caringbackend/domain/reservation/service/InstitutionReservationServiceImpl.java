@@ -1,3 +1,4 @@
+package com.caring.caringbackend.domain.reservation.service;
 
 import com.caring.caringbackend.api.reservation.dto.response.InstitutionReservationDetailResponseDto;
 import com.caring.caringbackend.api.reservation.dto.response.InstitutionReservationResponseDto;
@@ -46,3 +47,49 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
 
         return reservations.map(InstitutionReservationResponseDto::from);
     }
+
+    @Override
+    public InstitutionReservationDetailResponseDto getMyInstitutionReservationDetail(
+            Long adminId,
+            Long reservationId) {
+
+        // adminId로 institutionId 조회
+        Long institutionId = getInstitutionIdByAdminId(adminId);
+        Reservation reservation = getReservation(reservationId);
+
+        // 기관 소유 확인
+        validateInstitutionOwnership(reservation, institutionId);
+
+        return InstitutionReservationDetailResponseDto.from(reservation);
+    }
+
+
+    /**
+     * adminId로 institutionId 가져오기
+     */
+    private Long getInstitutionIdByAdminId(Long adminId) {
+        InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
+
+        if (!admin.hasInstitution()) {
+            throw new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION);
+        }
+
+        return admin.getInstitution().getId();
+    }
+
+    private Reservation getReservation(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    /**
+     * 기관 소유 확인
+     */
+    private void validateInstitutionOwnership(Reservation reservation, Long institutionId) {
+        if (!reservation.getCounselDetail().getInstitutionCounsel().getInstitution().getId().equals(institutionId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
+        }
+    }
+}
+
