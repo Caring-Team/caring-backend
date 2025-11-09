@@ -56,6 +56,11 @@ public class ElderlyProfile extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ActivityLevel activityLevel;
 
+    // 장기요양등급
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private LongTermCareGrade longTermCareGrade;
+
     // 인지 수준
     @Enumerated(EnumType.STRING)
     private CognitiveLevel cognitiveLevel;
@@ -76,6 +81,7 @@ public class ElderlyProfile extends BaseEntity {
     public ElderlyProfile(Member member, String name, Gender gender, LocalDate birthDate,
                           BloodType bloodType, String phoneNumber,
                           ActivityLevel activityLevel, CognitiveLevel cognitiveLevel,
+                          LongTermCareGrade longTermCareGrade,
                           String notes, Address address, GeoPoint location) {
         this.member = member;
         this.name = name;
@@ -85,6 +91,7 @@ public class ElderlyProfile extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
         this.cognitiveLevel = cognitiveLevel;
+        this.longTermCareGrade = longTermCareGrade;
         this.notes = notes;
         this.address = address;
         this.location = location;
@@ -96,6 +103,7 @@ public class ElderlyProfile extends BaseEntity {
     public void updateInfo(String name, Gender gender, LocalDate birthDate,
                            BloodType bloodType, String phoneNumber,
                            ActivityLevel activityLevel, CognitiveLevel cognitiveLevel,
+                           LongTermCareGrade longTermCareGrade,
                            String notes, Address address, GeoPoint location) {
         this.name = name;
         this.gender = gender;
@@ -104,6 +112,7 @@ public class ElderlyProfile extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
         this.cognitiveLevel = cognitiveLevel;
+        this.longTermCareGrade = longTermCareGrade;
         this.notes = notes;
         this.address = address;
         this.location = location;

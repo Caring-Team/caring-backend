@@ -3,6 +3,7 @@ package com.caring.caringbackend.api.user.dto.elderly.request;
 import com.caring.caringbackend.domain.user.elderly.entity.ActivityLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.BloodType;
 import com.caring.caringbackend.domain.user.elderly.entity.CognitiveLevel;
+import com.caring.caringbackend.domain.user.elderly.entity.LongTermCareGrade;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
 import jakarta.validation.Valid;
@@ -65,6 +66,14 @@ public class ElderlyProfileUpdateRequest {
      * 🧠 인지 수준
      */
     private CognitiveLevel cognitiveLevel;
+
+    /**
+     * 🏥 장기요양등급
+     * <p>
+     * 등급이 있으면 인지수준, 활동레벨은 불필요합니다.
+     * 등급이 없으면(NONE) 인지수준, 활동레벨이 필수입니다.
+     */
+    private LongTermCareGrade longTermCareGrade;
 
     /**
      * 📝 특이사항
