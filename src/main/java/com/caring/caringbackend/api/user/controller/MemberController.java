@@ -4,6 +4,7 @@ import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;
@@ -165,12 +166,23 @@ public class MemberController {
      * 내 계정 삭제 (토큰 기반)
      */
     @DeleteMapping("/me")
-    @Operation(summary = "내 계정 삭제", description = "인증된 사용자의 회원 정보를 소프트 삭제합니다.")
+    @Operation(summary = "내 계정 삭제", description = "인증된 사용자가 자신의 계정을 소프트 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteMe(
             @AuthenticationPrincipal MemberDetails memberDetails) {
 
         memberService.deleteMember(memberDetails.getId());
         return ResponseEntity.ok(ApiResponse.success());
     }
-}
 
+    /**
+     * 내 활동 통계 조회
+     */
+    @GetMapping("/me/statistics")
+    @Operation(summary = "내 활동 통계 조회", description = "인증된 사용자의 활동 통계를 조회합니다. (등록된 어르신 수, 작성한 리뷰 수, 가입일)")
+    public ResponseEntity<ApiResponse<MemberStatisticsResponse>> getMyStatistics(
+            @AuthenticationPrincipal MemberDetails memberDetails) {
+
+        MemberStatisticsResponse statistics = memberService.getStatistics(memberDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("활동 통계 조회 성공", statistics));
+    }
+}

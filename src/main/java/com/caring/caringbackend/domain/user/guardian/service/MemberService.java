@@ -4,6 +4,9 @@ import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.domain.review.repository.ReviewRepository;
+import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.MemberNotFoundException;
@@ -34,6 +37,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final GeocodingService geocodingService;
+    private final ElderlyProfileRepository elderlyProfileRepository;
+    private final ReviewRepository reviewRepository;
 
     /**
      * 회원 단건 조회
@@ -102,6 +107,30 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         member.softDelete();
+    }
+
+    /**
+     * 회원 통계 조회
+     * 
+     * 등록된 어르신 수, 작성한 리뷰 수, 가입일을 조회합니다.
+     */
+    public MemberStatisticsResponse getStatistics(Long memberId) {
+        // 1. 회원 존재 확인
+        Member member = memberRepository.findByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        // 2. 등록된 어르신 수 조회 (삭제되지 않은 프로필만)
+        long elderlyCount = elderlyProfileRepository.countByMemberIdAndDeletedFalse(memberId);
+
+        // 3. 작성한 리뷰 수 조회 (삭제되지 않은 리뷰만)
+        long reviewCount = reviewRepository.countByMemberIdAndDeletedFalse(memberId);
+
+        // 4. 통계 응답 생성
+        return MemberStatisticsResponse.builder()
+                .elderlyCount(elderlyCount)
+                .reviewCount(reviewCount)
+                .joinedAt(member.getCreatedAt())
+                .build();
     }
 
     /**
