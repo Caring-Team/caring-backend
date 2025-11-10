@@ -3,6 +3,7 @@ package com.caring.caringbackend.api.user.controller;
 import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
@@ -157,9 +158,8 @@ public class MemberController {
         
         memberService.deleteMember(memberId);
         
-        return ResponseEntity.ok(
-            ApiResponse.success()
-        );
+        return ResponseEntity.ok(ApiResponse.success("회원 삭제 성공", null));
+
     }
 
     /**
@@ -171,7 +171,7 @@ public class MemberController {
             @AuthenticationPrincipal MemberDetails memberDetails) {
 
         memberService.deleteMember(memberDetails.getId());
-        return ResponseEntity.ok(ApiResponse.success());
+        return ResponseEntity.ok(ApiResponse.success("회원 삭제 성공", null));
     }
 
     /**
@@ -184,5 +184,17 @@ public class MemberController {
 
         MemberStatisticsResponse statistics = memberService.getStatistics(memberDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("활동 통계 조회 성공", statistics));
+    }
+
+    /**
+     * 내 마이페이지 데이터 조회
+     */
+    @GetMapping("/me/mypage")
+    @Operation(summary = "마이페이지 조회", description = "인증된 사용자의 마이페이지 통합 데이터를 조회합니다.")
+    public ResponseEntity<ApiResponse<MemberMyPageResponse>> getMyPage(
+            @AuthenticationPrincipal MemberDetails memberDetails) {
+
+        MemberMyPageResponse myPage = memberService.getMyPage(memberDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("마이페이지 조회 성공", myPage));
     }
 }

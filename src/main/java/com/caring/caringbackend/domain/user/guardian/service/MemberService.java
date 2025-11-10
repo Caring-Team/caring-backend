@@ -3,9 +3,12 @@ package com.caring.caringbackend.domain.user.guardian.service;
 import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
+import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.domain.review.entity.Review;
 import com.caring.caringbackend.domain.review.repository.ReviewRepository;
+import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
@@ -119,13 +122,31 @@ public class MemberService {
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        // 2. 등록된 어르신 수 조회 (삭제되지 않은 프로필만)
-        long elderlyCount = elderlyProfileRepository.countByMemberIdAndDeletedFalse(memberId);
+        return buildStatistics(member);
+    }
 
-        // 3. 작성한 리뷰 수 조회 (삭제되지 않은 리뷰만)
-        long reviewCount = reviewRepository.countByMemberIdAndDeletedFalse(memberId);
+    /**
+     * 마이페이지 통합 데이터 조회
+     */
+    public MemberMyPageResponse getMyPage(Long memberId) {
+        Member member = memberRepository.findByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        // 4. 통계 응답 생성
+        MemberStatisticsResponse statistics = buildStatistics(member);
+
+        List<ElderlyProfile> elderlyProfiles =
+                elderlyProfileRepository.findTop3ByMemberIdAndDeletedFalseOrderByCreatedAtDesc(memberId);
+
+        List<Review> recentReviews =
+                reviewRepository.findTop5ByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(memberId);
+
+        return MemberMyPageResponse.of(member, statistics, elderlyProfiles, recentReviews);
+    }
+
+    private MemberStatisticsResponse buildStatistics(Member member) {
+        long elderlyCount = elderlyProfileRepository.countByMemberIdAndDeletedFalse(member.getId());
+        long reviewCount = reviewRepository.countByMemberIdAndDeletedFalse(member.getId());
+
         return MemberStatisticsResponse.builder()
                 .elderlyCount(elderlyCount)
                 .reviewCount(reviewCount)

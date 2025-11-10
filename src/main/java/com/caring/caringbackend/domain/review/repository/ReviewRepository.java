@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,6 +45,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      */
     @EntityGraph(attributePaths = {"member", "institution"})
     Page<Review> findByInstitutionIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long institutionId, Pageable pageable);
+
+    /**
+     * 특정 회원의 최근 리뷰 상위 5개 조회 (삭제되지 않은 리뷰만, 신고되지 않은 리뷰만)
+     * <p>
+     * 마이페이지용으로 사용됩니다.
+     */
+    @EntityGraph(attributePaths = {"institution", "reservation"})
+    List<Review> findTop5ByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long memberId);
 
     /**
      * 예약 ID와 회원 ID로 리뷰 존재 여부 확인 (중복 리뷰 체크용)
