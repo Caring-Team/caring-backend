@@ -4,8 +4,11 @@ import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,10 +46,21 @@ public class Review extends BaseEntity {
     @Column(nullable = false, length = 500)
     private String content;
 
-    // 별점
+    @Min(1)
+    @Max(5)
     @Column(nullable = false)
     private int rating;
-
+    
     // 태그
     // TODO: 태그 도입
+
+    @Builder
+    public Review(Reservation reservation, Member member, Institution institution,
+                  String content, int rating) {
+        this.reservation = reservation;
+        this.member = member;
+        this.institution = institution;
+        this.content = content;
+        this.rating = rating;
+    }
 }
