@@ -50,7 +50,11 @@ public class Review extends BaseEntity {
     @Max(5)
     @Column(nullable = false)
     private int rating;
-    
+
+    // 신고 여부
+    @Column(nullable = false)
+    private boolean reported;
+
     // 태그
     // TODO: 태그 도입
 
@@ -62,6 +66,7 @@ public class Review extends BaseEntity {
         this.institution = institution;
         this.content = content;
         this.rating = rating;
+        this.reported = false;
     }
 
     /**
@@ -73,5 +78,19 @@ public class Review extends BaseEntity {
     public void updateContent(String content, int rating) {
         this.content = content;
         this.rating = rating;
+    }
+
+    /**
+     * 리뷰 신고 표시
+     */
+    public void markReported() {
+        this.reported = true;
+    }
+
+    /**
+     * 리뷰 신고 해제
+     */
+    public void clearReport() {
+        this.reported = false;
     }
 }

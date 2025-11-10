@@ -34,7 +34,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * N+1 문제 방지를 위해 member, institution 연관 관계를 즉시 로딩합니다.
      */
     @EntityGraph(attributePaths = {"member", "institution"})
-    Page<Review> findByMemberIdAndDeletedFalseOrderByCreatedAtDesc(Long memberId, Pageable pageable);
+    Page<Review> findByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long memberId, Pageable pageable);
 
     /**
      * 특정 기관의 리뷰 목록 조회 (삭제되지 않은 리뷰만, 최신순)
@@ -43,7 +43,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * TODO: isReported 필드 추가 후 신고된 리뷰 제외 로직 추가 필요
      */
     @EntityGraph(attributePaths = {"member", "institution"})
-    Page<Review> findByInstitutionIdAndDeletedFalseOrderByCreatedAtDesc(Long institutionId, Pageable pageable);
+    Page<Review> findByInstitutionIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long institutionId, Pageable pageable);
 
     /**
      * 예약 ID와 회원 ID로 리뷰 존재 여부 확인 (중복 리뷰 체크용)

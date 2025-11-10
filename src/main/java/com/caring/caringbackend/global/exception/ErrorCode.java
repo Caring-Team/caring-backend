@@ -92,7 +92,9 @@ public enum ErrorCode {
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-002", "이미 해당 예약에 대한 리뷰를 작성했습니다"),
     REVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN, "REVIEW-003", "해당 리뷰에 접근할 수 없습니다"),
     REVIEW_EDIT_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-004", "리뷰 작성 후 30일 이내에만 수정할 수 있습니다"),
-    REVIEW_CREATE_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-005", "예약 완료 후 90일 이내에만 리뷰를 작성할 수 있습니다");
+    REVIEW_CREATE_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-005", "예약 완료 후 90일 이내에만 리뷰를 작성할 수 있습니다"),
+    REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
+    REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
