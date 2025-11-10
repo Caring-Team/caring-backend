@@ -11,9 +11,9 @@ import java.util.List;
 import org.springframework.lang.Nullable;
 
 /**
- * ⭐ 리뷰 작성 요청 DTO
+ * ⭐ 리뷰 수정 요청 DTO
  * <p>
- * 리뷰 작성 시 필요한 정보를 담는 요청 객체입니다.
+ * 리뷰 수정 시 필요한 정보를 담는 요청 객체입니다.
  *
  * @author caring-team
  * @since 1.0.0
@@ -22,13 +22,7 @@ import org.springframework.lang.Nullable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewCreateRequest {
-
-    /**
-     * 📅 예약 ID (필수)
-     */
-    @NotNull(message = "예약 ID는 필수입니다.")
-    private Long reservationId;
+public class ReviewUpdateRequest {
 
     /**
      * 📝 리뷰 내용 (필수, 10~500자)

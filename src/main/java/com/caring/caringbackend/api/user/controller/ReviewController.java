@@ -73,19 +73,6 @@ public class ReviewController {
         ReviewResponse review = reviewService.getReview(reviewId);
         return ResponseEntity.ok(ApiResponse.success("리뷰 조회 성공", review));
     }
-
-    /**
-     * 특정 기관의 리뷰 목록 조회 (공개)
-     */
-    @GetMapping("/institution/{institutionId}")
-    @Operation(summary = "기관 리뷰 목록 조회", description = "특정 기관에 등록된 리뷰 목록을 조회합니다. (공개)")
-    public ResponseEntity<ApiResponse<ReviewListResponse>> getInstitutionReviews(
-            @PathVariable Long institutionId,
-            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
-
-        ReviewListResponse reviews = reviewService.getInstitutionReviews(institutionId, pageable);
-        return ResponseEntity.ok(ApiResponse.success("기관 리뷰 목록 조회 성공", reviews));
-    }
 }
 
 
