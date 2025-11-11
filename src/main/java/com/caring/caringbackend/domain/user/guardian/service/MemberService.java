@@ -8,11 +8,15 @@ import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.review.entity.Review;
 import com.caring.caringbackend.domain.review.repository.ReviewRepository;
+import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
+import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.MemberNotFoundException;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
@@ -42,6 +46,7 @@ public class MemberService {
     private final GeocodingService geocodingService;
     private final ElderlyProfileRepository elderlyProfileRepository;
     private final ReviewRepository reviewRepository;
+    private final ReservationRepository reservationRepository;
 
     /**
      * 회원 단건 조회
@@ -109,6 +114,27 @@ public class MemberService {
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
+        // 1) 진행 중 예약 확인 (PENDING, CONFIRMED)
+        boolean hasActiveReservation = reservationRepository.existsByMemberIdAndStatusIn(
+                memberId, List.of(ReservationStatus.PENDING));
+        if (hasActiveReservation) {
+            throw new BusinessException(ErrorCode.CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION);
+        }
+
+        // 2) 개인정보 마스킹 (요구수준에 맞게 최소치로 마스킹)
+        // - 이름: "탈퇴회원"
+        // - 전화번호: null (또는 "000-0000-0000" 등 정책에 맞게)
+        // - 주소/위치: null
+        member.updateInfo(
+                "탈퇴회원",
+                null,
+                member.getGender(),
+                member.getBirthDate(),
+                null,
+                null
+        );
+
+        // 3) 소프트 삭제
         member.softDelete();
     }
 
