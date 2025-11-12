@@ -179,9 +179,9 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
     }
 
-    private InstitutionAdmin findInstitutionAdminById(Long institutionId) {
-        return institutionAdminRepository.findById(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+    private InstitutionAdmin findInstitutionAdminById(Long adminId) {
+        return institutionAdminRepository.findById(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
     }
 
     private static void validateCounselOwnership(Long institutionId, InstitutionCounsel counsel) {
