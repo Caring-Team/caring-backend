@@ -1,0 +1,30 @@
+spring:
+    application:
+        name: caring
+    profiles:
+      active: dev
+
+# 🌐 서버 설정
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# 📝 로깅 설정
+logging:
+  level:
+    com.caring.caringbackend: INFO
+    org.springframework.web: DEBUG
+    p6spy: INFO  # P6Spy 로그 레벨
+    com.caring.caringbackend.global.aop: INFO  # AOP 로깅
+
+# Kakao Map API
+kakao:
+  api:
+    key: ${KAKAO_API_KEY}
+
+# P6Spy 설정
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true

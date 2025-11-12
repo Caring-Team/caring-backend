@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.reservation.repository;
 
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +27,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * @param memberId 회원 ID
      * @return 예약
      */
+    @EntityGraph(attributePaths = {"institutionCounsel", "institutionCounsel.institution"})
     Optional<Reservation> findByIdAndMemberId(Long reservationId, Long memberId);
 
     /**

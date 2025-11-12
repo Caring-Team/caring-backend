@@ -24,7 +24,7 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.url", () -> url);
         registry.add("spring.datasource.username", () -> username);
         registry.add("spring.datasource.password", () -> password);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create");
     }
 
     private static String getenvOrDefault(String key, String def) {
