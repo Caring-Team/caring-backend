@@ -30,7 +30,7 @@ public class MemberReservationServiceImpl implements MemberReservationService {
     public void createMemberReservation(Long memberId, MemberReservationCreateRequestDto requestDto) {
         // 기관 상담 ID, 날짜, 예약 시간, erderlyProfile,
         Member member = getMember(memberId);
-        ElderlyProfile elderlyProfile = getElderlyProfile(requestDto);
+        ElderlyProfile elderlyProfile = getElderlyProfile(memberId, requestDto);
         InstitutionCounselDetail counselDetail = getCounselDetail(requestDto);
 
         // 예약이 가능한지 확인
@@ -50,8 +50,8 @@ public class MemberReservationServiceImpl implements MemberReservationService {
         reservationRepository.save(reservation);
     }
 
-    private ElderlyProfile getElderlyProfile(MemberReservationCreateRequestDto requestDto) {
-        return elderlyProfileRepository.findById(requestDto.getElderlyProfileId())
+    private ElderlyProfile getElderlyProfile(Long memberId, MemberReservationCreateRequestDto requestDto) {
+        return elderlyProfileRepository.findByIdAndMemberIdAndDeletedFalse(memberId, requestDto.getElderlyProfileId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ELDERLY_PROFILE_NOT_FOUND));
     }
 
