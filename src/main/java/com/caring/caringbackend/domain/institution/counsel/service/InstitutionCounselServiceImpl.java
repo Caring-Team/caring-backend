@@ -46,6 +46,8 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
 
         Institution institution = findInstitutionById(institutionId);
 
+
+
         InstitutionCounsel counsel = InstitutionCounsel.createInstitutionCounsel(
                 institution,
                 requestDto.getTitle(),
@@ -55,6 +57,9 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         institutionCounselRepository.save(counsel);
     }
 
+    /**
+     * 기관의 상담 서비스 목록 조회
+     */
     @Override
     public List<InstitutionCounselResponseDto> getInstitutionCounsels(Long institutionId) {
         List<InstitutionCounsel> counsels = institutionCounselRepository.findByInstitutionId(institutionId);
@@ -64,21 +69,30 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
                 .toList();
     }
 
+    /**
+     * 기관 상담 서비스 활성화/비활성화 토글
+     */
     @Override
     public CounselStatus toggleInstitutionCounselStatus(Long adminId, Long institutionId, Long counselId) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validate(institutionId, admin);
 
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        validateCounselOwnership(institutionId, counsel);
+
         return counsel.toggleStatus();
     }
 
+    /**
+     * 기관 상담 서비스 삭제 (논리 삭제)
+     */
     @Override
     public void deleteCounselByCouncelId(Long adminId, Long institutionId, Long counselId) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validate(institutionId, admin);
 
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        validateCounselOwnership(institutionId, counsel);
         counsel.delete();
     }
 
@@ -99,6 +113,9 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         return InstitutionCounselDetailResponseDto.from(counselDetail);
     }
 
+    /**
+     * 기관 상담 서비스 정보 수정
+     */
     @Override
     public void updateInstitutionCounsel(Long adminId, Long institutionId, Long counselId,
                                          InstitutionCounselUpdateRequestDto requestDto) {
@@ -106,8 +123,11 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         validate(institutionId, admin);
 
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
+        validateCounselOwnership(institutionId, counsel);
         counsel.updateInfo(requestDto.getTitle(), requestDto.getDescription());
     }
+
+    // ==================== Private Methods ====================
 
     /**
      * 새로운 상담 예약 가능 시간 Detail 생성
@@ -162,5 +182,11 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
     private InstitutionAdmin findInstitutionAdminById(Long institutionId) {
         return institutionAdminRepository.findById(institutionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+    }
+
+    private static void validateCounselOwnership(Long institutionId, InstitutionCounsel counsel) {
+        if (!counsel.getInstitution().getId().equals(institutionId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
+        }
     }
 }
