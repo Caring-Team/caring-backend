@@ -1,6 +1,8 @@
 package com.caring.caringbackend.api.reservation.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +28,9 @@ public class MemberReservationCreateRequestDto {
     private LocalDate reservationDate;
 
     @Schema(description = "슬롯 인덱스 (0~47)", example = "18")
+    @NotNull(message = "slotIndex는 필수입니다")
+    @Min(value = 0, message = "slotIndex는 0 이상이어야 합니다")
+    @Max(value = 47, message = "slotIndex는 47 이하이어야 합니다")
     int slotIndex;
 
     @Schema(description = "시작 시간", example = "09:00")
