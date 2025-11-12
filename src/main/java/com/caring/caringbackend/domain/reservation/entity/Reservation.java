@@ -27,25 +27,13 @@ public class Reservation extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    // 예약 이름
-//    @Column(nullable = false, length = 100)
-//    private String title;
-//
-//    // 예약 설명
-//    @Column(length = 500)
-//    private String description;
-//
-//    // 예약 날짜
-//    @Column(nullable = false)
-//    private LocalDate reservationDate;
-
     // 예약 시간
     @Column(nullable = false)
     private LocalTime reservationTime;
 
     // 기관 상담 서비스 디테일
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "institution_counsel_Detail_id", nullable = false)
+    @JoinColumn(name = "institution_counsel_detail_id", nullable = false)
     private InstitutionCounselDetail counselDetail;
 
     // Member
@@ -67,20 +55,24 @@ public class Reservation extends BaseTimeEntity {
     public Reservation(InstitutionCounselDetail counselDetail,
                        Member member,
                        ElderlyProfile elderlyProfile,
-                       LocalTime reservationTime
+                       LocalTime reservationTime,
+                       ReservationStatus status
     ) {
         this.counselDetail = counselDetail;
         this.reservationTime = reservationTime;
         this.member = member;
         this.elderlyProfile = elderlyProfile;
+        this.status = status;
     }
 
     public static Reservation createReservation(InstitutionCounselDetail counselDetail, Member member, ElderlyProfile elderlyProfile, LocalTime reservationTime) {
         return Reservation.builder()
+
                 .counselDetail(counselDetail)
                 .member(member)
                 .elderlyProfile(elderlyProfile)
                 .reservationTime(reservationTime)
+                .status(ReservationStatus.COMPLETED)
                 .build();
     }
 
