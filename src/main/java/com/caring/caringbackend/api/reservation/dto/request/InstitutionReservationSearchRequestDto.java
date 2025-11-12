@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.reservation.dto.request;
 
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,9 +30,11 @@ public class InstitutionReservationSearchRequestDto {
     private LocalDate endDate;
 
     @Schema(description = "페이지 번호 (0부터 시작)", example = "0")
+    @Min(value = 0, message = "페이지 번호는 0 이상이어야 합니다")
     private Integer page = 0;
 
     @Schema(description = "페이지 크기", example = "20")
+    @Min(value = 1, message = "페이지 크기는 1 이상이어야 합니다")
     private Integer size = 20;
 }
 
