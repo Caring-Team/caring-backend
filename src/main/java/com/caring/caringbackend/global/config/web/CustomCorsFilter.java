@@ -13,18 +13,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * CORS 필터
+ * 커스텀 CORS 필터
  * Spring의 CORS 설정보다 먼저 실행되어 모든 요청에 대해 CORS 헤더를 추가합니다.
  */
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter extends OncePerRequestFilter {
+public class CustomCorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String origin = request.getHeader("Origin");
 
         // Origin이 있으면 해당 Origin을 허용
