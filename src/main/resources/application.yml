@@ -2,29 +2,33 @@ spring:
     application:
         name: caring
     profiles:
-      active: dev
+        active: dev
+    servlet:
+      multipart:
+          max-file-size: 20MB
+          max-request-size: 20MB
 
 # 🌐 서버 설정
 server:
-  port: 8080
-  servlet:
-    context-path: /
+    port: 8080
+    servlet:
+        context-path: /
 
 # 📝 로깅 설정
 logging:
-  level:
-    com.caring.caringbackend: INFO
-    org.springframework.web: DEBUG
-    p6spy: INFO  # P6Spy 로그 레벨
-    com.caring.caringbackend.global.aop: INFO  # AOP 로깅
+    level:
+        com.caring.caringbackend: INFO
+        org.springframework.web: DEBUG
+        p6spy: INFO  # P6Spy 로그 레벨
+        com.caring.caringbackend.global.aop: INFO  # AOP 로깅
 
 # Kakao Map API
 kakao:
-  api:
-    key: ${KAKAO_API_KEY}
+    api:
+        key: ${KAKAO_API_KEY}
 
 # P6Spy 설정
 decorator:
-  datasource:
-    p6spy:
-      enable-logging: true
+    datasource:
+        p6spy:
+            enable-logging: true
