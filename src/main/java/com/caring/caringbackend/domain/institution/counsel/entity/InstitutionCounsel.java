@@ -1,6 +1,8 @@
 package com.caring.caringbackend.domain.institution.counsel.entity;
 
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,12 +37,60 @@ public class InstitutionCounsel extends BaseEntity {
     @Column(length = 500)
     private String description;
 
-    @Builder
+    // 상태 enum 추가 가능 (예: ACTIVE, INACTIVE)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CounselStatus status = CounselStatus.ACTIVE;
+
+    @Builder(access = AccessLevel.PRIVATE)
     public InstitutionCounsel(Institution institution, String title, String description) {
         this.institution = institution;
         this.title = title;
         this.description = description;
     }
 
-    // TODO: 필요한 도메인 로직 작성
+    public static InstitutionCounsel createInstitutionCounsel(Institution institution, String title, String description) {
+        InstitutionCounsel counsel = InstitutionCounsel.builder()
+                .institution(institution)
+                .title(title)
+                .description(description)
+                .build();
+
+        institution.addCounsel(counsel);
+        return counsel;
+    }
+
+    public CounselStatus toggleStatus() {
+        if (status == CounselStatus.ACTIVE) {
+            status = CounselStatus.INACTIVE;
+            return status;
+        }
+
+        if (status == CounselStatus.INACTIVE) {
+            status = CounselStatus.ACTIVE;
+            return status;
+        }
+        return status;
+    }
+
+    // 상담 서비스 soft delete
+    public void delete() {
+        this.status = CounselStatus.INACTIVE;
+
+        if(this.isDeleted()) {
+            throw new BusinessException(ErrorCode.COUNSEL_ALREADY_DELETED);
+        }
+
+        this.softDelete();
+    }
+
+    public void updateInfo(String title, String description) {
+        // null이 아닌 값만 업데이트
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+    }
 }

@@ -56,7 +56,7 @@ public class CareGiver extends BaseEntity {
     @Column(length = 255)
     private String photoUrl;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     public CareGiver(Institution institution, String name, String email,
                      String phoneNumber, Gender gender, LocalDate birthDate,
                      String experienceDetails, String photoUrl) {
@@ -70,5 +70,51 @@ public class CareGiver extends BaseEntity {
         this.photoUrl = photoUrl;
     }
 
-    // TODO: 필요한 도메인 로직 작성
+    /**
+     * 요양보호사 생성 정적 팩토리 메서드
+     * 양방향 연관관계 자동 설정
+     */
+    public static CareGiver createCareGiver(Institution institution, String name, String email,
+                                           String phoneNumber, Gender gender, LocalDate birthDate,
+                                           String experienceDetails) {
+        CareGiver careGiver = CareGiver.builder()
+                .institution(institution)
+                .name(name)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .birthDate(birthDate)
+                .experienceDetails(experienceDetails)
+                .build();
+
+        // 양방향 연관관계 설정
+        institution.addCareGiver(careGiver);
+        return careGiver;
+    }
+
+    /**
+     * 요양보호사 정보 수정
+     * null이 아닌 값만 수정
+     */
+    public void updateCareGiver(String name, String email, String phoneNumber,
+                               Gender gender, LocalDate birthDate, String experienceDetails) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (email != null) {
+            this.email = email;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        if (gender != null) {
+            this.gender = gender;
+        }
+        if (birthDate != null) {
+            this.birthDate = birthDate;
+        }
+        if (experienceDetails != null) {
+            this.experienceDetails = experienceDetails;
+        }
+    }
 }

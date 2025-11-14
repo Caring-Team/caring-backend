@@ -4,6 +4,7 @@ import com.caring.caringbackend.domain.user.elderly.entity.ActivityLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.BloodType;
 import com.caring.caringbackend.domain.user.elderly.entity.CognitiveLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
+import com.caring.caringbackend.domain.user.elderly.entity.LongTermCareGrade;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.model.GeoPoint;
@@ -75,6 +76,11 @@ public class ElderlyProfileResponse {
     private CognitiveLevel cognitiveLevel;
 
     /**
+     * 🏥 장기요양등급
+     */
+    private LongTermCareGrade longTermCareGrade;
+
+    /**
      * 📝 특이사항
      */
     private String notes;
@@ -138,6 +144,7 @@ public class ElderlyProfileResponse {
             .phoneNumber(profile.getPhoneNumber())
             .activityLevel(profile.getActivityLevel())
             .cognitiveLevel(profile.getCognitiveLevel())
+            .longTermCareGrade(profile.getLongTermCareGrade())
             .notes(profile.getNotes())
             .address(toAddressDto(profile.getAddress()))
             .location(toGeoPointDto(profile.getLocation()))
