@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
@@ -50,6 +51,14 @@ public class Institution extends BaseEntity {
     @Embedded
     private GeoPoint location;
 
+    // 사업자 등록번호
+    @Column(nullable = false)
+    private String businessLicense;
+
+    // 사업자 등록증 사진
+    @Column(nullable = false)
+    private String businessLicenseImageUrl;
+
     // 승인 상태
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -74,6 +83,10 @@ public class Institution extends BaseEntity {
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGiver> careGivers = new ArrayList<>();
 
+    // 상담 목록
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstitutionCounsel> counsels = new ArrayList<>();
+
     // 가격표
     @Embedded
     private PriceInfo priceInfo;
@@ -87,11 +100,11 @@ public class Institution extends BaseEntity {
                         String phoneNumber, Address address, GeoPoint location,
                         ApprovalStatus approvalStatus, Integer bedCount,
                         Boolean isAdmissionAvailable,
-                        PriceInfo priceInfo, String openingHours) {
+                        PriceInfo priceInfo, String openingHours,
+                        String businessLicense, String businessLicenseImageUrl) {
 
         // 도메인 비즈니스 규칙 검증
         validate(phoneNumber, bedCount);
-
         this.name = name;
         this.admins = new ArrayList<>();
         this.institutionType = institutionType;
@@ -105,6 +118,8 @@ public class Institution extends BaseEntity {
         this.careGivers = new ArrayList<>();
         this.priceInfo = priceInfo;
         this.openingHours = openingHours;
+        this.businessLicense = businessLicense;
+        this.businessLicenseImageUrl = businessLicenseImageUrl;
     }
 
     /**
@@ -119,7 +134,9 @@ public class Institution extends BaseEntity {
             Integer bedCount,
             Boolean isAdmissionAvailable,
             PriceInfo priceInfo,
-            String openingHours) {
+            String openingHours,
+            String businessLicense,
+            String businessLicenseImageUrl) {
 
         return new Institution(
                 name,
@@ -131,7 +148,9 @@ public class Institution extends BaseEntity {
                 bedCount,
                 isAdmissionAvailable,
                 priceInfo,
-                openingHours
+                openingHours,
+                businessLicense,
+                businessLicenseImageUrl
         );
     }
 
@@ -165,6 +184,20 @@ public class Institution extends BaseEntity {
      */
     public void addAdmin(InstitutionAdmin admin) {
         this.admins.add(admin);
+    }
+
+    /**
+     * 요양보호사 추가 편의 메서드
+     */
+    public void addCareGiver(CareGiver careGiver) {
+        this.careGivers.add(careGiver);
+    }
+
+    /**
+     * 상담 추가 편의 메서드
+     */
+    public void addCounsel(InstitutionCounsel counsel) {
+        this.counsels.add(counsel);
     }
 
     /**

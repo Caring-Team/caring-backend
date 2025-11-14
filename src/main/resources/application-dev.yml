@@ -7,7 +7,7 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: create
+            ddl-auto: update
         show-sql: false  # P6Spy를 사용하므로 비활성화
         properties:
             hibernate:
@@ -15,18 +15,18 @@ spring:
                 default_schema: public
         open-in-view: false
     data:
-      redis:
-          host: ${REDIS_URL:localhost}
-          port: ${REDIS_PORT:6379}
+        redis:
+            host: ${REDIS_URL:localhost}
+            port: ${REDIS_PORT:6379}
 
 oauth2:
     providers:
         google:
-          client-id: ${GOOGLE_CLIENT_ID}
-          client-secret: ${GOOGLE_CLIENT_SECRET}
-          redirect-uri: ${GOOGLE_REDIRECT_URI}
-          user-info-uri: ${GOOGLE_USERINFO_URI}
-          token-uri: ${GOOGLE_TOKEN_URI}
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            user-info-uri: ${GOOGLE_USERINFO_URI}
+            token-uri: ${GOOGLE_TOKEN_URI}
         naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
@@ -72,3 +72,9 @@ logging:
 
 server:
     port: 8080
+
+app:
+    aws:
+        s3:
+            bucket-name: amz-s3-care-bucket
+            region: ap-northeast-2

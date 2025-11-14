@@ -52,19 +52,29 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((requests) -> requests
+                        // Swagger 및 API 문서 경로
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
 
+                        // 회원 인증 경로
                         .requestMatchers("/api/v1/auth/oauth2/login/**").permitAll()
                         .requestMatchers("/api/v1/auth/token/refresh").permitAll()
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/certification-code").permitAll()
                         .requestMatchers("/api/v1/auth/verify-phone").permitAll()
 
-                        .requestMatchers("api/v1/auth/institution/login").permitAll()
-                        .requestMatchers("api/v1/auth/institution/verify-phone").permitAll()
-                        .requestMatchers("api/v1/auth/institution/certification-code").permitAll()
-                        .requestMatchers("api/v1/auth/institution/token/refresh").permitAll()
+                        // 기관 인증 경로
+                        .requestMatchers("/api/v1/auth/institution/login").permitAll()
+                        .requestMatchers("/api/v1/auth/institution/verify-phone").permitAll()
+                        .requestMatchers("/api/v1/auth/institution/certification-code").permitAll()
+                        .requestMatchers("/api/v1/auth/institution/token/refresh").permitAll()
+
+                        // 테스트 경로 (개발 환경)
+                        .requestMatchers("/api/v1/test/**").permitAll()
+
                         .anyRequest().authenticated());
         return http.build();
     }

@@ -53,6 +53,11 @@ jwt:
 verify-phone:
     expires-in: ${VERIFY_PHONE_EXPIRES_IN:300}
 
+# Kakao Map API
+kakao:
+    api:
+        key: ${KAKAO_API_KEY}
+
 # Swagger/OpenAPI 설정
 springdoc:
     api-docs:
@@ -80,3 +85,9 @@ decorator:
     datasource:
         p6spy:
             enable-logging: false
+
+app:
+    aws:
+        s3:
+            bucket-name: amz-s3-care-bucket
+            region: ap-northeast-2

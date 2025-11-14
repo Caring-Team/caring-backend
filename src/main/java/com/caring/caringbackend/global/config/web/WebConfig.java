@@ -1,18 +1,27 @@
 package com.caring.caringbackend.global.config.web;
 
+import com.caring.caringbackend.global.config.MultipartJackson2HttpMessageConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * 🌐 웹 설정
  *
- * CORS 설정 등을 관리
+ * CORS 설정 및 메시지 컨버터 관리
  *
  * @author caring-team
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
+    private final ObjectMapper objectMapper;
 
     /**
      * 🔓 CORS 설정
