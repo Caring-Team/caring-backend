@@ -112,12 +112,11 @@ public enum ErrorCode {
     REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
 
     // 👤 Member Delete Constraints
-    CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다");
+    CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
     ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
 
     // 📅 Reservation Errors (RES-xxx)
     RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다"),
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RES-002", "예약을 찾을 수 없습니다"),
     INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다");
 
 

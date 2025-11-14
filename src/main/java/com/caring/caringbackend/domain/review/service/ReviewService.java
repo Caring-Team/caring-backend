@@ -50,7 +50,7 @@ public class ReviewService {
      * 리뷰 작성
      *
      * @param memberId 회원 ID
-     * @param request 리뷰 작성 요청
+     * @param request  리뷰 작성 요청
      * @return 작성된 리뷰 응답
      */
     @Transactional
@@ -84,15 +84,8 @@ public class ReviewService {
         }
 
         // TODO: Reservation 엔티티에 completedAt 필드 추가 후, 완료일 기준으로 검증 필요
-        // 6. 기관 조회 (Reservation -> InstitutionCounsel -> Institution)
-        Institution institution = reservation.getInstitutionCounsel() != null
-        ? reservation.getInstitutionCounsel().getInstitution()
-        : null;
+        Institution institution = getInstitution(reservation);
 
-        if (institution == null) {
-            throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
-        }
-    
         // 7. 리뷰 생성
         Review review = Review.builder()
                 .reservation(reservation)
@@ -111,6 +104,15 @@ public class ReviewService {
 
         // 8. 응답 반환
         return ReviewResponse.from(savedReview);
+    }
+
+    private static Institution getInstitution(Reservation reservation) {
+        // 6. 기관 조회 (Reservation -> InstitutionCounsel -> Institution)
+        Institution institution = reservation.getCounselDetail().getInstitutionCounsel().getInstitution();
+        if (institution == null) {
+            throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
+        }
+        return institution;
     }
 
     /**
@@ -142,7 +144,7 @@ public class ReviewService {
      * 기관의 리뷰 목록 조회 (공개)
      *
      * @param institutionId 기관 ID
-     * @param pageable 페이징 정보
+     * @param pageable      페이징 정보
      * @return 리뷰 목록 응답
      */
     public ReviewListResponse getInstitutionReviews(Long institutionId, Pageable pageable) {
@@ -178,7 +180,7 @@ public class ReviewService {
      *
      * @param memberId 회원 ID
      * @param reviewId 리뷰 ID
-     * @param request 리뷰 수정 요청
+     * @param request  리뷰 수정 요청
      * @return 수정된 리뷰 응답
      */
     @Transactional
@@ -228,7 +230,7 @@ public class ReviewService {
      *
      * @param memberId 회원 ID (신고자)
      * @param reviewId 리뷰 ID
-     * @param request 리뷰 신고 요청
+     * @param request  리뷰 신고 요청
      */
     @Transactional
     public void reportReview(Long memberId, Long reviewId, ReviewReportRequest request) {

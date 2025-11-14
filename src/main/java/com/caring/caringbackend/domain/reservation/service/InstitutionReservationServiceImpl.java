@@ -41,9 +41,7 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
         // adminId로 institutionId 조회
         Long institutionId = getInstitutionIdByAdminId(adminId);
 
-        Page<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(
-                institutionId, status, startDate, endDate, pageable
-        );
+        Page<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(institutionId, status, startDate, endDate, pageable);
 
         return reservations.map(InstitutionReservationResponseDto::from);
     }
