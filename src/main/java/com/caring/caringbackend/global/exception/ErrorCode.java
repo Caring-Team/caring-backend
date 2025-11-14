@@ -96,6 +96,23 @@ public enum ErrorCode {
     ELDERLY_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "ELDERLY-001", "어르신 프로필을 찾을 수 없습니다"),
     ELDERLY_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ELDERLY-002", "해당 어르신 프로필에 접근할 수 없습니다"),
     ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다"),
+
+    // 📅 Reservation Domain Errors (RESERVATION-xxx)
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION-001", "예약을 찾을 수 없습니다"),
+    RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "RESERVATION-002", "완료된 예약만 리뷰를 작성할 수 있습니다"),
+    RESERVATION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "RESERVATION-003", "해당 예약에 접근할 수 없습니다"),
+
+    // ⭐ Review Domain Errors (REVIEW-xxx)
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "리뷰를 찾을 수 없습니다"),
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-002", "이미 해당 예약에 대한 리뷰를 작성했습니다"),
+    REVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN, "REVIEW-003", "해당 리뷰에 접근할 수 없습니다"),
+    REVIEW_EDIT_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-004", "리뷰 작성 후 30일 이내에만 수정할 수 있습니다"),
+    REVIEW_CREATE_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-005", "예약 완료 후 90일 이내에만 리뷰를 작성할 수 있습니다"),
+    REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
+    REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
+
+    // 👤 Member Delete Constraints
+    CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다");
     ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
 
     // 📅 Reservation Errors (RES-xxx)
