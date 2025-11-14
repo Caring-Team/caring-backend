@@ -46,8 +46,6 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
 
         Institution institution = findInstitutionById(institutionId);
 
-
-
         InstitutionCounsel counsel = InstitutionCounsel.createInstitutionCounsel(
                 institution,
                 requestDto.getTitle(),
@@ -143,8 +141,7 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
         // 0시~23시 30분 단위 = 48슬롯, 모든 시간대 예약 가능 (16진수 문자열)
         String allAvailable = initializeAllAvailableTimeSlots();
-        InstitutionCounselDetail detail = InstitutionCounselDetail.create(
-                counsel, date, allAvailable);
+        InstitutionCounselDetail detail = InstitutionCounselDetail.create(counsel, date, allAvailable);
 
         return counselDetailRepository.save(detail);
     }

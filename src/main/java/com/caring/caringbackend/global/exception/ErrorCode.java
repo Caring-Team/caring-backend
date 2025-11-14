@@ -78,6 +78,7 @@ public enum ErrorCode {
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
+    FILE_IS_EMPTY(HttpStatus.BAD_REQUEST, "FILE-005", "빈 파일은 업로드할 수 없습니다"),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-002", "파일 업로드에 실패했습니다"),
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "FILE-003", "지원하지 않는 파일 형식입니다"),
     FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "FILE-004", "파일 크기가 제한을 초과했습니다"),

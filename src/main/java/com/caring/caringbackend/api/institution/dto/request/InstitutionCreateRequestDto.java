@@ -2,10 +2,8 @@ package com.caring.caringbackend.api.institution.dto.request;
 
 import com.caring.caringbackend.domain.institution.profile.entity.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,9 +11,10 @@ import java.util.List;
  * 기관 생성 요청 DTO
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class InstitutionCreateRequestDto {
 
     // 기관 이름
@@ -66,4 +65,9 @@ public class InstitutionCreateRequestDto {
 
     // 운영 시간
     private String openingHours;
+
+    // 사업자 등록번호
+    @NotBlank(message = "사업자 등록번호는 필수입니다")
+    @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$", message = "사업자 등록번호 형식이 올바르지 않습니다 (예: 123-45-67890)")
+    private String businessLicense;
 }

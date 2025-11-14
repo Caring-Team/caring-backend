@@ -5,6 +5,8 @@ import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFil
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
+import com.caring.caringbackend.domain.file.entity.File;
+import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
@@ -21,10 +23,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+
+import static com.caring.caringbackend.domain.file.entity.ReferenceType.INSTITUTION;
 
 @Slf4j
 @Service
@@ -35,16 +40,18 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final InstitutionAdminRepository institutionAdminRepository;
     private final GeocodingService geocodingService;
     private final List<InstitutionSearchStrategy> searchStrategies;
+    private final FileService fileService;
 
     /**
      * 기관 등록
      *
      * @param adminId 관리자 ID
      * @param requestDto 기관 생성 요청 DTO
+     * @param file 사업자 등록증 파일
      */
     @Override
     @Transactional
-    public void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto) {
+    public void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto, MultipartFile file) {
         // 관리자 조회
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
 
@@ -71,7 +78,11 @@ public class InstitutionServiceImpl implements InstitutionService {
                 .priceNotes(requestDto.getPriceNotes())
                 .build();
 
-        // Institution 생성
+        // 사업자등록증 파일 업로드 (임시 저장 - referenceId는 null)
+        File uploadedFile = fileService.uploadAndLinkBusinessLicense(file, null);
+
+
+        // Institution 생성 및 저장
         Institution institution = Institution.createInstitution(
                 requestDto.getName(),
                 requestDto.getInstitutionType(),
@@ -81,19 +92,18 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getBedCount(),
                 requestDto.getIsAdmissionAvailable(),
                 priceInfo,
-                requestDto.getOpeningHours()
+                requestDto.getOpeningHours(),
+                requestDto.getBusinessLicense(),
+                uploadedFile.getFileUrl()  // 업로드한 파일 URL
         );
 
-        // Institution 저장
-        institutionRepository.save(institution);
+        Institution savedInstitution = institutionRepository.save(institution);
+        admin.linkInstitution(savedInstitution);
 
-        // Admin과 Institution 양방향 연결 (admin에 institution 설정 + institution의 admins 리스트에 추가)
-        admin.linkInstitution(institution);
-
-        log.info("기관 등록 완료 및 관리자 연결: adminId={}, institutionId={}, institutionName={}, role={}",
-                adminId, institution.getId(), institution.getName(), admin.getRole());
-
-        // TODO: 전문 질환 목록(specializedConditionCodes) 처리
+        // 파일의 참조 정보 업데이트 (기관 ID와 연결)
+        if (uploadedFile.getId() != null) {
+            fileService.updateFileReference(uploadedFile.getId(), savedInstitution.getId(), INSTITUTION);
+        }
     }
 
     /**

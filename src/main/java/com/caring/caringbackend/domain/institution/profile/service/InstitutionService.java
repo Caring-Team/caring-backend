@@ -7,6 +7,7 @@ import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailRe
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface InstitutionService {
 
@@ -15,7 +16,7 @@ public interface InstitutionService {
      * @param adminId 관리자 ID
      * @param requestDto 기관 생성 요청 DTO
      */
-    void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto);
+    void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto, MultipartFile file);
 
     /**
      * 기관 목록 조회 (페이징, 검색, 필터링)

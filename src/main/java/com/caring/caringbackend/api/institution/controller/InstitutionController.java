@@ -12,20 +12,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 기관 프로필 관련 컨트롤러
  *
  * @author 나의찬
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/profile")
@@ -36,16 +40,21 @@ public class InstitutionController {
     /**
      * 기관 등록 요청
      *
-     * @param adminDetails 인증된 기관 관리자 정보
-     * @param institutionCreateRequestDto 기관 생성 요청 DTO
+     * @param requestDto    기관 생성 요청 DTO
+     * @param file          사업자 등록증 이미지 파일 (선택사항)
+     * @param adminDetails  인증된 기관 관리자 정보
      */
-    @PostMapping("/register")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다. (인증 필요)")
     public ApiResponse<Void> registerInstitution(
-            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @Valid @RequestBody InstitutionCreateRequestDto institutionCreateRequestDto
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @Valid @RequestPart(value = "data") InstitutionCreateRequestDto requestDto,
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        institutionService.registerInstitution(adminDetails.getId(), institutionCreateRequestDto);
+        log.info("Institution Create Request - DTO: {}", requestDto);
+        log.info("Institution Create Request - File: {}", file != null ? file.getOriginalFilename() : "null");
+
+        institutionService.registerInstitution(adminDetails.getId(), requestDto, file);
         return ApiResponse.success(null);
     }
 
@@ -105,8 +114,8 @@ public class InstitutionController {
     /**
      * 기관 정보 수정
      *
-     * @param adminDetails 인증된 기관 관리자 정보
-     * @param institutionId 기관 ID
+     * @param adminDetails                인증된 기관 관리자 정보
+     * @param institutionId               기관 ID
      * @param institutionUpdateRequestDto 기관 수정 요청 DTO
      */
     @PutMapping("/{institutionId}")
@@ -124,8 +133,8 @@ public class InstitutionController {
     /**
      * 기관 입소 가능 여부 변경
      *
-     * @param adminDetails 인증된 기관 관리자 정보
-     * @param institutionId 기관 ID
+     * @param adminDetails         인증된 기관 관리자 정보
+     * @param institutionId        기관 ID
      * @param isAdmissionAvailable 입소 가능 여부
      */
     @PatchMapping("/{institutionId}/admission-availability")
@@ -156,7 +165,7 @@ public class InstitutionController {
     /**
      * 기관 삭제 (Soft Delete)
      *
-     * @param adminDetails 인증된 기관 관리자 정보
+     * @param adminDetails  인증된 기관 관리자 정보
      * @param institutionId 기관 ID
      */
     @DeleteMapping("/{institutionId}")
