@@ -56,14 +56,29 @@ public enum ErrorCode {
     INSTITUTION_APPROVAL_PENDING(HttpStatus.BAD_REQUEST, "INST-007", "승인 대기 중인 기관입니다"),
     INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "INST-008", "유효하지 않은 전화번호입니다"),
     INVALID_BED_COUNT(HttpStatus.BAD_REQUEST, "INST-009", "유효하지 않은 병상 수입니다"),
+    INSTITUTION_ALREADY_REGISTERED(HttpStatus.CONFLICT, "INST-010", "이미 기관이 등록되어 있습니다"),
+    ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-011", "기관 관리자를 찾을 수 없습니다"),
+    UNAUTHORIZED_INSTITUTION_ACCESS(HttpStatus.FORBIDDEN, "INST-012", "해당 기관에 대한 접근 권한이 없습니다"),
+    OWNER_PERMISSION_REQUIRED(HttpStatus.FORBIDDEN, "INST-013", "기관장(OWNER) 권한이 필요합니다"),
+    ADMIN_HAS_NO_INSTITUTION(HttpStatus.BAD_REQUEST, "INST-014", "기관에 소속되어 있지 않습니다. 먼저 기관을 등록해주세요"),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
     CARE_REQUEST_ALREADY_PROCESSED(HttpStatus.CONFLICT, "CARE-002", "이미 처리된 케어 요청입니다"),
     INVALID_CARE_STATUS(HttpStatus.BAD_REQUEST, "CARE-003", "유효하지 않은 케어 상태입니다"),
+    CAREGIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-004", "요양보호사를 찾을 수 없습니다"),
+
+    // 💬 Counsel Domain Errors (COUNSEL-xxx)
+    COUNSEL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-001", "상담 서비스를 찾을 수 없습니다"),
+    COUNSEL_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "COUNSEL-002", "이미 삭제된 상담 서비스입니다"),
+    INVALID_TIME_SLOT(HttpStatus.BAD_REQUEST, "COUNSEL-003", "유효하지 않은 시간대입니다 (0~47 범위)"),
+    TIME_SLOT_ALREADY_RESERVED(HttpStatus.CONFLICT, "COUNSEL-004", "이미 예약된 시간대입니다"),
+    CONCURRENT_RESERVATION_CONFLICT(HttpStatus.CONFLICT, "COUNSEL-005", "동시 예약 충돌이 발생했습니다. 다시 시도해주세요"),
+    INSTITUTION_COUNSEL_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "COUNSEL-006", "기관 상담 상세 정보를 찾을 수 없습니다"),
 
     // 📁 File Domain Errors (FILE-xxx)
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-001", "파일을 찾을 수 없습니다"),
+    FILE_IS_EMPTY(HttpStatus.BAD_REQUEST, "FILE-005", "빈 파일은 업로드할 수 없습니다"),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-002", "파일 업로드에 실패했습니다"),
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "FILE-003", "지원하지 않는 파일 형식입니다"),
     FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "FILE-004", "파일 크기가 제한을 초과했습니다"),
@@ -80,7 +95,14 @@ public enum ErrorCode {
     // 👵 Elderly Profile Errors (ELDERLY-xxx)
     ELDERLY_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "ELDERLY-001", "어르신 프로필을 찾을 수 없습니다"),
     ELDERLY_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ELDERLY-002", "해당 어르신 프로필에 접근할 수 없습니다"),
-    ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다");
+    ELDERLY_PROFILE_INVALID_DATA(HttpStatus.BAD_REQUEST, "ELDERLY-003", "유효하지 않은 어르신 프로필 정보입니다"),
+    ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
+
+    // 📅 Reservation Errors (RES-xxx)
+    RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다"),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RES-002", "예약을 찾을 수 없습니다"),
+    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다");
+
 
     private final HttpStatus httpStatus;
     private final String code;

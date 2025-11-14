@@ -6,26 +6,30 @@ import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateReq
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
+import com.caring.caringbackend.global.response.ApiResponse;
+import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 기관 프로필 관련 컨트롤러
  *
  * @author 나의찬
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/profile")
@@ -36,15 +40,19 @@ public class InstitutionController {
     /**
      * 기관 등록 요청
      *
-     * @param institutionCreateRequestDto 기관 생성 요청 DTO
+     * @param requestDto    기관 생성 요청 DTO
+     * @param file          사업자 등록증 이미지 파일 (선택사항)
+     * @param adminDetails  인증된 기관 관리자 정보
      */
-    @PostMapping("/register")
-    @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다.")
-    public ResponseEntity<Void> registerInstitution(
-            @Valid @RequestBody InstitutionCreateRequestDto institutionCreateRequestDto
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다. (인증 필요)")
+    public ApiResponse<Void> registerInstitution(
+            @RequestPart(value = "file", required = true) MultipartFile file,
+            @Valid @RequestPart(value = "data") InstitutionCreateRequestDto requestDto,
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        institutionService.registerInstitution(institutionCreateRequestDto);
-        return ResponseEntity.ok().build();
+        institutionService.registerInstitution(adminDetails.getId(), requestDto, file);
+        return ApiResponse.success(null);
     }
 
     /**
@@ -71,7 +79,7 @@ public class InstitutionController {
                     ```
                     """
     )
-    public ResponseEntity<Page<InstitutionProfileResponseDto>> getInstitutions(
+    public ApiResponse<Page<InstitutionProfileResponseDto>> getInstitutions(
             @ParameterObject @PageableDefault(size = 20, page = 0)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC),
@@ -80,7 +88,7 @@ public class InstitutionController {
             @ParameterObject @ModelAttribute InstitutionSearchFilter filter
     ) {
         Page<InstitutionProfileResponseDto> institutions = institutionService.getInstitutions(pageable, filter);
-        return ResponseEntity.ok(institutions);
+        return ApiResponse.success(institutions);
     }
 
 
@@ -92,39 +100,49 @@ public class InstitutionController {
      */
     @GetMapping("/{institutionId}")
     @Operation(summary = "기관 상세 조회", description = "기관의 상세 정보를 조회합니다.")
-    public ResponseEntity<InstitutionDetailResponseDto> getInstitutionDetail(
+    public ApiResponse<InstitutionDetailResponseDto> getInstitutionDetail(
             @PathVariable Long institutionId
     ) {
         InstitutionDetailResponseDto institutionDetail = institutionService.getInstitutionDetail(institutionId);
-        return ResponseEntity.ok().body(institutionDetail);
+        return ApiResponse.success(institutionDetail);
     }
 
 
     /**
      * 기관 정보 수정
+     *
+     * @param adminDetails                인증된 기관 관리자 정보
+     * @param institutionId               기관 ID
+     * @param institutionUpdateRequestDto 기관 수정 요청 DTO
      */
     @PutMapping("/{institutionId}")
-    @Operation(summary = "기관 정보 수정", description = "기관의 정보를 수정합니다.")
-    public ResponseEntity<Void> updateInstitution(
+    @Operation(summary = "기관 정보 수정", description = "기관의 정보를 수정합니다. (OWNER 권한 필요)")
+    public ApiResponse<Void> updateInstitution(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId,
             @Valid @RequestBody InstitutionUpdateRequestDto institutionUpdateRequestDto
     ) {
-        institutionService.updateInstitution(institutionId, institutionUpdateRequestDto);
-        return ResponseEntity.ok().build();
+        institutionService.updateInstitution(adminDetails.getId(), institutionId, institutionUpdateRequestDto);
+        return ApiResponse.success(null);
     }
 
 
     /**
      * 기관 입소 가능 여부 변경
+     *
+     * @param adminDetails         인증된 기관 관리자 정보
+     * @param institutionId        기관 ID
+     * @param isAdmissionAvailable 입소 가능 여부
      */
     @PatchMapping("/{institutionId}/admission-availability")
-    @Operation(summary = "기관 입소 가능 여부 변경", description = "기관의 입소 가능 여부를 변경합니다.")
-    public ResponseEntity<Void> changeAdmissionAvailability(
+    @Operation(summary = "기관 입소 가능 여부 변경", description = "기관의 입소 가능 여부를 변경합니다. (OWNER/STAFF 권한 필요)")
+    public ApiResponse<Void> changeAdmissionAvailability(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId,
             @RequestParam Boolean isAdmissionAvailable
     ) {
-        institutionService.changeAdmissionAvailability(institutionId, isAdmissionAvailable);
-        return ResponseEntity.ok().build();
+        institutionService.changeAdmissionAvailability(adminDetails.getId(), institutionId, isAdmissionAvailable);
+        return ApiResponse.success(null);
     }
 
 
@@ -133,25 +151,27 @@ public class InstitutionController {
      */
     @PatchMapping("/{institutionId}/approval")
     @Operation(summary = "기관 승인", description = "관리자가 기관 등록 요청을 승인합니다.")
-    public ResponseEntity<Void> approveInstitution(
+    public ApiResponse<Void> approveInstitution(
             @PathVariable Long institutionId
     ) {
         // TODO: 관리자 권한 체크
         institutionService.approveInstitution(institutionId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success(null);
     }
 
     /**
      * 기관 삭제 (Soft Delete)
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     * @param institutionId 기관 ID
      */
     @DeleteMapping("/{institutionId}")
-    @Operation(summary = "기관 삭제", description = "기관을 논리적으로 삭제합니다. 입소 가능 여부가 자동으로 false로 변경됩니다.")
-    public ResponseEntity<Void> deleteInstitution(
+    @Operation(summary = "기관 삭제", description = "기관을 논리적으로 삭제합니다. 입소 가능 여부가 자동으로 false로 변경됩니다. (OWNER 권한 필요)")
+    public ApiResponse<Void> deleteInstitution(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long institutionId
     ) {
-        // TODO: OWNER 또는 관리자 권한 체크
-
-        institutionService.deleteInstitution(institutionId);
-        return ResponseEntity.ok().build();
+        institutionService.deleteInstitution(adminDetails.getId(), institutionId);
+        return ApiResponse.success(null);
     }
 }

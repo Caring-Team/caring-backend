@@ -1,0 +1,35 @@
+package com.caring.caringbackend.domain.institution.profile.service;
+
+import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
+import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
+
+import java.util.List;
+
+public interface CareGiverService {
+
+    /**
+     * 요양보호사 등록
+     */
+    void registerCareGiver(Long adminId, Long institutionId, CareGiverCreateRequestDto requestDto);
+
+    /**
+     * 기관별 요양보호사 목록 조회
+     */
+    List<CareGiverResponseDto> getCareGiversByInstitution(Long institutionId);
+
+    /**
+     * 요양보호사 상세 조회
+     */
+    CareGiverResponseDto getCareGiverDetail(Long institutionId, Long careGiverId);
+
+    /**
+     * 요양보호사 정보 수정
+     */
+    void updateCareGiver(Long adminId, Long institutionId, Long careGiverId, CareGiverUpdateRequestDto requestDto);
+
+    /**
+     * 요양보호사 삭제 (Soft Delete)
+     */
+    void deleteCareGiver(Long adminId, Long institutionId, Long careGiverId);
+}
