@@ -13,8 +13,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class InstitutionCreateRequestDto {
 
     // 기관 이름

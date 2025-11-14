@@ -47,13 +47,10 @@ public class InstitutionController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "기관 등록 요청", description = "새로운 기관 등록을 요청합니다. (인증 필요)")
     public ApiResponse<Void> registerInstitution(
-            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "file", required = true) MultipartFile file,
             @Valid @RequestPart(value = "data") InstitutionCreateRequestDto requestDto,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        log.info("Institution Create Request - DTO: {}", requestDto);
-        log.info("Institution Create Request - File: {}", file != null ? file.getOriginalFilename() : "null");
-
         institutionService.registerInstitution(adminDetails.getId(), requestDto, file);
         return ApiResponse.success(null);
     }
