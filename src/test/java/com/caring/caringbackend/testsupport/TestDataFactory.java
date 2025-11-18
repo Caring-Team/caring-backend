@@ -1,6 +1,7 @@
 package com.caring.caringbackend.testsupport;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.review.entity.Review;
@@ -16,8 +17,8 @@ import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.model.Gender;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public final class TestDataFactory {
 
@@ -63,32 +64,44 @@ public final class TestDataFactory {
                 100,
                 true,
                 null,
-                "09:00-18:00"
+                "09:00-18:00",
+                "123-45-67890",
+                null
         );
         institution.approveInstitution();
         return institution;
     }
 
     public static InstitutionCounsel createInstitutionCounsel(Institution institution) {
-        return InstitutionCounsel.builder()
-                .institution(institution)
-                .title("기본 상담")
-                .description("상담 설명")
-                .build();
+        return InstitutionCounsel.createInstitutionCounsel(
+                institution,
+                "기본 상담",
+                "상담 설명"
+        );
     }
 
     public static Reservation createReservation(InstitutionCounsel counsel, Member member,
                                                 ElderlyProfile profile, ReservationStatus status) {
-        Reservation reservation = Reservation.builder()
-                .institutionCounsel(counsel)
-                .member(member)
-                .elderlyProfile(profile)
-                .status(status)
-                .build();
-        ReflectionTestUtils.setField(reservation, "title", "예약 타이틀");
-        ReflectionTestUtils.setField(reservation, "description", "상담 예약입니다");
-        ReflectionTestUtils.setField(reservation, "reservationDate", LocalDate.now());
-        ReflectionTestUtils.setField(reservation, "reservationTime", "10:00");
+        // InstitutionCounselDetail 생성 (테스트용, 모든 시간 예약 가능한 비트마스크)
+        String allAvailableBitmask = "1".repeat(48); // 48개의 1 (모든 시간 예약 가능)
+        InstitutionCounselDetail counselDetail = InstitutionCounselDetail.create(
+                counsel,
+                LocalDate.now(),
+                allAvailableBitmask
+        );
+        
+        Reservation reservation = Reservation.createReservation(
+                counselDetail,
+                member,
+                profile,
+                LocalTime.of(10, 0)
+        );
+        
+        // COMPLETED 상태로 생성된 경우 completedAt도 자동 설정
+        if (status == ReservationStatus.COMPLETED) {
+            reservation.updateStatus(ReservationStatus.COMPLETED);
+        }
+        
         return reservation;
     }
 

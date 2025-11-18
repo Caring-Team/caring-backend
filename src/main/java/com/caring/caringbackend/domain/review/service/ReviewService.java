@@ -76,8 +76,7 @@ public class ReviewService {
         }
 
         // 4. 예약 완료 후 90일 이내인지 확인
-        // TODO: Reservation 엔티티에 completedAt 필드 추가 필요 (현재는 updatedAt 사용)
-        LocalDateTime completedDate = reservation.getUpdatedAt();
+        LocalDateTime completedDate = reservation.getCompletedAt();
         if (completedDate != null && completedDate.isBefore(LocalDateTime.now().minusDays(90))) {
             throw new BusinessException(ErrorCode.REVIEW_CREATE_EXPIRED);
         }
