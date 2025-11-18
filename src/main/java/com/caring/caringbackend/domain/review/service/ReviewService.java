@@ -13,6 +13,10 @@ import com.caring.caringbackend.domain.review.entity.Review;
 import com.caring.caringbackend.domain.review.entity.ReviewReport;
 import com.caring.caringbackend.domain.review.repository.ReviewReportRepository;
 import com.caring.caringbackend.domain.review.repository.ReviewRepository;
+import com.caring.caringbackend.domain.tag.entity.ReviewTagMapping;
+import com.caring.caringbackend.domain.tag.entity.Tag;
+import com.caring.caringbackend.domain.tag.repository.ReviewTagMappingRepository;
+import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
@@ -45,6 +49,8 @@ public class ReviewService {
     private final ReviewReportRepository reviewReportRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
+    private final TagRepository tagRepository;
+    private final ReviewTagMappingRepository reviewTagMappingRepository;
 
     /**
      * 리뷰 작성
@@ -100,9 +106,12 @@ public class ReviewService {
         log.info("리뷰 작성 완료: reviewId={}, memberId={}, institutionId={}, rating={}",
                 savedReview.getId(), memberId, institution.getId(), request.getRating());
 
-        // TODO: 태그 연결 (ReviewTagMapping 생성)
+        // 8. 태그 연결 (ReviewTagMapping 생성)
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            saveReviewTags(savedReview, request.getTagIds());
+        }
 
-        // 8. 응답 반환
+        // 9. 응답 반환
         return ReviewResponse.from(savedReview);
     }
 
@@ -144,13 +153,13 @@ public class ReviewService {
      * 기관의 리뷰 목록 조회 (공개)
      *
      * @param institutionId 기관 ID
-     * @param pageable      페이징 정보
+     * @param pageable      페이징 정보 (정렬: createdAt, rating 지원)
      * @return 리뷰 목록 응답
      */
     public ReviewListResponse getInstitutionReviews(Long institutionId, Pageable pageable) {
         // 1. 리뷰 목록 조회 (삭제되지 않은 리뷰만)
         // 기관 존재 여부는 리뷰 조회 시 자동으로 확인됨 (없으면 빈 목록 반환)
-        Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(
+        Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalse(
                 institutionId, pageable);
 
         // 2. DTO 변환
@@ -201,9 +210,13 @@ public class ReviewService {
         log.info("리뷰 수정 완료: reviewId={}, memberId={}, rating={}",
                 reviewId, memberId, request.getRating());
 
-        // TODO: 태그 업데이트 (ReviewTagMapping 수정)
+        // 4. 태그 업데이트 (기존 태그 삭제 후 재생성)
+        reviewTagMappingRepository.deleteByReviewId(reviewId);
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            saveReviewTags(review, request.getTagIds());
+        }
 
-        // 4. 응답 반환
+        // 5. 응답 반환
         return ReviewResponse.from(review);
     }
 
@@ -268,6 +281,34 @@ public class ReviewService {
 
         log.info("리뷰 신고 완료: reportId={}, reviewId={}, reporterId={}, reason={}",
                 reviewReport.getId(), reviewId, memberId, request.getReportReason());
+    }
+
+    /**
+     * 리뷰 태그 저장 헬퍼 메서드
+     *
+     * @param review 리뷰
+     * @param tagIds 태그 ID 목록
+     */
+    private void saveReviewTags(Review review, List<Long> tagIds) {
+        // 1. 태그 조회
+        List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
+
+        // 2. 존재하지 않는 태그 ID 검증
+        if (tags.size() != tagIds.size()) {
+            throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
+        }
+
+        // 3. ReviewTagMapping 생성 및 저장
+        List<ReviewTagMapping> mappings = tags.stream()
+                .map(tag -> ReviewTagMapping.builder()
+                        .review(review)
+                        .tag(tag)
+                        .build())
+                .collect(Collectors.toList());
+
+        reviewTagMappingRepository.saveAll(mappings);
+
+        log.debug("리뷰 태그 저장 완료: reviewId={}, tagCount={}", review.getId(), mappings.size());
     }
 }
 

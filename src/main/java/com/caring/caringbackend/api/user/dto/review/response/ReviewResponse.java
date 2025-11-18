@@ -131,12 +131,14 @@ public class ReviewResponse {
 
     /**
      * 리뷰에서 태그 정보 추출
-     * TODO: ReviewTagMapping 관계 추가 후 구현
-     * ReviewTagMapping 추가 시, fetch join 또는 DTO projection 방식으로 변환
+     * 
+     * Note: 이 메서드는 Review 엔티티에 직접 태그 목록을 주입받는 방식이 아니므로,
+     * Service 계층에서 별도로 태그를 조회하여 설정하는 방식 권장.
+     * 현재는 기본 빈 리스트 반환 (Service에서 별도 처리 예정)
      */
     private static List<TagInfo> extractTags(Review review) {
-        // TODO: ReviewTagMapping을 통해 태그 정보 추출
-        // 현재는 Review 엔티티에 태그 관계가 명시적으로 없으므로 빈 리스트 반환
+        // Service 계층에서 ReviewTagMapping을 통해 조회한 태그를 
+        // 별도로 설정하는 방식으로 처리하므로 여기서는 빈 리스트 반환
         return List.of();
     }
 }

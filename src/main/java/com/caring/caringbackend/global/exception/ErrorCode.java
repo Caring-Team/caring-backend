@@ -111,6 +111,9 @@ public enum ErrorCode {
     REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
     REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
 
+    // 🏷️ Tag Domain Errors (TAG-xxx)
+    TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
+
     // 👤 Member Delete Constraints
     CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
     ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),

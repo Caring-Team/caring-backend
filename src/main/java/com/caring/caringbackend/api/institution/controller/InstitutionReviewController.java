@@ -30,12 +30,24 @@ public class InstitutionReviewController {
 
     /**
      * 기관의 리뷰 목록 조회 (공개)
+     * 
+     * 정렬 옵션:
+     * - createdAt,desc (최신순, 기본값)
+     * - rating,desc (별점 높은 순)
+     * - rating,asc (별점 낮은 순)
      */
     @GetMapping("/{institutionId}/reviews")
-    @Operation(summary = "기관 리뷰 목록 조회", description = "특정 기관의 리뷰 목록을 조회합니다. (공개, 삭제되지 않은 리뷰만)")
+    @Operation(
+            summary = "기관 리뷰 목록 조회", 
+            description = "특정 기관의 리뷰 목록을 조회합니다. (공개, 삭제되지 않은 리뷰만)\n\n" +
+                    "**정렬 옵션:**\n" +
+                    "- `sort=createdAt,desc` (최신순, 기본값)\n" +
+                    "- `sort=rating,desc` (별점 높은 순)\n" +
+                    "- `sort=rating,asc` (별점 낮은 순)"
+    )
     public ResponseEntity<ApiResponse<ReviewListResponse>> getInstitutionReviews(
             @PathVariable Long institutionId,
-            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
 
         ReviewListResponse reviews = reviewService.getInstitutionReviews(institutionId, pageable);
         return ResponseEntity.ok(ApiResponse.success("기관 리뷰 목록 조회 성공", reviews));

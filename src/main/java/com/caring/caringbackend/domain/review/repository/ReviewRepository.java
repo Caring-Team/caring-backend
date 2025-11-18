@@ -38,12 +38,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long memberId, Pageable pageable);
 
     /**
-     * 특정 기관의 리뷰 목록 조회 (삭제되지 않은 리뷰만, 신고되지 않은 리뷰만, 최신순)
+     * 특정 기관의 리뷰 목록 조회 (삭제되지 않은 리뷰만, 신고되지 않은 리뷰만)
      * <p>
      * N+1 문제 방지를 위해 member, institution 연관 관계를 즉시 로딩합니다.
+     * Pageable의 sort 파라미터로 정렬 순서를 지정할 수 있습니다.
      */
     @EntityGraph(attributePaths = {"member", "institution"})
-    Page<Review> findByInstitutionIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(Long institutionId, Pageable pageable);
+    Page<Review> findByInstitutionIdAndDeletedFalseAndReportedFalse(Long institutionId, Pageable pageable);
 
     /**
      * 특정 회원의 최근 리뷰 상위 5개 조회 (삭제되지 않은 리뷰만, 신고되지 않은 리뷰만)
