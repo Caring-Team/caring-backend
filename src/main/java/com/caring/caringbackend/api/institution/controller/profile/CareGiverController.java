@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institution.controller;
+package com.caring.caringbackend.api.institution.controller.profile;
 
 import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
