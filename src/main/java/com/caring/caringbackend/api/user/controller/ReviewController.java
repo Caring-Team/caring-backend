@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "⭐ Review", description = "리뷰 관리 API")
-@SecurityRequirement(name = "BearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 public class ReviewController {
 
     private final ReviewService reviewService;
