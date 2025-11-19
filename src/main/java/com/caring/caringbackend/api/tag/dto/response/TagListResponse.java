@@ -44,5 +44,15 @@ public class TagListResponse {
                 .totalCount(tagResponses.size())
                 .build();
     }
+    
+    /**
+     * TagResponse 리스트를 TagListResponse로 변환
+     */
+    public static TagListResponse of(List<TagResponse> tagResponses) {
+        return TagListResponse.builder()
+                .tags(tagResponses)
+                .totalCount(tagResponses.size())
+                .build();
+    }
 }
 

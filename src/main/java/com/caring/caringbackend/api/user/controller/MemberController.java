@@ -1,11 +1,13 @@
 package com.caring.caringbackend.api.user.controller;
 
+import com.caring.caringbackend.api.user.dto.member.request.MemberPreferenceTagRequest;
 import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.api.tag.dto.response.TagListResponse;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;
@@ -196,5 +198,30 @@ public class MemberController {
 
         MemberMyPageResponse myPage = memberService.getMyPage(memberDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("마이페이지 조회 성공", myPage));
+    }
+    
+    /**
+     * 내 선호 태그 조회
+     */
+    @GetMapping("/me/preference-tags")
+    @Operation(summary = "내 선호 태그 조회", description = "인증된 사용자의 선호 태그 목록을 조회합니다.")
+    public ResponseEntity<ApiResponse<TagListResponse>> getMyPreferenceTags(
+            @AuthenticationPrincipal MemberDetails memberDetails) {
+
+        TagListResponse tags = memberService.getPreferenceTags(memberDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("선호 태그 조회 성공", tags));
+    }
+    
+    /**
+     * 내 선호 태그 설정
+     */
+    @PutMapping("/me/preference-tags")
+    @Operation(summary = "내 선호 태그 설정", description = "인증된 사용자의 선호 태그를 설정합니다. (기존 태그를 덮어씁니다, 최대 10개)")
+    public ResponseEntity<ApiResponse<Void>> setMyPreferenceTags(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @Valid @RequestBody MemberPreferenceTagRequest request) {
+
+        memberService.setPreferenceTags(memberDetails.getId(), request);
+        return ResponseEntity.ok(ApiResponse.success("선호 태그 설정 성공", null));
     }
 }
