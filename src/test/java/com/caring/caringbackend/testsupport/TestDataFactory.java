@@ -66,7 +66,7 @@ public final class TestDataFactory {
                 null,
                 "09:00-18:00",
                 "123-45-67890",
-                null
+                "http://example.com/license.jpg"
         );
         institution.approveInstitution();
         return institution;
@@ -77,32 +77,26 @@ public final class TestDataFactory {
                 institution,
                 "기본 상담",
                 "상담 설명"
+                );
+    }
+
+    public static InstitutionCounselDetail createInstitutionCounselDetail(InstitutionCounsel counsel) {
+        return InstitutionCounselDetail.create(
+                counsel,
+                LocalDate.now().plusDays(1),
+                "111111111111111111111111111111111111111111111111" // 모든 시간 예약 가능
         );
     }
 
-    public static Reservation createReservation(InstitutionCounsel counsel, Member member,
+    public static Reservation createReservation(InstitutionCounselDetail counselDetail, Member member,
                                                 ElderlyProfile profile, ReservationStatus status) {
-        // InstitutionCounselDetail 생성 (테스트용, 모든 시간 예약 가능한 비트마스크)
-        String allAvailableBitmask = "1".repeat(48); // 48개의 1 (모든 시간 예약 가능)
-        InstitutionCounselDetail counselDetail = InstitutionCounselDetail.create(
-                counsel,
-                LocalDate.now(),
-                allAvailableBitmask
-        );
-        
-        Reservation reservation = Reservation.createReservation(
-                counselDetail,
-                member,
-                profile,
-                LocalTime.of(10, 0)
-        );
-        
-        // COMPLETED 상태로 생성된 경우 completedAt도 자동 설정
-        if (status == ReservationStatus.COMPLETED) {
-            reservation.updateStatus(ReservationStatus.COMPLETED);
-        }
-        
-        return reservation;
+        return Reservation.builder()
+                .counselDetail(counselDetail)
+                .member(member)
+                .elderlyProfile(profile)
+                .reservationTime(LocalTime.of(10, 0))
+                .status(status)
+                .build();
     }
 
     public static Review createReview(Reservation reservation, Member member, Institution institution) {

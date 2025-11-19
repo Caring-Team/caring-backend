@@ -9,6 +9,7 @@ import com.caring.caringbackend.api.user.dto.review.request.ReviewReportRequest;
 import com.caring.caringbackend.api.user.dto.review.request.ReviewUpdateRequest;
 import com.caring.caringbackend.api.user.dto.review.response.ReviewResponse;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
@@ -73,8 +74,12 @@ class ReviewServiceTest extends IntegrationTestBase {
         entityManager.persist(counsel);
         entityManager.flush();
 
+        InstitutionCounselDetail counselDetail = TestDataFactory.createInstitutionCounselDetail(counsel);
+        entityManager.persist(counselDetail);
+        entityManager.flush();
+
         Reservation reservation = reservationRepository.save(
-                TestDataFactory.createReservation(counsel, member, profile, ReservationStatus.COMPLETED));
+                TestDataFactory.createReservation(counselDetail, member, profile, ReservationStatus.COMPLETED));
 
         ReviewCreateRequest request = ReviewCreateRequest.builder()
                 .reservationId(reservation.getId())
@@ -101,8 +106,13 @@ class ReviewServiceTest extends IntegrationTestBase {
         InstitutionCounsel counsel = TestDataFactory.createInstitutionCounsel(institution);
         entityManager.persist(counsel);
         entityManager.flush();
+
+        InstitutionCounselDetail counselDetail = TestDataFactory.createInstitutionCounselDetail(counsel);
+        entityManager.persist(counselDetail);
+        entityManager.flush();
+
         Reservation reservation = reservationRepository.save(
-                TestDataFactory.createReservation(counsel, member, profile, ReservationStatus.COMPLETED));
+                TestDataFactory.createReservation(counselDetail, member, profile, ReservationStatus.COMPLETED));
 
         ReviewCreateRequest request = ReviewCreateRequest.builder()
                 .reservationId(reservation.getId())
@@ -142,9 +152,10 @@ class ReviewServiceTest extends IntegrationTestBase {
         // given
         Review review = prepareReview();
         // created_at 은 BaseEntity에서 updatable=false 이므로 네이티브 쿼리로 직접 갱신한다
-        entityManager.createNativeQuery("update review set created_at = :ts where id = :id")
-                .setParameter("ts", java.sql.Timestamp.valueOf(LocalDateTime.now().minusDays(31)))
-                .setParameter("id", review.getId())
+        entityManager.createNativeQuery(
+                "UPDATE review SET created_at = ?1 WHERE id = ?2")
+                .setParameter(1, java.sql.Timestamp.valueOf(LocalDateTime.now().minusDays(31)))
+                .setParameter(2, review.getId())
                 .executeUpdate();
         entityManager.clear();
 
@@ -204,8 +215,13 @@ class ReviewServiceTest extends IntegrationTestBase {
         InstitutionCounsel counsel = TestDataFactory.createInstitutionCounsel(institution);
         entityManager.persist(counsel);
         entityManager.flush();
+
+        InstitutionCounselDetail counselDetail = TestDataFactory.createInstitutionCounselDetail(counsel);
+        entityManager.persist(counselDetail);
+        entityManager.flush();
+
         Reservation reservation = reservationRepository.save(
-                TestDataFactory.createReservation(counsel, member, profile, ReservationStatus.COMPLETED));
+                TestDataFactory.createReservation(counselDetail, member, profile, ReservationStatus.COMPLETED));
 
         Review review = reviewRepository.save(TestDataFactory.createReview(reservation, member, institution));
 
