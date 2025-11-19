@@ -88,7 +88,7 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
-        // TODO: Reservation 엔티티에 completedAt 필드 추가 후, 완료일 기준으로 검증 필요
+        // 6. 기관 조회
         Institution institution = getInstitution(reservation);
 
         // 7. 리뷰 생성
@@ -110,8 +110,11 @@ public class ReviewService {
             saveReviewTags(savedReview, request.getTagIds());
         }
 
-        // 9. 응답 반환
-        return ReviewResponse.from(savedReview);
+        // 9. 태그 포함 응답 반환
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(savedReview.getId()).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+        return ReviewResponse.fromWithTags(savedReview, tags);
     }
 
     private static Institution getInstitution(Reservation reservation) {
@@ -139,9 +142,14 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(
                 memberId, pageable);
 
-        // 3. DTO 변환
+        // 3. DTO 변환 (태그 포함)
         List<ReviewResponse> reviewResponses = reviewPage.getContent().stream()
-                .map(ReviewResponse::from)
+                .map(review -> {
+                    List<Tag> tags = reviewTagMappingRepository.findByReviewId(review.getId()).stream()
+                            .map(ReviewTagMapping::getTag)
+                            .collect(Collectors.toList());
+                    return ReviewResponse.fromWithTags(review, tags);
+                })
                 .collect(Collectors.toList());
 
         // 4. 응답 반환
@@ -161,9 +169,14 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalse(
                 institutionId, pageable);
 
-        // 2. DTO 변환
+        // 2. DTO 변환 (태그 포함)
         List<ReviewResponse> reviewResponses = reviewPage.getContent().stream()
-                .map(ReviewResponse::from)
+                .map(review -> {
+                    List<Tag> tags = reviewTagMappingRepository.findByReviewId(review.getId()).stream()
+                            .map(ReviewTagMapping::getTag)
+                            .collect(Collectors.toList());
+                    return ReviewResponse.fromWithTags(review, tags);
+                })
                 .collect(Collectors.toList());
 
         // 3. 응답 반환
@@ -180,7 +193,12 @@ public class ReviewService {
         Review review = reviewRepository.findByIdAndDeletedFalse(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
 
-        return ReviewResponse.from(review);
+        // 리뷰에 연결된 태그 조회
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(reviewId).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+
+        return ReviewResponse.fromWithTags(review, tags);
     }
 
     /**
@@ -215,8 +233,11 @@ public class ReviewService {
             saveReviewTags(review, request.getTagIds());
         }
 
-        // 5. 응답 반환
-        return ReviewResponse.from(review);
+        // 5. 태그 포함 응답 반환
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(reviewId).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+        return ReviewResponse.fromWithTags(review, tags);
     }
 
     /**

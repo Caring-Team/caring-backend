@@ -1,6 +1,7 @@
 package com.caring.caringbackend.api.user.dto.review.response;
 
 import com.caring.caringbackend.domain.review.entity.Review;
+import com.caring.caringbackend.domain.tag.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -140,6 +141,42 @@ public class ReviewResponse {
         // Service 계층에서 ReviewTagMapping을 통해 조회한 태그를 
         // 별도로 설정하는 방식으로 처리하므로 여기서는 빈 리스트 반환
         return List.of();
+    }
+
+    /**
+     * Review와 Tag 목록으로 ReviewResponse 생성
+     * 
+     * @param review 리뷰 엔티티
+     * @param tags 태그 목록
+     * @return ReviewResponse
+     */
+    public static ReviewResponse fromWithTags(Review review, List<Tag> tags) {
+        List<TagInfo> tagInfos = tags.stream()
+                .map(tag -> TagInfo.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .build())
+                .toList();
+
+        return ReviewResponse.builder()
+                .id(review.getId())
+                .reservationId(review.getReservation().getId())
+                .member(review.getMember() != null ?
+                        MemberInfo.builder()
+                                .id(review.getMember().getId())
+                                .name(review.getMember().getName())
+                                .build() : null)
+                .institution(review.getInstitution() != null ?
+                        InstitutionInfo.builder()
+                                .id(review.getInstitution().getId())
+                                .name(review.getInstitution().getName())
+                                .build() : null)
+                .content(review.getContent())
+                .rating(review.getRating())
+                .tags(tagInfos)
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
+                .build();
     }
 }
 
