@@ -106,11 +106,18 @@ public class Tag extends BaseEntity {
     }
 
     // 비즈니스 로직: 정보 업데이트
-    public void updateInfo(String name, String description, Integer displayOrder) {
+    public void updateInfo(String name, String description, Boolean isActive, Integer displayOrder) {
         if (name != null && !name.isBlank()) {
             this.name = name;
         }
-        this.description = description;
-        this.displayOrder = displayOrder;
+        if (description != null) {
+            this.description = description;
+        }
+        if (isActive != null) {
+            this.isActive = isActive;
+        }
+        if (displayOrder != null) {
+            this.displayOrder = displayOrder;
+        }
     }
 }

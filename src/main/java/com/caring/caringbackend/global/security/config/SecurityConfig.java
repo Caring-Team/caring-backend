@@ -5,6 +5,7 @@ import com.caring.caringbackend.global.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -75,7 +76,8 @@ public class SecurityConfig {
                         // 공개 API (인증 불필요)
                         .requestMatchers("/api/v1/institutions/*/reviews").permitAll()  // 기관 리뷰 목록 조회
                         .requestMatchers("/api/v1/reviews/*").permitAll()  // 리뷰 상세 조회
-                        .requestMatchers("/api/v1/tags/**").permitAll()  // 태그 조회
+                        .requestMatchers(HttpMethod.GET, "/api/v1/tags/**").permitAll()  // 태그 조회만 공개
+                        .requestMatchers("/api/v1/tags/**").hasRole("ADMIN")  // 태그 관리는 시스템 관리자만
 
                         // 테스트 경로 (개발 환경)
                         .requestMatchers("/api/v1/test/**").permitAll()

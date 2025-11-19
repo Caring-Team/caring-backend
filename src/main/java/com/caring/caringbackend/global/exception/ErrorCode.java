@@ -23,7 +23,6 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-405", "허용되지 않은 HTTP 메서드입니다"),
     CONFLICT(HttpStatus.CONFLICT, "COMMON-409", "리소스 충돌이 발생했습니다"),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
 
     // 📝 Validation Errors (VALID-xxx)
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALID-400", "입력값 검증에 실패했습니다"),
@@ -114,6 +113,7 @@ public enum ErrorCode {
 
     // 🏷️ Tag Domain Errors (TAG-xxx)
     TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
+    TAG_ALREADY_EXISTS(HttpStatus.CONFLICT, "TAG-002", "이미 존재하는 태그 코드입니다"),
 
     // 👤 Member Delete Constraints
     CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
