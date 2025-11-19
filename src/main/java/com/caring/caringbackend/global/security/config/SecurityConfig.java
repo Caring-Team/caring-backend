@@ -72,6 +72,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/institution/certification-code").permitAll()
                         .requestMatchers("/api/v1/auth/institution/token/refresh").permitAll()
 
+                        // 공개 API (인증 불필요)
+                        .requestMatchers("/api/v1/institutions/*/reviews").permitAll()  // 기관 리뷰 목록 조회
+                        .requestMatchers("/api/v1/reviews/*").permitAll()  // 리뷰 상세 조회
+                        .requestMatchers("/api/v1/tags/**").permitAll()  // 태그 조회
+
                         // 테스트 경로 (개발 환경)
                         .requestMatchers("/api/v1/test/**").permitAll()
 

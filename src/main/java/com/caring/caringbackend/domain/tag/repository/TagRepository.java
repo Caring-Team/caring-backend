@@ -43,5 +43,20 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      * @return 태그 목록
      */
     List<Tag> findByCategoryAndIsActiveTrueOrderByDisplayOrderAsc(TagCategory category);
+
+    /**
+     * 태그 코드 존재 여부 확인
+     *
+     * @param code 태그 코드
+     * @return 존재 여부
+     */
+    boolean existsByCode(String code);
+
+    /**
+     * 전체 활성화된 태그 목록 조회
+     *
+     * @return 태그 목록
+     */
+    List<Tag> findByIsActiveTrueOrderByCategoryAscDisplayOrderAsc();
 }
 
