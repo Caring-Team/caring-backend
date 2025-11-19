@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institution.controller;
+package com.caring.caringbackend.api.institution.controller.profile;
 
 import com.caring.caringbackend.api.user.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.domain.review.service.ReviewService;
