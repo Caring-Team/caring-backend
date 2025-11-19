@@ -48,3 +48,6 @@ docs/
 
 # QueryDSL
 src/main/generated/
+
+# VSCode
+.vscode/
