@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,7 +42,7 @@ public class AdminAdvertisementController {
     public ApiResponse<Page<AdvertisementSummaryDto>> getAllRequests(
             @Parameter(description = "신청 상태 필터") @RequestParam(required = false) AdvertisementStatus status,
             @Parameter(description = "광고 유형 필터") @RequestParam(required = false) AdvertisementType type,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         log.info("전체 신청 목록 조회 (관리자) - status: {}, type: {}", status, type);
 
@@ -60,10 +61,8 @@ public class AdminAdvertisementController {
     @GetMapping("/requests/pending")
     @Operation(summary = "승인 대기 신청 목록", description = "승인 대기 중인 광고 신청 목록을 조회합니다.")
     public ApiResponse<Page<AdvertisementSummaryDto>> getPendingRequests(
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        log.info("승인 대기 신청 목록 조회");
-
         Page<AdvertisementSummaryDto> response = advertisementService.getPendingRequests(pageable);
 
         return ApiResponse.success(response);
@@ -126,7 +125,7 @@ public class AdminAdvertisementController {
     public ApiResponse<Page<AdvertisementSummaryDto>> getAllAdvertisements(
             @Parameter(description = "광고 상태 필터") @RequestParam(required = false) AdvertisementStatus status,
             @Parameter(description = "광고 유형 필터") @RequestParam(required = false) AdvertisementType type,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         log.info("전체 광고 목록 조회 (관리자) - status: {}, type: {}", status, type);
 
@@ -157,15 +156,15 @@ public class AdminAdvertisementController {
     /**
      * 광고 강제 종료
      */
-    @PatchMapping("/{adId}/force-end")
+    @PatchMapping("/{advertisementId}/force-end")
     @Operation(summary = "광고 강제 종료", description = "관리자가 진행중인 광고를 강제로 종료합니다.")
     public ApiResponse<AdvertisementResponseDto> forceEndAdvertisement(
-            @PathVariable Long adId,
+            @PathVariable Long advertisementId,
             @Parameter(description = "종료 사유", required = true) @RequestParam @NotBlank String reason
     ) {
-        log.info("광고 강제 종료 요청 - adId: {}", adId);
+        log.info("광고 강제 종료 요청 - adId: {}", advertisementId);
 
-        AdvertisementResponseDto response = advertisementService.forceEndAdvertisement(adId, reason);
+        AdvertisementResponseDto response = advertisementService.forceEndAdvertisement(advertisementId, reason);
 
         return ApiResponse.success("광고가 종료되었습니다.", response);
     }
