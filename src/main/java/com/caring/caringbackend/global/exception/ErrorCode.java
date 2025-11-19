@@ -121,7 +121,18 @@ public enum ErrorCode {
 
     // 📅 Reservation Errors (RES-xxx)
     RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다"),
-    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다");
+    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다"),
+
+    // 📢 Advertisement Domain Errors (AD-xxx)
+    ADVERTISEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "AD-001", "광고를 찾을 수 없습니다"),
+    INVALID_ADVERTISEMENT_PERIOD(HttpStatus.BAD_REQUEST, "AD-002", "광고 기간이 올바르지 않습니다"),
+    ADVERTISEMENT_PERIOD_TOO_SHORT(HttpStatus.BAD_REQUEST, "AD-003", "광고 기간이 너무 짧습니다 (최소 1일)"),
+    DUPLICATE_ADVERTISEMENT_PERIOD(HttpStatus.BAD_REQUEST, "AD-004", "해당 기간에 이미 신청된 광고가 있습니다"),
+    INVALID_ADVERTISEMENT_STATUS(HttpStatus.BAD_REQUEST, "AD-005", "현재 광고 상태에서는 해당 작업을 수행할 수 없습니다"),
+    CANNOT_CANCEL_ACTIVE_ADVERTISEMENT(HttpStatus.BAD_REQUEST, "AD-006", "진행중인 광고는 취소할 수 없습니다. 관리자에게 문의하세요"),
+    ADVERTISEMENT_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "AD-007", "이미 종료되었거나 취소된 광고입니다"),
+    ADVERTISEMENT_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "AD-008", "해당 광고 유형의 동시 진행 한도를 초과했습니다"),
+    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다");
 
 
     private final HttpStatus httpStatus;
