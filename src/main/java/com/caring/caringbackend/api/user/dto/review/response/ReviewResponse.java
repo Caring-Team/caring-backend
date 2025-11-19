@@ -58,6 +58,11 @@ public class ReviewResponse {
      * 🏷️ 리뷰 태그 목록
      */
     private List<TagInfo> tags;
+    
+    /**
+     * 📷 리뷰 이미지 URL 목록
+     */
+    private List<String> imageUrls;
 
     /**
      * 📅 생성일시
@@ -174,6 +179,45 @@ public class ReviewResponse {
                 .content(review.getContent())
                 .rating(review.getRating())
                 .tags(tagInfos)
+                .imageUrls(List.of()) // 이미지는 별도로 조회 필요
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
+                .build();
+    }
+    
+    /**
+     * Review, Tag, 이미지 URL로 ReviewResponse 생성
+     * 
+     * @param review 리뷰 엔티티
+     * @param tags 태그 목록
+     * @param imageUrls 이미지 URL 목록
+     * @return ReviewResponse
+     */
+    public static ReviewResponse fromWithTagsAndImages(Review review, List<Tag> tags, List<String> imageUrls) {
+        List<TagInfo> tagInfos = tags.stream()
+                .map(tag -> TagInfo.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .build())
+                .toList();
+
+        return ReviewResponse.builder()
+                .id(review.getId())
+                .reservationId(review.getReservation().getId())
+                .member(review.getMember() != null ?
+                        MemberInfo.builder()
+                                .id(review.getMember().getId())
+                                .name(review.getMember().getName())
+                                .build() : null)
+                .institution(review.getInstitution() != null ?
+                        InstitutionInfo.builder()
+                                .id(review.getInstitution().getId())
+                                .name(review.getInstitution().getName())
+                                .build() : null)
+                .content(review.getContent())
+                .rating(review.getRating())
+                .tags(tagInfos)
+                .imageUrls(imageUrls != null ? imageUrls : List.of())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .build();
