@@ -18,7 +18,7 @@ import java.util.Optional;
  * 기관 광고 Repository
  */
 @Repository
-public interface InstitutionAdvertisementRepository extends JpaRepository<InstitutionAdvertisement, Long> {
+public interface InstitutionAdvertisementRepository extends JpaRepository<InstitutionAdvertisement, Long>, InstitutionAdvertisementCustom {
 
     // ==================== 기관용 (페이징 없음) ====================
 
@@ -34,31 +34,11 @@ public interface InstitutionAdvertisementRepository extends JpaRepository<Instit
 
     // ==================== 관리자용 (페이징) ====================
 
-    /**
-     * 기관 ID로 광고 목록 조회 (페이징) - 관리자용
-     */
-    Page<InstitutionAdvertisement> findByInstitutionId(Long institutionId, Pageable pageable);
-
-
-    /**
-     * 기관 ID, 상태, 광고 유형으로 광고 목록 조회 (페이징)
-     */
-    Page<InstitutionAdvertisement> findByInstitutionIdAndStatusAndType(
-            Long institutionId,
-            AdvertisementStatus status,
-            AdvertisementType type,
-            Pageable pageable
-    );
 
     /**
      * 광고 ID와 기관 ID로 조회 (권한 확인용)
      */
     Optional<InstitutionAdvertisement> findByIdAndInstitutionId(Long id, Long institutionId);
-
-    /**
-     * 승인 대기 광고 목록 조회 (관리자용, 페이징)
-     */
-    Page<InstitutionAdvertisement> findByStatus(AdvertisementStatus status, Pageable pageable);
 
     /**
      * 특정 상태와 시작 시간 이전인 광고 목록 조회 (스케줄러용)
