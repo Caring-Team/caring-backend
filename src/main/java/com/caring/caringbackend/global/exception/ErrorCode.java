@@ -115,9 +115,6 @@ public enum ErrorCode {
     TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
     TAG_ALREADY_EXISTS(HttpStatus.CONFLICT, "TAG-002", "이미 존재하는 태그 코드입니다"),
 
-    // 🏷️ Tag Domain Errors (TAG-xxx)
-    TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
-
     // 👤 Member Delete Constraints
     CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
     ADMIN_INSTITUTION_MISMATCH(HttpStatus.FORBIDDEN, "INST-014", "기관 관리자와 기관 정보가 일치하지 않습니다"),
