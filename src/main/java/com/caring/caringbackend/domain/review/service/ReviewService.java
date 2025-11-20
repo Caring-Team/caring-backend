@@ -13,6 +13,14 @@ import com.caring.caringbackend.domain.review.entity.Review;
 import com.caring.caringbackend.domain.review.entity.ReviewReport;
 import com.caring.caringbackend.domain.review.repository.ReviewReportRepository;
 import com.caring.caringbackend.domain.review.repository.ReviewRepository;
+import com.caring.caringbackend.domain.file.entity.File;
+import com.caring.caringbackend.domain.file.entity.FileCategory;
+import com.caring.caringbackend.domain.file.entity.ReferenceType;
+import com.caring.caringbackend.domain.file.service.FileService;
+import com.caring.caringbackend.domain.tag.entity.ReviewTagMapping;
+import com.caring.caringbackend.domain.tag.entity.Tag;
+import com.caring.caringbackend.domain.tag.repository.ReviewTagMappingRepository;
+import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
@@ -24,8 +32,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,16 +55,22 @@ public class ReviewService {
     private final ReviewReportRepository reviewReportRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
+    private final TagRepository tagRepository;
+    private final ReviewTagMappingRepository reviewTagMappingRepository;
+    private final FileService fileService;
+    
+    private static final int MAX_REVIEW_IMAGES = 5;
 
     /**
      * 리뷰 작성
      *
      * @param memberId 회원 ID
      * @param request  리뷰 작성 요청
+     * @param images   리뷰 이미지 파일 목록 (최대 5개)
      * @return 작성된 리뷰 응답
      */
     @Transactional
-    public ReviewResponse createReview(Long memberId, ReviewCreateRequest request) {
+    public ReviewResponse createReview(Long memberId, ReviewCreateRequest request, List<MultipartFile> images) {
         // 1. 회원 존재 확인
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
@@ -70,8 +86,7 @@ public class ReviewService {
         }
 
         // 4. 예약 완료 후 90일 이내인지 확인
-        // TODO: Reservation 엔티티에 completedAt 필드 추가 필요 (현재는 updatedAt 사용)
-        LocalDateTime completedDate = reservation.getUpdatedAt();
+        LocalDateTime completedDate = reservation.getCompletedAt();
         if (completedDate != null && completedDate.isBefore(LocalDateTime.now().minusDays(90))) {
             throw new BusinessException(ErrorCode.REVIEW_CREATE_EXPIRED);
         }
@@ -83,7 +98,7 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
-        // TODO: Reservation 엔티티에 completedAt 필드 추가 후, 완료일 기준으로 검증 필요
+        // 6. 기관 조회
         Institution institution = getInstitution(reservation);
 
         // 7. 리뷰 생성
@@ -100,10 +115,19 @@ public class ReviewService {
         log.info("리뷰 작성 완료: reviewId={}, memberId={}, institutionId={}, rating={}",
                 savedReview.getId(), memberId, institution.getId(), request.getRating());
 
-        // TODO: 태그 연결 (ReviewTagMapping 생성)
+        // 8. 태그 연결 (ReviewTagMapping 생성)
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            saveReviewTags(savedReview, request.getTagIds());
+        }
 
-        // 8. 응답 반환
-        return ReviewResponse.from(savedReview);
+        // 9. 이미지 업로드 및 저장
+        List<String> imageUrls = uploadReviewImages(images, savedReview.getId());
+
+        // 10. 태그 및 이미지 포함 응답 반환
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(savedReview.getId()).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+        return ReviewResponse.fromWithTagsAndImages(savedReview, tags, imageUrls);
     }
 
     private static Institution getInstitution(Reservation reservation) {
@@ -131,9 +155,15 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findByMemberIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(
                 memberId, pageable);
 
-        // 3. DTO 변환
+        // 3. DTO 변환 (태그 및 이미지 포함)
         List<ReviewResponse> reviewResponses = reviewPage.getContent().stream()
-                .map(ReviewResponse::from)
+                .map(review -> {
+                    List<Tag> tags = reviewTagMappingRepository.findByReviewId(review.getId()).stream()
+                            .map(ReviewTagMapping::getTag)
+                            .collect(Collectors.toList());
+                    List<String> imageUrls = getReviewImageUrls(review.getId());
+                    return ReviewResponse.fromWithTagsAndImages(review, tags, imageUrls);
+                })
                 .collect(Collectors.toList());
 
         // 4. 응답 반환
@@ -144,18 +174,24 @@ public class ReviewService {
      * 기관의 리뷰 목록 조회 (공개)
      *
      * @param institutionId 기관 ID
-     * @param pageable      페이징 정보
+     * @param pageable      페이징 정보 (정렬: createdAt, rating 지원)
      * @return 리뷰 목록 응답
      */
     public ReviewListResponse getInstitutionReviews(Long institutionId, Pageable pageable) {
         // 1. 리뷰 목록 조회 (삭제되지 않은 리뷰만)
         // 기관 존재 여부는 리뷰 조회 시 자동으로 확인됨 (없으면 빈 목록 반환)
-        Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalseOrderByCreatedAtDesc(
+        Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalse(
                 institutionId, pageable);
 
-        // 2. DTO 변환
+        // 2. DTO 변환 (태그 및 이미지 포함)
         List<ReviewResponse> reviewResponses = reviewPage.getContent().stream()
-                .map(ReviewResponse::from)
+                .map(review -> {
+                    List<Tag> tags = reviewTagMappingRepository.findByReviewId(review.getId()).stream()
+                            .map(ReviewTagMapping::getTag)
+                            .collect(Collectors.toList());
+                    List<String> imageUrls = getReviewImageUrls(review.getId());
+                    return ReviewResponse.fromWithTagsAndImages(review, tags, imageUrls);
+                })
                 .collect(Collectors.toList());
 
         // 3. 응답 반환
@@ -172,7 +208,15 @@ public class ReviewService {
         Review review = reviewRepository.findByIdAndDeletedFalse(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
 
-        return ReviewResponse.from(review);
+        // 리뷰에 연결된 태그 조회
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(reviewId).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+        
+        // 리뷰 이미지 URL 조회
+        List<String> imageUrls = getReviewImageUrls(reviewId);
+
+        return ReviewResponse.fromWithTagsAndImages(review, tags, imageUrls);
     }
 
     /**
@@ -181,10 +225,11 @@ public class ReviewService {
      * @param memberId 회원 ID
      * @param reviewId 리뷰 ID
      * @param request  리뷰 수정 요청
+     * @param images   리뷰 이미지 파일 목록 (최대 5개)
      * @return 수정된 리뷰 응답
      */
     @Transactional
-    public ReviewResponse updateReview(Long memberId, Long reviewId, ReviewUpdateRequest request) {
+    public ReviewResponse updateReview(Long memberId, Long reviewId, ReviewUpdateRequest request, List<MultipartFile> images) {
         // 1. 리뷰 조회 및 작성자 확인
         Review review = reviewRepository.findByIdAndMemberIdAndDeletedFalse(reviewId, memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED));
@@ -201,10 +246,21 @@ public class ReviewService {
         log.info("리뷰 수정 완료: reviewId={}, memberId={}, rating={}",
                 reviewId, memberId, request.getRating());
 
-        // TODO: 태그 업데이트 (ReviewTagMapping 수정)
+        // 4. 태그 업데이트 (기존 태그 삭제 후 재생성)
+        reviewTagMappingRepository.deleteByReviewId(reviewId);
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            saveReviewTags(review, request.getTagIds());
+        }
 
-        // 4. 응답 반환
-        return ReviewResponse.from(review);
+        // 5. 이미지 업데이트 (기존 이미지 삭제 후 재업로드)
+        deleteReviewImages(reviewId);
+        List<String> imageUrls = uploadReviewImages(images, reviewId);
+
+        // 6. 태그 및 이미지 포함 응답 반환
+        List<Tag> tags = reviewTagMappingRepository.findByReviewId(reviewId).stream()
+                .map(ReviewTagMapping::getTag)
+                .collect(Collectors.toList());
+        return ReviewResponse.fromWithTagsAndImages(review, tags, imageUrls);
     }
 
     /**
@@ -268,6 +324,102 @@ public class ReviewService {
 
         log.info("리뷰 신고 완료: reportId={}, reviewId={}, reporterId={}, reason={}",
                 reviewReport.getId(), reviewId, memberId, request.getReportReason());
+    }
+
+    /**
+     * 리뷰 태그 저장 헬퍼 메서드
+     *
+     * @param review 리뷰
+     * @param tagIds 태그 ID 목록
+     */
+    private void saveReviewTags(Review review, List<Long> tagIds) {
+        // 1. 태그 조회
+        List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
+
+        // 2. 존재하지 않는 태그 ID 검증
+        if (tags.size() != tagIds.size()) {
+            throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
+        }
+
+        // 3. ReviewTagMapping 생성 및 저장
+        List<ReviewTagMapping> mappings = tags.stream()
+                .map(tag -> ReviewTagMapping.builder()
+                        .review(review)
+                        .tag(tag)
+                        .build())
+                .collect(Collectors.toList());
+
+        reviewTagMappingRepository.saveAll(mappings);
+
+        log.debug("리뷰 태그 저장 완료: reviewId={}, tagCount={}", review.getId(), mappings.size());
+    }
+    
+    /**
+     * 리뷰 이미지 업로드 헬퍼 메서드
+     *
+     * @param images 업로드할 이미지 파일 목록
+     * @param reviewId 리뷰 ID
+     * @return 업로드된 이미지 URL 목록
+     */
+    private List<String> uploadReviewImages(List<MultipartFile> images, Long reviewId) {
+        if (images == null || images.isEmpty()) {
+            return List.of();
+        }
+        
+        // 이미지 개수 제한 검증
+        if (images.size() > MAX_REVIEW_IMAGES) {
+            throw new BusinessException(ErrorCode.REVIEW_IMAGE_LIMIT_EXCEEDED);
+        }
+        
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile image : images) {
+            File uploadedFile = fileService.uploadFileWithMetadata(
+                    image,
+                    FileCategory.REVIEW_IMAGE,
+                    reviewId,
+                    ReferenceType.REVIEW
+            );
+            imageUrls.add(uploadedFile.getFileUrl());
+        }
+        
+        log.info("리뷰 이미지 업로드 완료: reviewId={}, imageCount={}", reviewId, imageUrls.size());
+        return imageUrls;
+    }
+    
+    /**
+     * 리뷰 이미지 URL 조회 헬퍼 메서드
+     *
+     * @param reviewId 리뷰 ID
+     * @return 이미지 URL 목록
+     */
+    private List<String> getReviewImageUrls(Long reviewId) {
+        List<File> files = fileService.getFilesByReferenceAndCategory(
+                reviewId,
+                ReferenceType.REVIEW,
+                FileCategory.REVIEW_IMAGE
+        );
+        return files.stream()
+                .map(File::getFileUrl)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * 리뷰 이미지 삭제 헬퍼 메서드
+     *
+     * @param reviewId 리뷰 ID
+     */
+    private void deleteReviewImages(Long reviewId) {
+        List<File> files = fileService.getFilesByReferenceAndCategory(
+                reviewId,
+                ReferenceType.REVIEW,
+                FileCategory.REVIEW_IMAGE
+        );
+        
+        for (File file : files) {
+            fileService.deleteFile(file.getId());
+        }
+        
+        log.info("리뷰 이미지 삭제 완료: reviewId={}, deletedCount={}", reviewId, files.size());
     }
 }
 

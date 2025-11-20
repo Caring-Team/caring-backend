@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -49,7 +50,11 @@ public class Reservation extends BaseTimeEntity {
     // 예약 상태
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReservationStatus status = ReservationStatus.COMPLETED;
+    private ReservationStatus status = ReservationStatus.PENDING;
+
+    // 예약 완료 일시 (리뷰 작성 가능 기간 판정용)
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
 
     @Builder
     public Reservation(InstitutionCounselDetail counselDetail,
@@ -72,14 +77,21 @@ public class Reservation extends BaseTimeEntity {
                 .member(member)
                 .elderlyProfile(elderlyProfile)
                 .reservationTime(reservationTime)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.PENDING)
                 .build();
     }
 
     /**
      * 예약 상태 변경
+     * <p>
+     * 상태가 COMPLETED로 변경될 때 completedAt을 자동으로 설정합니다.
      */
     public void updateStatus(ReservationStatus newStatus) {
         this.status = newStatus;
+        
+        // 상태가 COMPLETED로 변경되면 완료 시각 기록
+        if (newStatus == ReservationStatus.COMPLETED && this.completedAt == null) {
+            this.completedAt = LocalDateTime.now();
+        }
     }
 }

@@ -189,7 +189,7 @@ public class GlobalExceptionHandler {
             log.warn("📂 Resource not found: {}", uri);
         }
 
-        ErrorCode errorCode = ErrorCode.RESOURCE_NOT_FOUND;
+        ErrorCode errorCode = ErrorCode.NOT_FOUND;
         ApiResponse<Object> response = ApiResponse.builder()
                 .success(false)
                 .code(errorCode.getCode())

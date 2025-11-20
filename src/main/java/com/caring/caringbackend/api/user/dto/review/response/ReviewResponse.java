@@ -1,6 +1,7 @@
 package com.caring.caringbackend.api.user.dto.review.response;
 
 import com.caring.caringbackend.domain.review.entity.Review;
+import com.caring.caringbackend.domain.tag.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,6 +58,11 @@ public class ReviewResponse {
      * 🏷️ 리뷰 태그 목록
      */
     private List<TagInfo> tags;
+    
+    /**
+     * 📷 리뷰 이미지 URL 목록
+     */
+    private List<String> imageUrls;
 
     /**
      * 📅 생성일시
@@ -131,13 +137,90 @@ public class ReviewResponse {
 
     /**
      * 리뷰에서 태그 정보 추출
-     * TODO: ReviewTagMapping 관계 추가 후 구현
-     * ReviewTagMapping 추가 시, fetch join 또는 DTO projection 방식으로 변환
+     * 
+     * Note: 이 메서드는 Review 엔티티에 직접 태그 목록을 주입받는 방식이 아니므로,
+     * Service 계층에서 별도로 태그를 조회하여 설정하는 방식 권장.
+     * 현재는 기본 빈 리스트 반환 (Service에서 별도 처리 예정)
      */
     private static List<TagInfo> extractTags(Review review) {
-        // TODO: ReviewTagMapping을 통해 태그 정보 추출
-        // 현재는 Review 엔티티에 태그 관계가 명시적으로 없으므로 빈 리스트 반환
+        // Service 계층에서 ReviewTagMapping을 통해 조회한 태그를 
+        // 별도로 설정하는 방식으로 처리하므로 여기서는 빈 리스트 반환
         return List.of();
+    }
+
+    /**
+     * Review와 Tag 목록으로 ReviewResponse 생성
+     * 
+     * @param review 리뷰 엔티티
+     * @param tags 태그 목록
+     * @return ReviewResponse
+     */
+    public static ReviewResponse fromWithTags(Review review, List<Tag> tags) {
+        List<TagInfo> tagInfos = tags.stream()
+                .map(tag -> TagInfo.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .build())
+                .toList();
+
+        return ReviewResponse.builder()
+                .id(review.getId())
+                .reservationId(review.getReservation().getId())
+                .member(review.getMember() != null ?
+                        MemberInfo.builder()
+                                .id(review.getMember().getId())
+                                .name(review.getMember().getName())
+                                .build() : null)
+                .institution(review.getInstitution() != null ?
+                        InstitutionInfo.builder()
+                                .id(review.getInstitution().getId())
+                                .name(review.getInstitution().getName())
+                                .build() : null)
+                .content(review.getContent())
+                .rating(review.getRating())
+                .tags(tagInfos)
+                .imageUrls(List.of()) // 이미지는 별도로 조회 필요
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
+                .build();
+    }
+    
+    /**
+     * Review, Tag, 이미지 URL로 ReviewResponse 생성
+     * 
+     * @param review 리뷰 엔티티
+     * @param tags 태그 목록
+     * @param imageUrls 이미지 URL 목록
+     * @return ReviewResponse
+     */
+    public static ReviewResponse fromWithTagsAndImages(Review review, List<Tag> tags, List<String> imageUrls) {
+        List<TagInfo> tagInfos = tags.stream()
+                .map(tag -> TagInfo.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .build())
+                .toList();
+
+        return ReviewResponse.builder()
+                .id(review.getId())
+                .reservationId(review.getReservation().getId())
+                .member(review.getMember() != null ?
+                        MemberInfo.builder()
+                                .id(review.getMember().getId())
+                                .name(review.getMember().getName())
+                                .build() : null)
+                .institution(review.getInstitution() != null ?
+                        InstitutionInfo.builder()
+                                .id(review.getInstitution().getId())
+                                .name(review.getInstitution().getName())
+                                .build() : null)
+                .content(review.getContent())
+                .rating(review.getRating())
+                .tags(tagInfos)
+                .imageUrls(imageUrls != null ? imageUrls : List.of())
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
+                .build();
     }
 }
 

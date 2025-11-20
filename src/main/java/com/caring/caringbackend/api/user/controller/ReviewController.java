@@ -19,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * ⭐ 리뷰(Review) 관리 Controller
@@ -32,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "⭐ Review", description = "리뷰 관리 API")
-@SecurityRequirement(name = "BearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -40,13 +43,14 @@ public class ReviewController {
     /**
      * 리뷰 작성
      */
-    @PostMapping
-    @Operation(summary = "리뷰 작성", description = "완료된 예약에 대한 리뷰를 작성합니다.")
+    @PostMapping(consumes = {"multipart/form-data"})
+    @Operation(summary = "리뷰 작성", description = "완료된 예약에 대한 리뷰를 작성합니다. (이미지 최대 5개)")
     public ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
-            @Valid @RequestBody ReviewCreateRequest request) {
+            @Valid @RequestPart("request") ReviewCreateRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        ReviewResponse review = reviewService.createReview(memberDetails.getId(), request);
+        ReviewResponse review = reviewService.createReview(memberDetails.getId(), request, images);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("리뷰 작성 성공", review));
     }
@@ -79,14 +83,15 @@ public class ReviewController {
     /**
      * 리뷰 수정
      */
-    @PutMapping("/{reviewId}")
-    @Operation(summary = "리뷰 수정", description = "본인이 작성한 리뷰를 수정합니다. (작성 후 30일 이내만 수정 가능)")
+    @PutMapping(value = "/{reviewId}", consumes = {"multipart/form-data"})
+    @Operation(summary = "리뷰 수정", description = "본인이 작성한 리뷰를 수정합니다. (작성 후 30일 이내만 수정 가능, 이미지 최대 5개)")
     public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequest request) {
+            @Valid @RequestPart("request") ReviewUpdateRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        ReviewResponse review = reviewService.updateReview(memberDetails.getId(), reviewId, request);
+        ReviewResponse review = reviewService.updateReview(memberDetails.getId(), reviewId, request, images);
         return ResponseEntity.ok(ApiResponse.success("리뷰 수정 성공", review));
     }
 

@@ -12,6 +12,10 @@ import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdm
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
+import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
+import com.caring.caringbackend.domain.tag.entity.Tag;
+import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
+import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
@@ -41,6 +45,8 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final GeocodingService geocodingService;
     private final List<InstitutionSearchStrategy> searchStrategies;
     private final FileService fileService;
+    private final TagRepository tagRepository;
+    private final InstitutionTagRepository institutionTagRepository;
 
     /**
      * 기관 등록
@@ -104,6 +110,13 @@ public class InstitutionServiceImpl implements InstitutionService {
         if (uploadedFile.getId() != null) {
             fileService.updateFileReference(uploadedFile.getId(), savedInstitution.getId(), INSTITUTION);
         }
+        
+        // 태그 연결 (InstitutionTag 생성)
+        if (requestDto.getTagIds() != null && !requestDto.getTagIds().isEmpty()) {
+            saveInstitutionTags(savedInstitution, requestDto.getTagIds());
+        }
+        
+        log.info("기관 등록 완료: institutionId={}, adminId={}", savedInstitution.getId(), adminId);
     }
 
     /**
@@ -178,6 +191,14 @@ public class InstitutionServiceImpl implements InstitutionService {
                 updatedPriceInfo,
                 requestDto.getOpeningHours()
         );
+        
+        // 태그 업데이트 (기존 태그 삭제 후 재생성)
+        if (requestDto.getTagIds() != null) {
+            institutionTagRepository.deleteByInstitutionId(institutionId);
+            if (!requestDto.getTagIds().isEmpty()) {
+                saveInstitutionTags(institution, requestDto.getTagIds());
+            }
+        }
 
         log.info("기관 정보 수정 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
 
@@ -384,5 +405,33 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getAdmissionFee() != null ||
                 requestDto.getMonthlyMealCost() != null ||
                 requestDto.getPriceNotes() != null;
+    }
+    
+    /**
+     * 기관 태그 저장 헬퍼 메서드
+     *
+     * @param institution 기관
+     * @param tagIds 태그 ID 목록
+     */
+    private void saveInstitutionTags(Institution institution, List<Long> tagIds) {
+        // 1. 태그 조회
+        List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
+        
+        // 2. 존재하지 않는 태그 ID 검증
+        if (tags.size() != tagIds.size()) {
+            throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
+        }
+        
+        // 3. InstitutionTag 생성 및 저장
+        List<InstitutionTag> institutionTags = tags.stream()
+                .map(tag -> InstitutionTag.builder()
+                        .institution(institution)
+                        .tag(tag)
+                        .build())
+                .toList();
+        
+        institutionTagRepository.saveAll(institutionTags);
+        
+        log.debug("기관 태그 저장 완료: institutionId={}, tagCount={}", institution.getId(), institutionTags.size());
     }
 }

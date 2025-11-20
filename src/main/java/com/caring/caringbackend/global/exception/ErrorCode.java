@@ -23,7 +23,6 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-405", "허용되지 않은 HTTP 메서드입니다"),
     CONFLICT(HttpStatus.CONFLICT, "COMMON-409", "리소스 충돌이 발생했습니다"),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
 
     // 📝 Validation Errors (VALID-xxx)
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALID-400", "입력값 검증에 실패했습니다"),
@@ -110,6 +109,11 @@ public enum ErrorCode {
     REVIEW_CREATE_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-005", "예약 완료 후 90일 이내에만 리뷰를 작성할 수 있습니다"),
     REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
     REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
+    REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "REVIEW-008", "리뷰 이미지는 최대 5개까지 업로드할 수 있습니다"),
+
+    // 🏷️ Tag Domain Errors (TAG-xxx)
+    TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
+    TAG_ALREADY_EXISTS(HttpStatus.CONFLICT, "TAG-002", "이미 존재하는 태그 코드입니다"),
 
     // 👤 Member Delete Constraints
     CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
