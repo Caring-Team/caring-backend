@@ -93,8 +93,8 @@ public class SwaggerConfig {
                 .description("🔧 로컬 개발 서버");
 
         Server devServer = new Server()
-                .url("http://43.203.41.246/")
-                .description("🚀 개발 서버");
+                .url("http://43.203.41.246:8080")
+                .description("🚀 개발 서버 (EC2)");
 
         return List.of(localServer, devServer);
     }

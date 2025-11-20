@@ -1,6 +1,7 @@
 package com.caring.caringbackend.testsupport;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.review.entity.Review;
@@ -16,8 +17,8 @@ import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.model.Gender;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public final class TestDataFactory {
 
@@ -63,33 +64,39 @@ public final class TestDataFactory {
                 100,
                 true,
                 null,
-                "09:00-18:00"
+                "09:00-18:00",
+                "123-45-67890",
+                "http://example.com/license.jpg"
         );
         institution.approveInstitution();
         return institution;
     }
 
     public static InstitutionCounsel createInstitutionCounsel(Institution institution) {
-        return InstitutionCounsel.builder()
-                .institution(institution)
-                .title("기본 상담")
-                .description("상담 설명")
-                .build();
+        return InstitutionCounsel.createInstitutionCounsel(
+                institution,
+                "기본 상담",
+                "상담 설명"
+                );
     }
 
-    public static Reservation createReservation(InstitutionCounsel counsel, Member member,
+    public static InstitutionCounselDetail createInstitutionCounselDetail(InstitutionCounsel counsel) {
+        return InstitutionCounselDetail.create(
+                counsel,
+                LocalDate.now().plusDays(1),
+                "111111111111111111111111111111111111111111111111" // 모든 시간 예약 가능
+        );
+    }
+
+    public static Reservation createReservation(InstitutionCounselDetail counselDetail, Member member,
                                                 ElderlyProfile profile, ReservationStatus status) {
-        Reservation reservation = Reservation.builder()
-                .institutionCounsel(counsel)
+        return Reservation.builder()
+                .counselDetail(counselDetail)
                 .member(member)
                 .elderlyProfile(profile)
+                .reservationTime(LocalTime.of(10, 0))
                 .status(status)
                 .build();
-        ReflectionTestUtils.setField(reservation, "title", "예약 타이틀");
-        ReflectionTestUtils.setField(reservation, "description", "상담 예약입니다");
-        ReflectionTestUtils.setField(reservation, "reservationDate", LocalDate.now());
-        ReflectionTestUtils.setField(reservation, "reservationTime", "10:00");
-        return reservation;
     }
 
     public static Review createReview(Reservation reservation, Member member, Institution institution) {

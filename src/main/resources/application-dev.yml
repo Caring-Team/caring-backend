@@ -13,6 +13,7 @@ spring:
             hibernate:
                 format_sql: false  # P6Spy에서 포맷팅하므로 비활성화
                 default_schema: public
+                dialect: org.hibernate.dialect.PostgreSQLDialect
         open-in-view: false
     data:
         redis:
