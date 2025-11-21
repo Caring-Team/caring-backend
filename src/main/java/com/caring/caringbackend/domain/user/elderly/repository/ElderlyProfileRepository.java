@@ -33,4 +33,12 @@ public interface ElderlyProfileRepository extends JpaRepository<ElderlyProfile, 
      * 특정 회원의 어르신 프로필 수 조회 (삭제되지 않은 프로필만)
      */
     long countByMemberIdAndDeletedFalse(Long memberId);
+
+    /**
+     * 특정 회원의 최신 어르신 프로필 상위 3개 조회 (삭제되지 않은 프로필만)
+     *
+     * @param memberId 회원 ID
+     * @return 최신 어르신 프로필 상위 3개
+     */
+    List<ElderlyProfile> findTop3ByMemberIdAndDeletedFalseOrderByCreatedAtDesc(Long memberId);
 }
