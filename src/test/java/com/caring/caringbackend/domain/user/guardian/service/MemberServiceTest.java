@@ -6,6 +6,7 @@ import com.caring.caringbackend.IntegrationTestBase;
 import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.domain.review.entity.Review;
@@ -126,8 +127,13 @@ class MemberServiceTest extends IntegrationTestBase {
         InstitutionCounsel counsel = TestDataFactory.createInstitutionCounsel(institution);
         entityManager.persist(counsel);
         entityManager.flush();
+
+        InstitutionCounselDetail counselDetail = TestDataFactory.createInstitutionCounselDetail(counsel);
+        entityManager.persist(counselDetail);
+        entityManager.flush();
+
         Reservation reservation = reservationRepository.save(
-                TestDataFactory.createReservation(counsel, member, profile, ReservationStatus.COMPLETED));
+                TestDataFactory.createReservation(counselDetail, member, profile, ReservationStatus.COMPLETED));
         return new ReservationBundle(reservation, institution, counsel);
     }
 

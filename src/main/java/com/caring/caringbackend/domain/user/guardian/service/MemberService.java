@@ -1,11 +1,18 @@
 package com.caring.caringbackend.domain.user.guardian.service;
 
+import com.caring.caringbackend.api.tag.dto.response.TagListResponse;
+import com.caring.caringbackend.api.tag.dto.response.TagResponse;
+import com.caring.caringbackend.api.user.dto.member.request.MemberPreferenceTagRequest;
 import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.domain.tag.entity.MemberPreferenceTag;
+import com.caring.caringbackend.domain.tag.entity.Tag;
+import com.caring.caringbackend.domain.tag.repository.MemberPreferenceTagRepository;
+import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.domain.review.entity.Review;
 import com.caring.caringbackend.domain.review.repository.ReviewRepository;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
@@ -47,6 +54,8 @@ public class MemberService {
     private final ElderlyProfileRepository elderlyProfileRepository;
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
+    private final TagRepository tagRepository;
+    private final MemberPreferenceTagRepository memberPreferenceTagRepository;
 
     /**
      * 회원 단건 조회
@@ -196,5 +205,65 @@ public class MemberService {
         GeoPoint location = geocodingService.convertAddressToGeoPoint(updatedAddress);
         log.info("회원 주소 변경으로 인한 위치 업데이트: memberId={}, location={}", memberId, location);
         return location;
+    }
+    
+    /**
+     * 회원 선호 태그 조회
+     * 
+     * @param memberId 회원 ID
+     * @return 선호 태그 목록
+     */
+    public TagListResponse getPreferenceTags(Long memberId) {
+        // 회원 존재 확인
+        memberRepository.findByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        
+        // 선호 태그 조회
+        List<MemberPreferenceTag> preferenceTags = memberPreferenceTagRepository.findByMemberId(memberId);
+        
+        List<TagResponse> tagResponses = preferenceTags.stream()
+                .map(preferenceTag -> TagResponse.from(preferenceTag.getTag()))
+                .toList();
+        
+        log.info("선호 태그 조회: memberId={}, tagCount={}", memberId, tagResponses.size());
+        return TagListResponse.of(tagResponses);
+    }
+    
+    /**
+     * 회원 선호 태그 설정
+     * 
+     * @param memberId 회원 ID
+     * @param request 선호 태그 설정 요청
+     */
+    @Transactional
+    public void setPreferenceTags(Long memberId, MemberPreferenceTagRequest request) {
+        // 회원 존재 확인
+        Member member = memberRepository.findByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        
+        // 기존 선호 태그 삭제
+        memberPreferenceTagRepository.deleteByMemberId(memberId);
+        
+        // 새 선호 태그 저장
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            List<Tag> tags = tagRepository.findAllByIdIn(request.getTagIds());
+            
+            // 존재하지 않는 태그 ID 검증
+            if (tags.size() != request.getTagIds().size()) {
+                throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
+            }
+            
+            List<MemberPreferenceTag> preferenceTags = tags.stream()
+                    .map(tag -> MemberPreferenceTag.builder()
+                            .member(member)
+                            .tag(tag)
+                            .build())
+                    .toList();
+            
+            memberPreferenceTagRepository.saveAll(preferenceTags);
+            log.info("선호 태그 설정 완료: memberId={}, tagCount={}", memberId, preferenceTags.size());
+        } else {
+            log.info("선호 태그 전체 삭제: memberId={}", memberId);
+        }
     }
 }

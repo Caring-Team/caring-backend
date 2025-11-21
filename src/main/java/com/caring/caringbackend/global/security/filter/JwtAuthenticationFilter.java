@@ -6,6 +6,7 @@ import com.caring.caringbackend.global.security.JwtUtils;
 import com.caring.caringbackend.global.security.details.JwtUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,14 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String header = request.getHeader("Authorization");
-            /*
-            if (header == null || !header.startsWith("Bearer ")) {
-                throw new JwtAuthenticationException("Could not find JWT token");
+            String accessToken = findAccessTokenFromHeader(request);
+            if (accessToken == null) {
+                accessToken = findAccessTokenFromCookie(request);
             }
-            */
-            if (header != null && header.startsWith("Bearer ")) {
-                String accessToken = header.substring(7);
+            if (accessToken != null) {
                 if (jwtUtils.isTokenExpired(accessToken)) {
                     throw new JwtAuthenticationException("Expired JWT token");
                 }
@@ -57,5 +55,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         filterChain.doFilter(request, response);
+    }
+
+    private static String findAccessTokenFromHeader(HttpServletRequest request) {
+        String header = request.getHeader( "Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
+    }
+
+    private static String findAccessTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

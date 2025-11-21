@@ -23,7 +23,6 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-405", "허용되지 않은 HTTP 메서드입니다"),
     CONFLICT(HttpStatus.CONFLICT, "COMMON-409", "리소스 충돌이 발생했습니다"),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "요청한 리소스를 찾을 수 없습니다"),
 
     // 📝 Validation Errors (VALID-xxx)
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALID-400", "입력값 검증에 실패했습니다"),
@@ -110,6 +109,11 @@ public enum ErrorCode {
     REVIEW_CREATE_EXPIRED(HttpStatus.BAD_REQUEST, "REVIEW-005", "예약 완료 후 90일 이내에만 리뷰를 작성할 수 있습니다"),
     REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
     REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
+    REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "REVIEW-008", "리뷰 이미지는 최대 5개까지 업로드할 수 있습니다"),
+
+    // 🏷️ Tag Domain Errors (TAG-xxx)
+    TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),
+    TAG_ALREADY_EXISTS(HttpStatus.CONFLICT, "TAG-002", "이미 존재하는 태그 코드입니다"),
 
     // 👤 Member Delete Constraints
     CANNOT_DELETE_MEMBER_WITH_ACTIVE_RESERVATION(HttpStatus.BAD_REQUEST, "USER-010", "진행 중인 예약이 있어 회원 탈퇴가 불가합니다"),
@@ -117,7 +121,18 @@ public enum ErrorCode {
 
     // 📅 Reservation Errors (RES-xxx)
     RESERVATION_TIME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "RES-001", "선택한 예약 시간이 유효하지 않습니다"),
-    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다");
+    INSTITUTION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "RES-003", "해당 예약에 대한 권한이 없습니다"),
+
+    // 📢 Advertisement Domain Errors (AD-xxx)
+    ADVERTISEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "AD-001", "광고를 찾을 수 없습니다"),
+    INVALID_ADVERTISEMENT_PERIOD(HttpStatus.BAD_REQUEST, "AD-002", "광고 기간이 올바르지 않습니다"),
+    ADVERTISEMENT_PERIOD_TOO_SHORT(HttpStatus.BAD_REQUEST, "AD-003", "광고 기간이 너무 짧습니다 (최소 1일)"),
+    DUPLICATE_ADVERTISEMENT_PERIOD(HttpStatus.BAD_REQUEST, "AD-004", "해당 기간에 이미 신청된 광고가 있습니다"),
+    INVALID_ADVERTISEMENT_STATUS(HttpStatus.BAD_REQUEST, "AD-005", "현재 광고 상태에서는 해당 작업을 수행할 수 없습니다"),
+    CANNOT_CANCEL_ACTIVE_ADVERTISEMENT(HttpStatus.BAD_REQUEST, "AD-006", "진행중인 광고는 취소할 수 없습니다. 관리자에게 문의하세요"),
+    ADVERTISEMENT_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "AD-007", "이미 종료되었거나 취소된 광고입니다"),
+    ADVERTISEMENT_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "AD-008", "해당 광고 유형의 동시 진행 한도를 초과했습니다"),
+    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다");
 
 
     private final HttpStatus httpStatus;
