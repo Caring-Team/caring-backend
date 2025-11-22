@@ -1,9 +1,13 @@
 package com.caring.caringbackend.global.integration.ai.service;
 
+import com.caring.caringbackend.api.recommendation.dto.response.RecommendationResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
+import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.integration.ai.config.AiServerProperties;
 import com.caring.caringbackend.global.integration.ai.dto.InstitutionEmbeddingRequest;
 import com.caring.caringbackend.global.integration.ai.dto.InstitutionEmbeddingResponse;
+import com.caring.caringbackend.global.integration.ai.dto.RecommendationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -132,6 +136,57 @@ public class AiServerServiceImpl implements AiServerService {
     }
 
     /**
+     * AI 서버로 Member와 ElderlyProfile을 보내고 추천 기관 목록을 받아오는 메서드
+     *
+     * @param member         보호자 회원 엔티티
+     * @param elderlyProfile 노인 프로필 엔티티
+     * @return 추천 기관 응답 DTO
+     */
+    @Override
+    public RecommendationResponseDto recommend(Member member, ElderlyProfile elderlyProfile) {
+        try {
+            // Member와 ElderlyProfile을 요청 DTO로 변환
+            RecommendationRequest request = convertToRecommendationRequest(member, elderlyProfile);
+
+            // HTTP 헤더 설정
+            HttpHeaders headers = createHeaders();
+            HttpEntity<RecommendationRequest> entity = new HttpEntity<>(request, headers);
+
+            // AI 서버로 POST 요청
+            log.info("AI 서버로 추천 요청 전송: memberId={}, elderlyProfileId={}",
+                    member.getId(), elderlyProfile.getId());
+
+            String recommendationUrl = aiServerProperties.getRecommendationPath();
+            ResponseEntity<RecommendationResponseDto> response = restTemplate.exchange(
+                    recommendationUrl,
+                    HttpMethod.POST,
+                    entity,
+                    RecommendationResponseDto.class
+            );
+
+            // 응답 검증
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                RecommendationResponseDto body = response.getBody();
+                log.info("AI 서버 추천 성공: memberId={}", member.getId());
+                return body;
+            }
+
+            log.warn("AI 서버 추천 실패: memberId={}, status={}",
+                    member.getId(), response.getStatusCode());
+            return null;
+
+        } catch (RestClientException e) {
+            log.error("AI 서버 통신 오류 (추천 요청): memberId={}, elderlyProfileId={}, error={}",
+                    member.getId(), elderlyProfile.getId(), e.getMessage(), e);
+            return null;
+        } catch (Exception e) {
+            log.error("추천 요청 중 예상치 못한 오류: memberId={}, elderlyProfileId={}, error={}",
+                    member.getId(), elderlyProfile.getId(), e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
      * 기관 엔티티를 AI 서버 요청 DTO로 변환
      */
     private InstitutionEmbeddingRequest convertToEmbeddingRequest(Institution institution) {
@@ -156,8 +211,10 @@ public class AiServerServiceImpl implements AiServerService {
                 .name(institution.getName())
                 .institutionType(institution.getInstitutionType().getDescription())
                 .address(address)
-                .latitude(institution.getLocation().getLatitude())
-                .longitude(institution.getLocation().getLongitude())
+                .latitude(institution.getLocation() != null ?
+                        institution.getLocation().getLatitude() : null)
+                .longitude(institution.getLocation() != null?
+                        institution.getLocation().getLongitude() : null)
                 .bedCount(institution.getBedCount())
                 .monthlyBaseFee(institution.getPriceInfo() != null ?
                         institution.getPriceInfo().getMonthlyBaseFee() : null)
@@ -176,16 +233,76 @@ public class AiServerServiceImpl implements AiServerService {
     }
 
     /**
+     * Member와 ElderlyProfile을 AI 서버 추천 요청 DTO로 변환
+     */
+    private RecommendationRequest convertToRecommendationRequest(Member member, ElderlyProfile elderlyProfile) {
+        // Member 엔티티의 preferenceTags를 직접 사용
+        // 선호 태그를 카테고리별로 분류
+        Map<String, List<String>> preferenceTagsByCategory = member.getPreferenceTags()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        memberPreferenceTag -> memberPreferenceTag.getTag().getCategory().name(),
+                        Collectors.mapping(
+                                memberPreferenceTag -> memberPreferenceTag.getTag().getName(),
+                                Collectors.toList()
+                        )
+                ));
+
+        // 회원 정보 생성
+        RecommendationRequest.MemberInfo memberInfo = RecommendationRequest.MemberInfo.builder()
+                .memberId(member.getId())
+                .name(member.getName())
+                .preferredSpecializedDiseases(preferenceTagsByCategory.getOrDefault("SPECIALIZATION", List.of()))
+                .preferredServiceTypes(preferenceTagsByCategory.getOrDefault("SERVICE", List.of()))
+                .preferredOperationalFeatures(preferenceTagsByCategory.getOrDefault("OPERATION", List.of()))
+                .preferredFacilityFeatures(preferenceTagsByCategory.getOrDefault("ENVIRONMENT", List.of()))
+                .latitude(member.getLocation() != null ? member.getLocation().getLatitude() : null)
+                .longitude(member.getLocation() != null ? member.getLocation().getLongitude() : null)
+                .build();
+
+        // 주소 문자열 생성
+        String address = null;
+        if (elderlyProfile.getAddress() != null) {
+            address = String.format("%s %s %s",
+                    elderlyProfile.getAddress().getCity(),
+                    elderlyProfile.getAddress().getStreet(),
+                    elderlyProfile.getAddress().getZipCode());
+        }
+
+        // 어르신 정보 생성
+        RecommendationRequest.ElderlyInfo elderlyInfo = RecommendationRequest.ElderlyInfo.builder()
+                .elderlyProfileId(elderlyProfile.getId())
+                .name(elderlyProfile.getName())
+                .gender(elderlyProfile.getGender() != null ? elderlyProfile.getGender().name() : null)
+                .birthDate(elderlyProfile.getBirthDate() != null ? elderlyProfile.getBirthDate().toString() : null)
+                .bloodType(elderlyProfile.getBloodType() != null ? elderlyProfile.getBloodType().name() : null)
+                .phoneNumber(elderlyProfile.getPhoneNumber())
+                .longTermCareGrade(elderlyProfile.getLongTermCareGrade() != null ?
+                        elderlyProfile.getLongTermCareGrade().name() : null)
+                .activityLevel(elderlyProfile.getActivityLevel() != null ?
+                        elderlyProfile.getActivityLevel().name() : null)
+                .cognitiveLevel(elderlyProfile.getCognitiveLevel() != null ?
+                        elderlyProfile.getCognitiveLevel().name() : null)
+                .notes(elderlyProfile.getNotes())
+                .address(address)
+                .latitude(elderlyProfile.getLocation() != null ?
+                        elderlyProfile.getLocation().getLatitude() : null)
+                .longitude(elderlyProfile.getLocation() != null ?
+                        elderlyProfile.getLocation().getLongitude() : null)
+                .build();
+
+        return RecommendationRequest.builder()
+                .member(memberInfo)
+                .elderly(elderlyInfo)
+                .build();
+    }
+
+    /**
      * HTTP 헤더 생성
      */
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // API 키가 설정되어 있으면 추가
-        if (aiServerProperties.getApiKey() != null && !aiServerProperties.getApiKey().isEmpty()) {
-            headers.set("X-API-Key", aiServerProperties.getApiKey());
-        }
 
         return headers;
     }
