@@ -256,6 +256,34 @@ public class InstitutionServiceImpl implements InstitutionService {
         log.info("기관 삭제 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
     }
 
+    /**
+     * 기관 태그 설정 (기존 태그를 덮어씁니다)
+     *
+     * @param adminId 관리자 ID
+     * @param institutionId 기관 ID
+     * @param tagIds 태그 ID 목록
+     */
+    @Override
+    @Transactional
+    public void setInstitutionTags(Long adminId, Long institutionId, List<Long> tagIds) {
+        Institution institution = findInstitutionById(institutionId);
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 권한 체크: 해당 기관의 OWNER 또는 STAFF 모두 가능
+        validateAdminAuthorization(admin, institution, false);
+
+        // 기존 태그 전체 삭제
+        institutionTagRepository.deleteByInstitutionId(institutionId);
+
+        // 새 태그 저장 (빈 리스트가 아닌 경우만)
+        if (tagIds != null && !tagIds.isEmpty()) {
+            saveInstitutionTags(institution, tagIds);
+        }
+
+        log.info("기관 태그 설정 완료: adminId={}, institutionId={}, tagCount={}",
+                adminId, institutionId, tagIds != null ? tagIds.size() : 0);
+    }
+
 
     /**
      * 기관 조회 내부 메서드
@@ -414,24 +442,23 @@ public class InstitutionServiceImpl implements InstitutionService {
      * @param tagIds 태그 ID 목록
      */
     private void saveInstitutionTags(Institution institution, List<Long> tagIds) {
-        // 1. 태그 조회
+        // 태그 조회
         List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
         
-        // 2. 존재하지 않는 태그 ID 검증
+        // 존재하지 않는 태그 ID 검증
         if (tags.size() != tagIds.size()) {
             throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
         }
         
-        // 3. InstitutionTag 생성 및 저장
+        // InstitutionTag 생성 및 저장
         List<InstitutionTag> institutionTags = tags.stream()
                 .map(tag -> InstitutionTag.builder()
                         .institution(institution)
                         .tag(tag)
                         .build())
                 .toList();
-        
+
+        institutionTags.forEach(institution::saveInstitutionTag);
         institutionTagRepository.saveAll(institutionTags);
-        
-        log.debug("기관 태그 저장 완료: institutionId={}, tagCount={}", institution.getId(), institutionTags.size());
     }
 }

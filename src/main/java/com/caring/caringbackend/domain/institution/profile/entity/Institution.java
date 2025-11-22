@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
@@ -86,6 +87,10 @@ public class Institution extends BaseEntity {
     // 상담 목록
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstitutionCounsel> counsels = new ArrayList<>();
+
+    // 태그 목록
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstitutionTag> tags = new ArrayList<>();
 
     // 가격표
     @Embedded
@@ -282,4 +287,7 @@ public class Institution extends BaseEntity {
         softDelete();
     }
 
+    public void saveInstitutionTag(InstitutionTag institutionTag) {
+        this.tags.add(institutionTag);
+    }
 }
