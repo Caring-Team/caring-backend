@@ -100,13 +100,16 @@ public class Institution extends BaseEntity {
     @Column(length = 500)
     private String openingHours;
 
+    @Column(length = 1000)
+    private String description;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Institution(String name, InstitutionType institutionType,
                         String phoneNumber, Address address, GeoPoint location,
                         ApprovalStatus approvalStatus, Integer bedCount,
                         Boolean isAdmissionAvailable,
                         PriceInfo priceInfo, String openingHours,
-                        String businessLicense, String businessLicenseImageUrl) {
+                        String businessLicense, String businessLicenseImageUrl,String description) {
 
         // 도메인 비즈니스 규칙 검증
         validate(phoneNumber, bedCount);
@@ -125,6 +128,7 @@ public class Institution extends BaseEntity {
         this.openingHours = openingHours;
         this.businessLicense = businessLicense;
         this.businessLicenseImageUrl = businessLicenseImageUrl;
+        this.description = description;
     }
 
     /**
@@ -141,7 +145,8 @@ public class Institution extends BaseEntity {
             PriceInfo priceInfo,
             String openingHours,
             String businessLicense,
-            String businessLicenseImageUrl) {
+            String businessLicenseImageUrl,
+            String description) {
 
         return new Institution(
                 name,
@@ -155,7 +160,8 @@ public class Institution extends BaseEntity {
                 priceInfo,
                 openingHours,
                 businessLicense,
-                businessLicenseImageUrl
+                businessLicenseImageUrl,
+                description
         );
     }
 

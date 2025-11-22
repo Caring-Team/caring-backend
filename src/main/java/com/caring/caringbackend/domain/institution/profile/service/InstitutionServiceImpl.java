@@ -18,6 +18,7 @@ import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
 import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
+import com.caring.caringbackend.global.integration.ai.service.AiServerService;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
@@ -47,6 +48,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final FileService fileService;
     private final TagRepository tagRepository;
     private final InstitutionTagRepository institutionTagRepository;
+    private final AiServerService aiServerService;
 
     /**
      * 기관 등록
@@ -100,7 +102,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                 priceInfo,
                 requestDto.getOpeningHours(),
                 requestDto.getBusinessLicense(),
-                uploadedFile.getFileUrl()  // 업로드한 파일 URL
+                uploadedFile.getFileUrl(),
+                requestDto.getDescription()
         );
 
         Institution savedInstitution = institutionRepository.save(institution);
@@ -215,6 +218,23 @@ public class InstitutionServiceImpl implements InstitutionService {
     public void approveInstitution(Long institutionId) {
         Institution institution = findInstitutionById(institutionId);
         institution.approveInstitution();
+
+        // 기관 승인 후 AI 서버에 기관 데이터 전송하여 임베딩 벡터로 저장
+        try {
+            boolean embeddingSuccess = aiServerService.sendInstitutionEmbedding(institution);
+            if (embeddingSuccess) {
+                log.info("기관 승인 및 AI 임베딩 완료: id={}, name={}",
+                        institution.getId(), institution.getName());
+            } else {
+                log.warn("기관 승인 완료했으나 AI 임베딩 실패: id={}, name={}",
+                        institution.getId(), institution.getName());
+            }
+        } catch (Exception e) {
+            // AI 서버 오류가 발생해도 기관 승인은 정상 처리
+            log.error("기관 승인은 완료했으나 AI 임베딩 중 오류 발생: id={}, name={}, error={}",
+                    institution.getId(), institution.getName(), e.getMessage(), e);
+        }
+
         log.info("기관 승인 완료: id={}, name={}", institution.getId(), institution.getName());
     }
 

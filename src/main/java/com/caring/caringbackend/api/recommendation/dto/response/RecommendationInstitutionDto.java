@@ -30,7 +30,7 @@ public record RecommendationInstitutionDto(
             String type,
             String address,
             Boolean isAvailable,
-            List<String> e,
+            List<String> tags,
             String recommendationReason
     ) {
         return new RecommendationInstitutionDto(
