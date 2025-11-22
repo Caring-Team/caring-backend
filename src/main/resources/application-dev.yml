@@ -85,5 +85,6 @@ ai:
     server:
         base-url: ${AI_SERVER_BASE_URL:http://localhost:8001}
         institution-embedding-path: /api/v1/institutions/embeddings
+        recommendation-path: /api/v1/recommendations
         connect-timeout: 5000
         read-timeout: 10000

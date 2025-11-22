@@ -27,6 +27,11 @@ public class AiServerProperties {
      */
     private String institutionEmbeddingPath = "/api/v1/embeddings/institution";
 
+
+    /**
+     * 추천 엔드포인트
+     */
+    private String recommendationPath = "/api/v1/recommendations";
     /**
      * 연결 타임아웃 (밀리초)
      */
