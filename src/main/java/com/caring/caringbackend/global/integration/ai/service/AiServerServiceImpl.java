@@ -154,7 +154,7 @@ public class AiServerServiceImpl implements AiServerService {
         return InstitutionEmbeddingRequest.builder()
                 .institutionId(institution.getId())
                 .name(institution.getName())
-                .institutionType(institution.getInstitutionType().name())
+                .institutionType(institution.getInstitutionType().getDescription())
                 .address(address)
                 .latitude(institution.getLocation().getLatitude())
                 .longitude(institution.getLocation().getLongitude())
