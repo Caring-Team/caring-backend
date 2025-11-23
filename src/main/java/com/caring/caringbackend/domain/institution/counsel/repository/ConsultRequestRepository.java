@@ -1,7 +1,6 @@
 package com.caring.caringbackend.domain.institution.counsel.repository;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequest;
-import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -54,20 +53,39 @@ public interface ConsultRequestRepository extends JpaRepository<ConsultRequest, 
     Optional<ConsultRequest> findByIdWithDetails(@Param("requestId") Long requestId);
     
     /**
-     * 회원의 특정 상담 서비스에 대한 활성 상담 요청 존재 여부 확인
+     * 회원의 특정 상담 서비스에 대한 ACTIVE 상태 상담 요청 존재 여부 확인
+     * - 같은 회원 + 같은 상담 서비스에 대해 ACTIVE 상태는 하나만 존재해야 함
      */
     @Query("""
             SELECT COUNT(cr) > 0
             FROM ConsultRequest cr
             WHERE cr.member.id = :memberId
             AND cr.counsel.id = :counselId
-            AND cr.status IN :activeStatuses
+            AND cr.status = 'ACTIVE'
             AND cr.deleted = false
             """)
-    boolean existsActiveByCounselAndMember(
+    boolean existsActiveByMemberAndCounsel(
             @Param("memberId") Long memberId,
-            @Param("counselId") Long counselId,
-            @Param("activeStatuses") List<ConsultRequestStatus> activeStatuses
+            @Param("counselId") Long counselId
+    );
+    
+    /**
+     * 회원과 상담 서비스로 ACTIVE 상태 상담 요청 조회
+     */
+    @Query("""
+            SELECT cr
+            FROM ConsultRequest cr
+            JOIN FETCH cr.member m
+            JOIN FETCH cr.institution i
+            JOIN FETCH cr.counsel c
+            WHERE cr.member.id = :memberId
+            AND cr.counsel.id = :counselId
+            AND cr.status = 'ACTIVE'
+            AND cr.deleted = false
+            """)
+    Optional<ConsultRequest> findActiveByMemberAndCounsel(
+            @Param("memberId") Long memberId,
+            @Param("counselId") Long counselId
     );
 }
 

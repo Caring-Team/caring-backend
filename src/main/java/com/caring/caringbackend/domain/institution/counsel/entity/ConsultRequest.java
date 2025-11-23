@@ -47,7 +47,7 @@ public class ConsultRequest extends BaseEntity {
     // 상담 요청 상태
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private ConsultRequestStatus status = ConsultRequestStatus.PENDING;
+    private ConsultRequestStatus status = ConsultRequestStatus.ACTIVE;
     
     @Builder
     private ConsultRequest(Member member, Institution institution, InstitutionCounsel counsel, String message) {
@@ -55,11 +55,12 @@ public class ConsultRequest extends BaseEntity {
         this.institution = institution;
         this.counsel = counsel;
         this.message = message;
-        this.status = ConsultRequestStatus.PENDING;
+        this.status = ConsultRequestStatus.ACTIVE;
     }
     
     /**
-     * 상담 요청 생성
+     * 상담 요청 생성 (상담 시작 시 호출)
+     * - 상담 시작 버튼 클릭 시 ConsultRequest + ChatRoom 동시 생성
      */
     public static ConsultRequest create(Member member, Institution institution, InstitutionCounsel counsel, String message) {
         return ConsultRequest.builder()
@@ -71,54 +72,21 @@ public class ConsultRequest extends BaseEntity {
     }
     
     /**
-     * 상담 요청 상태 변경
+     * 상담 종료
+     * - 회원 또는 기관 관리자가 상담을 종료할 수 있음
+     * - CLOSED 상태가 되면 채팅 불가
      */
-    public void updateStatus(ConsultRequestStatus newStatus) {
-        this.status = newStatus;
+    public void close() {
+        this.status = ConsultRequestStatus.CLOSED;
     }
     
     /**
-     * 상담 요청 수락
-     */
-    public void accept() {
-        this.status = ConsultRequestStatus.ACCEPTED;
-    }
-    
-    /**
-     * 상담 요청 거절
-     */
-    public void reject() {
-        this.status = ConsultRequestStatus.REJECTED;
-    }
-    
-    /**
-     * 상담 시작
-     */
-    public void startConsult() {
-        this.status = ConsultRequestStatus.IN_PROGRESS;
-    }
-    
-    /**
-     * 상담 완료
-     */
-    public void complete() {
-        this.status = ConsultRequestStatus.COMPLETED;
-    }
-    
-    /**
-     * 상담 요청 취소
-     */
-    public void cancel() {
-        this.status = ConsultRequestStatus.CANCELLED;
-    }
-    
-    /**
-     * 상담 요청이 활성 상태인지 확인
+     * 상담이 활성 상태인지 확인
+     * - ACTIVE: 채팅 가능
+     * - CLOSED: 채팅 불가
      */
     public boolean isActive() {
-        return status == ConsultRequestStatus.PENDING 
-            || status == ConsultRequestStatus.ACCEPTED 
-            || status == ConsultRequestStatus.IN_PROGRESS;
+        return status == ConsultRequestStatus.ACTIVE;
     }
 }
 
