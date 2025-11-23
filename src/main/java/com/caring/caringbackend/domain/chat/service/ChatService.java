@@ -59,11 +59,10 @@ public class ChatService {
      * @param memberId 회원 ID
      * @param institutionId 기관 ID
      * @param counselId 상담 서비스 ID
-     * @param message 상담 요청 메시지 (선택)
      * @return 생성된 ChatRoom
      */
     @Transactional
-    public ChatRoom startChat(Long memberId, Long institutionId, Long counselId, String message) {
+    public ChatRoom startChat(Long memberId, Long institutionId, Long counselId) {
         // 1. 회원 존재 확인
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
@@ -86,8 +85,8 @@ public class ChatService {
             throw new BusinessException(ErrorCode.CONFLICT);
         }
 
-        // 5. ConsultRequest 생성
-        ConsultRequest consultRequest = ConsultRequest.create(member, institution, counsel, message);
+        // 5. ConsultRequest 생성 (message는 null)
+        ConsultRequest consultRequest = ConsultRequest.create(member, institution, counsel, null);
         ConsultRequest savedConsultRequest = consultRequestRepository.save(consultRequest);
 
         // 6. ChatRoom 생성
