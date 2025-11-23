@@ -82,7 +82,7 @@ public class ChatService {
         // 4. ACTIVE 상태 중복 확인 (같은 회원 + 같은 상담 서비스)
         boolean activeExists = consultRequestRepository.existsActiveByMemberAndCounsel(memberId, counselId);
         if (activeExists) {
-            throw new BusinessException(ErrorCode.CONFLICT);
+            throw new BusinessException(ErrorCode.ACTIVE_CONSULT_REQUEST_EXISTS);
         }
 
         // 5. ConsultRequest 생성 (message는 null)
@@ -115,16 +115,16 @@ public class ChatService {
     public ChatMessage sendMessage(Long chatRoomId, SenderType senderType, Long senderId, String content) {
         // 1. 채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // 2. 채팅방 활성화 상태 확인
         if (!chatRoom.getIsActive()) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            throw new BusinessException(ErrorCode.CHAT_ROOM_ALREADY_CLOSED);
         }
 
         // 3. ConsultRequest 활성화 상태 확인
         if (!chatRoom.getConsultRequest().isActive()) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            throw new BusinessException(ErrorCode.CHAT_ROOM_ALREADY_CLOSED);
         }
 
         // 4. 발신자 권한 검증
@@ -227,21 +227,21 @@ public class ChatService {
 
         // 2. 메시지 조회
         ChatMessage message = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
 
         // 3. 메시지가 해당 채팅방의 것인지 확인
         if (!message.getChatRoom().getId().equals(chatRoomId)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            throw new BusinessException(ErrorCode.CHAT_ACCESS_DENIED);
         }
 
         // 4. 본인이 보낸 메시지인지 확인
         if (!message.getSenderType().equals(userType) || !message.getSenderId().equals(userId)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            throw new BusinessException(ErrorCode.CHAT_MESSAGE_DELETE_DENIED);
         }
 
         // 5. 이미 삭제된 메시지인지 확인
         if (message.isDeleted()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.CHAT_MESSAGE_NOT_FOUND);
         }
 
         // 6. Soft Delete 처리
@@ -279,7 +279,7 @@ public class ChatService {
 
         // 2. 이미 종료된 상담인지 확인
         if (!chatRoom.getIsActive()) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            throw new BusinessException(ErrorCode.CHAT_ROOM_ALREADY_CLOSED);
         }
 
         // 3. ConsultRequest 종료
@@ -305,7 +305,7 @@ public class ChatService {
         if (userType == SenderType.MEMBER) {
             // 회원: 본인의 채팅방인지 확인
             return chatRoomRepository.findByIdAndMemberId(chatRoomId, userId)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_ACCESS_DENIED));
         } else if (userType == SenderType.INSTITUTION_ADMIN) {
             // 기관 관리자: 소속 기관의 채팅방인지 확인
             InstitutionAdmin admin = institutionAdminRepository.findById(userId)
@@ -316,9 +316,9 @@ public class ChatService {
             }
 
             return chatRoomRepository.findByIdAndInstitutionId(chatRoomId, admin.getInstitution().getId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_ACCESS_DENIED));
         } else {
-            throw new BusinessException(ErrorCode.BAD_REQUEST);
+            throw new BusinessException(ErrorCode.INVALID_SENDER_TYPE);
         }
     }
 
@@ -333,7 +333,7 @@ public class ChatService {
         if (senderType == SenderType.MEMBER) {
             // 회원: 본인의 채팅방인지 확인
             if (!chatRoom.getMemberId().equals(senderId)) {
-                throw new BusinessException(ErrorCode.FORBIDDEN);
+                throw new BusinessException(ErrorCode.CHAT_ACCESS_DENIED);
             }
         } else if (senderType == SenderType.INSTITUTION_ADMIN) {
             // 기관 관리자: 소속 기관의 채팅방인지 확인
@@ -345,10 +345,10 @@ public class ChatService {
             }
 
             if (!chatRoom.getInstitutionId().equals(admin.getInstitution().getId())) {
-                throw new BusinessException(ErrorCode.FORBIDDEN);
+                throw new BusinessException(ErrorCode.CHAT_ACCESS_DENIED);
             }
         } else {
-            throw new BusinessException(ErrorCode.BAD_REQUEST);
+            throw new BusinessException(ErrorCode.INVALID_SENDER_TYPE);
         }
     }
 }

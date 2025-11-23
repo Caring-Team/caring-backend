@@ -132,7 +132,16 @@ public enum ErrorCode {
     CANNOT_CANCEL_ACTIVE_ADVERTISEMENT(HttpStatus.BAD_REQUEST, "AD-006", "진행중인 광고는 취소할 수 없습니다. 관리자에게 문의하세요"),
     ADVERTISEMENT_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "AD-007", "이미 종료되었거나 취소된 광고입니다"),
     ADVERTISEMENT_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "AD-008", "해당 광고 유형의 동시 진행 한도를 초과했습니다"),
-    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다");
+    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다"),
+
+    // 💬 Chat Domain Errors (CHAT-xxx)
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT-001", "채팅방을 찾을 수 없습니다"),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT-002", "채팅 메시지를 찾을 수 없습니다"),
+    CHAT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "CHAT-003", "해당 채팅방에 접근할 권한이 없습니다"),
+    CHAT_MESSAGE_DELETE_DENIED(HttpStatus.FORBIDDEN, "CHAT-004", "본인이 작성한 메시지만 삭제할 수 있습니다"),
+    ACTIVE_CONSULT_REQUEST_EXISTS(HttpStatus.CONFLICT, "CHAT-005", "이미 활성화된 상담 요청이 존재합니다"),
+    CHAT_ROOM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "CHAT-006", "이미 종료된 채팅방입니다"),
+    INVALID_SENDER_TYPE(HttpStatus.BAD_REQUEST, "CHAT-007", "유효하지 않은 발신자 유형입니다");
 
 
     private final HttpStatus httpStatus;
