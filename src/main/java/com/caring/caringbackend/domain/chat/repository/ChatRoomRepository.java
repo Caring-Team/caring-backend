@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
@@ -56,5 +57,31 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
      * - 중복 생성 방지
      */
     boolean existsByConsultRequestId(Long consultRequestId);
+
+    /**
+     * ConsultRequest ID 리스트로 채팅방 배치 조회
+     * - N+1 문제 방지를 위한 배치 조회
+     * - 상담 내역 목록 조회 시 사용
+     */
+    @Query("""
+            SELECT cr FROM ChatRoom cr
+            JOIN FETCH cr.consultRequest req
+            WHERE req.id IN :consultRequestIds
+            """)
+    List<ChatRoom> findAllByConsultRequestIdIn(@Param("consultRequestIds") List<Long> consultRequestIds);
+
+    /**
+     * 채팅방 ID로 조회 (ConsultRequest, Member, Institution 포함, JOIN FETCH)
+     * - sendMessage 등에서 사용
+     * - Lazy Loading 방지 (getMemberId(), getInstitutionId() 호출 시 필요)
+     */
+    @Query("""
+            SELECT cr FROM ChatRoom cr
+            JOIN FETCH cr.consultRequest req
+            JOIN FETCH req.member m
+            JOIN FETCH req.institution i
+            WHERE cr.id = :chatRoomId
+            """)
+    Optional<ChatRoom> findByIdWithConsultRequest(@Param("chatRoomId") Long chatRoomId);
 }
 

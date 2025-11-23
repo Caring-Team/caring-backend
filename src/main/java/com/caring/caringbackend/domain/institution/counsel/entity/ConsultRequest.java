@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 상담 요청 엔티티
  * <p>
@@ -49,6 +51,10 @@ public class ConsultRequest extends BaseEntity {
     @Column(nullable = false, length = 20)
     private ConsultRequestStatus status = ConsultRequestStatus.ACTIVE;
     
+    // 상담 종료 일시 (CLOSED 상태일 때만 값이 있음)
+    @Column(name = "closed_at")
+    private LocalDateTime closedAt;
+    
     @Builder
     private ConsultRequest(Member member, Institution institution, InstitutionCounsel counsel, String message) {
         this.member = member;
@@ -56,6 +62,7 @@ public class ConsultRequest extends BaseEntity {
         this.counsel = counsel;
         this.message = message;
         this.status = ConsultRequestStatus.ACTIVE;
+        this.closedAt = null; // 생성 시에는 null
     }
     
     /**
@@ -75,9 +82,11 @@ public class ConsultRequest extends BaseEntity {
      * 상담 종료
      * - 회원 또는 기관 관리자가 상담을 종료할 수 있음
      * - CLOSED 상태가 되면 채팅 불가
+     * - 종료 일시를 기록
      */
     public void close() {
         this.status = ConsultRequestStatus.CLOSED;
+        this.closedAt = LocalDateTime.now();
     }
     
     /**
