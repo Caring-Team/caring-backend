@@ -29,8 +29,8 @@ public class AiServerRestTemplateConfig {
     public RestTemplate aiServerRestTemplate(RestTemplateBuilder builder) {
         return builder
                 .rootUri(aiServerProperties.getBaseUrl())
-                .connectTimeout(Duration.ofSeconds(aiServerProperties.getConnectTimeout()))
-                .readTimeout(Duration.ofSeconds(aiServerProperties.getReadTimeout()))
+                .connectTimeout(Duration.ofMillis(aiServerProperties.getConnectTimeout()))
+                .readTimeout(Duration.ofMillis(aiServerProperties.getReadTimeout()))
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(
                         new SimpleClientHttpRequestFactory()))
                 .build();
