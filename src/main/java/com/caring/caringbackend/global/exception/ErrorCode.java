@@ -141,7 +141,7 @@ public enum ErrorCode {
     CHAT_MESSAGE_DELETE_DENIED(HttpStatus.FORBIDDEN, "CHAT-004", "본인이 작성한 메시지만 삭제할 수 있습니다"),
     ACTIVE_CONSULT_REQUEST_EXISTS(HttpStatus.CONFLICT, "CHAT-005", "이미 활성화된 상담 요청이 존재합니다"),
     CHAT_ROOM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "CHAT-006", "이미 종료된 채팅방입니다"),
-    INVALID_SENDER_TYPE(HttpStatus.BAD_REQUEST, "CHAT-007", "유효하지 않은 발신자 유형입니다");
+    INVALID_SENDER_TYPE(HttpStatus.BAD_REQUEST, "CHAT-007", "유효하지 않은 발신자 유형입니다"),
 
     // AI Server Errors (AI-xxx)
     AI_SERVER_COMMUNICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI-001", "AI 서버와의 통신에 실패했습니다");
