@@ -132,8 +132,10 @@ public enum ErrorCode {
     CANNOT_CANCEL_ACTIVE_ADVERTISEMENT(HttpStatus.BAD_REQUEST, "AD-006", "진행중인 광고는 취소할 수 없습니다. 관리자에게 문의하세요"),
     ADVERTISEMENT_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "AD-007", "이미 종료되었거나 취소된 광고입니다"),
     ADVERTISEMENT_TYPE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "AD-008", "해당 광고 유형의 동시 진행 한도를 초과했습니다"),
-    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다");
+    ADVERTISEMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AD-009", "광고에 접근할 권한이 없습니다"),
 
+    // AI Server Errors (AI-xxx)
+    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI-001", "AI 서버와의 통신에 실패했습니다");
 
     private final HttpStatus httpStatus;
     private final String code;

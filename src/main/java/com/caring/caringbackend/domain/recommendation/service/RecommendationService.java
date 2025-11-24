@@ -44,6 +44,11 @@ public class RecommendationService {
         }
 
         // 추천 기관 목록 받아오기
-        return aiServerService.recommend(member, elderlyProfile);
+        RecommendationResponseDto response = aiServerService.recommend(member, elderlyProfile);
+        if (response == null) {
+            throw new BusinessException(AI_SERVER_COMMUNICATION_FAILED);
+
+        }
+        return response;
     }
 }
