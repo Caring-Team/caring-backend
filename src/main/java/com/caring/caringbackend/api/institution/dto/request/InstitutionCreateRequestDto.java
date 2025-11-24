@@ -72,4 +72,8 @@ public class InstitutionCreateRequestDto {
     @NotBlank(message = "사업자 등록번호는 필수입니다")
     @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$", message = "사업자 등록번호 형식이 올바르지 않습니다 (예: 123-45-67890)")
     private String businessLicense;
+
+    // 설명
+    @Size(max = 1000, message = "설명은 1000자를 초과할 수 없습니다")
+    private String description;
 }

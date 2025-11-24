@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface InstitutionService {
 
     /**
@@ -63,4 +65,13 @@ public interface InstitutionService {
      * @param institutionId 기관 ID
      */
     void deleteInstitution(Long adminId, Long institutionId);
+
+    /**
+     * 기관 태그 설정
+     *
+     * @param adminId 관리자 ID
+     * @param institutionId 기관 ID
+     * @param tagIds 태그 ID 목록
+     */
+    void setInstitutionTags(Long adminId, Long institutionId, List<Long> tagIds);
 }

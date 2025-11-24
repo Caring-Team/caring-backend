@@ -18,6 +18,7 @@ import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
 import com.caring.caringbackend.domain.tag.repository.TagRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
+import com.caring.caringbackend.global.integration.ai.service.AiServerService;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
@@ -47,6 +48,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final FileService fileService;
     private final TagRepository tagRepository;
     private final InstitutionTagRepository institutionTagRepository;
+    private final AiServerService aiServerService;
 
     /**
      * 기관 등록
@@ -100,7 +102,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                 priceInfo,
                 requestDto.getOpeningHours(),
                 requestDto.getBusinessLicense(),
-                uploadedFile.getFileUrl()  // 업로드한 파일 URL
+                uploadedFile.getFileUrl(),
+                requestDto.getDescription()
         );
 
         Institution savedInstitution = institutionRepository.save(institution);
@@ -215,6 +218,23 @@ public class InstitutionServiceImpl implements InstitutionService {
     public void approveInstitution(Long institutionId) {
         Institution institution = findInstitutionById(institutionId);
         institution.approveInstitution();
+
+        // 기관 승인 후 AI 서버에 기관 데이터 전송하여 임베딩 벡터로 저장
+        try {
+            boolean embeddingSuccess = aiServerService.sendInstitutionEmbedding(institution);
+            if (embeddingSuccess) {
+                log.info("기관 승인 및 AI 임베딩 완료: id={}, name={}",
+                        institution.getId(), institution.getName());
+            } else {
+                log.warn("기관 승인 완료했으나 AI 임베딩 실패: id={}, name={}",
+                        institution.getId(), institution.getName());
+            }
+        } catch (Exception e) {
+            // AI 서버 오류가 발생해도 기관 승인은 정상 처리
+            log.error("기관 승인은 완료했으나 AI 임베딩 중 오류 발생: id={}, name={}, error={}",
+                    institution.getId(), institution.getName(), e.getMessage(), e);
+        }
+
         log.info("기관 승인 완료: id={}, name={}", institution.getId(), institution.getName());
     }
 
@@ -254,6 +274,34 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         institution.deleteInstitution();
         log.info("기관 삭제 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
+    }
+
+    /**
+     * 기관 태그 설정 (기존 태그를 덮어씁니다)
+     *
+     * @param adminId 관리자 ID
+     * @param institutionId 기관 ID
+     * @param tagIds 태그 ID 목록
+     */
+    @Override
+    @Transactional
+    public void setInstitutionTags(Long adminId, Long institutionId, List<Long> tagIds) {
+        Institution institution = findInstitutionById(institutionId);
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+
+        // 권한 체크: 해당 기관의 OWNER 또는 STAFF 모두 가능
+        validateAdminAuthorization(admin, institution, false);
+
+        // 기존 태그 전체 삭제
+        institutionTagRepository.deleteByInstitutionId(institutionId);
+
+        // 새 태그 저장 (빈 리스트가 아닌 경우만)
+        if (tagIds != null && !tagIds.isEmpty()) {
+            saveInstitutionTags(institution, tagIds);
+        }
+
+        log.info("기관 태그 설정 완료: adminId={}, institutionId={}, tagCount={}",
+                adminId, institutionId, tagIds != null ? tagIds.size() : 0);
     }
 
 
@@ -414,24 +462,23 @@ public class InstitutionServiceImpl implements InstitutionService {
      * @param tagIds 태그 ID 목록
      */
     private void saveInstitutionTags(Institution institution, List<Long> tagIds) {
-        // 1. 태그 조회
+        // 태그 조회
         List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
         
-        // 2. 존재하지 않는 태그 ID 검증
+        // 존재하지 않는 태그 ID 검증
         if (tags.size() != tagIds.size()) {
             throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
         }
         
-        // 3. InstitutionTag 생성 및 저장
+        // InstitutionTag 생성 및 저장
         List<InstitutionTag> institutionTags = tags.stream()
                 .map(tag -> InstitutionTag.builder()
                         .institution(institution)
                         .tag(tag)
                         .build())
                 .toList();
-        
+
+        institutionTags.forEach(institution::saveInstitutionTag);
         institutionTagRepository.saveAll(institutionTags);
-        
-        log.debug("기관 태그 저장 완료: institutionId={}, tagCount={}", institution.getId(), institutionTags.size());
     }
 }

@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.institution.controller.profile;
 
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.institution.dto.request.InstitutionTagRequest;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
@@ -142,6 +143,24 @@ public class InstitutionController {
             @RequestParam Boolean isAdmissionAvailable
     ) {
         institutionService.changeAdmissionAvailability(adminDetails.getId(), institutionId, isAdmissionAvailable);
+        return ApiResponse.success(null);
+    }
+
+    /**
+     * 기관 태그 설정
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     * @param institutionId 기관 ID
+     * @param request       태그 설정 요청 DTO
+     */
+    @PutMapping("/{institutionId}/tags")
+    @Operation(summary = "기관 태그 설정", description = "기관의 태그를 설정합니다. (기존 태그를 덮어씁니다, 최대 10개, OWNER/STAFF 권한 필요)")
+    public ApiResponse<Void> setInstitutionTags(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long institutionId,
+            @Valid @RequestBody InstitutionTagRequest request
+    ) {
+        institutionService.setInstitutionTags(adminDetails.getId(), institutionId, request.getTagIds());
         return ApiResponse.success(null);
     }
 

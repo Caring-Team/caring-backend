@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@BatchSize(size = 100)  // Tag 엔티티 배치 조회 (ManyToOne 관계에서 사용)
 public class Tag extends BaseEntity {
 
     @Id
