@@ -241,9 +241,11 @@ public class MemberService {
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         
-        // 기존 선호 태그 삭제
-        memberPreferenceTagRepository.deleteByMemberId(memberId);
-        
+        // 기존 선호 태그 삭제 (양방향 관계 정리)
+        member.getPreferenceTags().clear();
+        // 삭제 즉시 DB에 반영
+        memberPreferenceTagRepository.flush();
+
         // 새 선호 태그 저장
         if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
             List<Tag> tags = tagRepository.findAllByIdIn(request.getTagIds());
@@ -260,6 +262,9 @@ public class MemberService {
                             .build())
                     .toList();
             
+            // 양방향 관계 설정
+            member.getPreferenceTags().addAll(preferenceTags);
+
             memberPreferenceTagRepository.saveAll(preferenceTags);
             log.info("선호 태그 설정 완료: memberId={}, tagCount={}", memberId, preferenceTags.size());
         } else {

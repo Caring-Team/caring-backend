@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
+import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.Address;
@@ -87,6 +88,10 @@ public class Institution extends BaseEntity {
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstitutionCounsel> counsels = new ArrayList<>();
 
+    // 태그 목록
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstitutionTag> tags = new ArrayList<>();
+
     // 가격표
     @Embedded
     private PriceInfo priceInfo;
@@ -95,13 +100,16 @@ public class Institution extends BaseEntity {
     @Column(length = 500)
     private String openingHours;
 
+    @Column(length = 1000)
+    private String description;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Institution(String name, InstitutionType institutionType,
                         String phoneNumber, Address address, GeoPoint location,
                         ApprovalStatus approvalStatus, Integer bedCount,
                         Boolean isAdmissionAvailable,
                         PriceInfo priceInfo, String openingHours,
-                        String businessLicense, String businessLicenseImageUrl) {
+                        String businessLicense, String businessLicenseImageUrl,String description) {
 
         // 도메인 비즈니스 규칙 검증
         validate(phoneNumber, bedCount);
@@ -120,6 +128,7 @@ public class Institution extends BaseEntity {
         this.openingHours = openingHours;
         this.businessLicense = businessLicense;
         this.businessLicenseImageUrl = businessLicenseImageUrl;
+        this.description = description;
     }
 
     /**
@@ -136,7 +145,8 @@ public class Institution extends BaseEntity {
             PriceInfo priceInfo,
             String openingHours,
             String businessLicense,
-            String businessLicenseImageUrl) {
+            String businessLicenseImageUrl,
+            String description) {
 
         return new Institution(
                 name,
@@ -150,7 +160,8 @@ public class Institution extends BaseEntity {
                 priceInfo,
                 openingHours,
                 businessLicense,
-                businessLicenseImageUrl
+                businessLicenseImageUrl,
+                description
         );
     }
 
@@ -282,4 +293,7 @@ public class Institution extends BaseEntity {
         softDelete();
     }
 
+    public void saveInstitutionTag(InstitutionTag institutionTag) {
+        this.tags.add(institutionTag);
+    }
 }
