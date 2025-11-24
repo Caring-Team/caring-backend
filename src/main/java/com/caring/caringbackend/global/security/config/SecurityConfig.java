@@ -102,6 +102,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/tags/**").permitAll()  // 태그 조회만 공개
                         .requestMatchers("/api/v1/tags/**").hasRole("ADMIN")  // 태그 관리는 시스템 관리자만
 
+                        // 채팅 API (인증 필요 - 회원 또는 기관 관리자)
+                        .requestMatchers("/api/v1/chat/**").authenticated()  // 상담 채팅 API
+
                         // 테스트 경로 (개발 환경)
                         .requestMatchers("/api/v1/test/**").permitAll()
 

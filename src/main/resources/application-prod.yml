@@ -91,3 +91,12 @@ app:
         s3:
             bucket-name: amz-s3-care-bucket
             region: ap-northeast-2
+
+# AI Server API
+ai:
+    server:
+        base-url: ${AI_SERVER_BASE_URL}
+        institution-embedding-path: /api/v1/institutions/embeddings
+        recommendation-path: /api/v1/recommendations
+        connect-timeout: 5000
+        read-timeout: 10000

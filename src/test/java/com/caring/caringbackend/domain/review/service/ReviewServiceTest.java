@@ -88,7 +88,7 @@ class ReviewServiceTest extends IntegrationTestBase {
                 .build();
 
         // when
-        ReviewResponse response = reviewService.createReview(member.getId(), request);
+        ReviewResponse response = reviewService.createReview(member.getId(), request, null);
 
         // then
         assertThat(response.getId()).isNotNull();
@@ -120,10 +120,10 @@ class ReviewServiceTest extends IntegrationTestBase {
                 .rating(4)
                 .build();
 
-        reviewService.createReview(member.getId(), request);
+        reviewService.createReview(member.getId(), request, null);
 
         // expect
-        assertThatThrownBy(() -> reviewService.createReview(member.getId(), request))
+        assertThatThrownBy(() -> reviewService.createReview(member.getId(), request, null))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -139,7 +139,7 @@ class ReviewServiceTest extends IntegrationTestBase {
 
         // when
         ReviewResponse response = reviewService.updateReview(review.getMember().getId(),
-                review.getId(), request);
+                review.getId(), request, null);
 
         // then
         assertThat(response.getRating()).isEqualTo(3);
@@ -166,7 +166,7 @@ class ReviewServiceTest extends IntegrationTestBase {
 
         // expect
         assertThatThrownBy(() -> reviewService.updateReview(review.getMember().getId(),
-                review.getId(), request)).isInstanceOf(BusinessException.class);
+                review.getId(), request, null)).isInstanceOf(BusinessException.class);
     }
 
     @Test

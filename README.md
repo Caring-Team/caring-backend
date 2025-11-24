@@ -28,6 +28,7 @@
 - 👤 **사용자 관리**: 회원가입, 로그인, 프로필 관리
 - 🏥 **기관 관리**: 케어 기관 등록 및 정보 관리
 - 📋 **케어 서비스**: 케어 요청, 매칭, 관리 시스템
+- 🤖 **AI 추천**: FastAPI 기반 임베딩 벡터를 활용한 기관 추천
 - 🔒 **인증/인가**: JWT 기반 보안 시스템
 - 📊 **모니터링**: 시스템 상태 및 성능 모니터링
 
@@ -36,6 +37,7 @@
 - **Framework**: Spring Boot 3.5.5
 - **Database**: PostgreSQL
 - **ORM**: Spring Data JPA
+- **AI Integration**: FastAPI + Sentence-Transformers + ChromaDB
 - **Documentation**: Swagger/OpenAPI 3
 - **Build**: Gradle
 - **Containerization**: Docker

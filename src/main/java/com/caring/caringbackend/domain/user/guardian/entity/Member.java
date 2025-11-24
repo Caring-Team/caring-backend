@@ -4,6 +4,7 @@ import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
+import com.caring.caringbackend.domain.tag.entity.MemberPreferenceTag;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -74,6 +76,11 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElderlyProfile> elderlyProfiles = new ArrayList<>();
 
+    // 선호 태그 연관관계
+    @BatchSize(size = 100)  // N+1 문제 해결: 한 번에 100개씩 배치로 조회
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberPreferenceTag> preferenceTags = new ArrayList<>();
+
     @Builder
     public Member(MemberRole role, String name, String phoneNumber, String duplicationInformation,
                   Gender gender, LocalDate birthDate, Address address, GeoPoint location) {
@@ -85,6 +92,8 @@ public class Member extends BaseEntity {
         this.birthDate = birthDate;
         this.address = address;
         this.location = location;
+        this.elderlyProfiles = new ArrayList<>();
+        this.preferenceTags = new ArrayList<>();
     }
 
     /**
@@ -98,6 +107,20 @@ public class Member extends BaseEntity {
         this.birthDate = birthDate;
         this.address = address;
         this.location = location;
+    }
+
+    /**
+     * 선호 태그 추가 편의 메서드 (양방향 관계 설정)
+     */
+    public void addPreferenceTag(MemberPreferenceTag preferenceTag) {
+        this.preferenceTags.add(preferenceTag);
+    }
+
+    /**
+     * 선호 태그 전체 삭제 편의 메서드 (양방향 관계 정리)
+     */
+    public void clearPreferenceTags() {
+        this.preferenceTags.clear();
     }
     // TODO: 필요한 도메인 로직 작성
 
