@@ -16,4 +16,6 @@ public class InstitutionAdminMeResponse {
     private Long institutionId;
     @JsonProperty("institution_name")
     private String institutionName;
+    @JsonProperty("institution_status")
+    private String institutionStatus;
 }

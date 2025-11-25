@@ -443,6 +443,7 @@ public class AuthService {
         return tokenService.regenerateAccessToken(generateTokenDto);
     }
 
+    @Transactional(readOnly = true)
     public InstitutionAdminMeResponse getInstitutionAdminInformation(InstitutionAdminDetails institutionAdminDetails) {
         InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(institutionAdminDetails.getId())
                 .orElseThrow(MemberNotFoundException::new);
@@ -453,7 +454,8 @@ public class AuthService {
                 .role(institutionAdmin.getRole().name());
         if (institution != null) {
             builder.institutionId(institution.getId())
-                    .institutionName(institution.getName());
+                    .institutionName(institution.getName())
+                    .institutionStatus(institution.getApprovalStatus().name());
         }
         return builder.build();
     }
