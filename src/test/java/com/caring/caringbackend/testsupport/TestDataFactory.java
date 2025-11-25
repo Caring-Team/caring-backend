@@ -58,13 +58,10 @@ public final class TestDataFactory {
         Institution institution = Institution.createInstitution(
                 "테스트요양원",
                 InstitutionType.NURSING_HOME,
+                11111000006L,
                 "021234567",
                 new Address("서울시", "강남대로", "06100"),
                 new GeoPoint(37.4, 127.1),
-                100,
-                true,
-                null,
-                "09:00-18:00",
                 "123-45-67890",
                 "http://example.com/license.jpg"
         );
