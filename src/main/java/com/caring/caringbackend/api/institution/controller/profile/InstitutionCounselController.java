@@ -4,7 +4,7 @@ import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCr
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
-import com.caring.caringbackend.domain.institution.counsel.entity.CounselStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselStatus;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;

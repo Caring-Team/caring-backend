@@ -1,4 +1,4 @@
-package com.caring.caringbackend.domain.institution.counsel.entity;
+package com.caring.caringbackend.domain.institution.counsel.entity.enums;
 
 import lombok.Getter;
 
