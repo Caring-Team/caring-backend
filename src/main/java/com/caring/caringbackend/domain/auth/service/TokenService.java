@@ -1,10 +1,10 @@
 package com.caring.caringbackend.domain.auth.service;
 
-import com.caring.caringbackend.api.auth.dto.GenerateTemporaryTokenDto;
-import com.caring.caringbackend.api.auth.dto.GenerateTokenDto;
-import com.caring.caringbackend.api.auth.dto.RefreshTokenPayloadDto;
-import com.caring.caringbackend.api.auth.dto.request.TokenRefreshRequest;
-import com.caring.caringbackend.api.auth.dto.response.JwtTokenResponse;
+import com.caring.caringbackend.api.internal.auth.dto.GenerateTemporaryTokenDto;
+import com.caring.caringbackend.api.internal.auth.dto.GenerateTokenDto;
+import com.caring.caringbackend.api.internal.auth.dto.RefreshTokenPayloadDto;
+import com.caring.caringbackend.api.internal.auth.dto.request.TokenRefreshRequest;
+import com.caring.caringbackend.api.internal.auth.dto.response.JwtTokenResponse;
 import com.caring.caringbackend.domain.auth.entity.RefreshToken;
 import com.caring.caringbackend.domain.auth.repository.RefreshTokenRepository;
 import com.caring.caringbackend.global.exception.BusinessException;

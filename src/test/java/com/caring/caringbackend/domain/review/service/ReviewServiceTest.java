@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.caring.caringbackend.IntegrationTestBase;
-import com.caring.caringbackend.api.user.dto.review.request.ReviewCreateRequest;
-import com.caring.caringbackend.api.user.dto.review.request.ReviewReportRequest;
-import com.caring.caringbackend.api.user.dto.review.request.ReviewUpdateRequest;
-import com.caring.caringbackend.api.user.dto.review.response.ReviewResponse;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewCreateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewReportRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewUpdateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewResponse;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;

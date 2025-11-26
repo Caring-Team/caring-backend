@@ -3,14 +3,13 @@ package com.caring.caringbackend.domain.institution.profile.repository;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * Institution Repository
@@ -34,6 +33,13 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long>,
             Boolean isAdmissionAvailable,
             Pageable pageable
     );
+
+    @Query("""
+                SELECT i FROM Institution i
+                JOIN i.admins a
+                WHERE a.id = :adminId
+            """)
+    Optional<Institution> findByAdminId(@Param("adminId") Long adminId);
 
     // ==================== @Query with JPQL ====================
 

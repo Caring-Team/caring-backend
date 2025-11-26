@@ -32,3 +32,15 @@ decorator:
     datasource:
         p6spy:
             enable-logging: true
+
+# 📚 Swagger/OpenAPI 설정
+springdoc:
+    swagger-ui:
+        tags-sorter: alpha  # 태그를 알파벳 순으로 정렬
+        custom-js-url: /swagger-custom.js  # 커스텀 정렬 스크립트 (summary 번호 순서)
+        display-request-duration: true  # 요청 지속 시간 표시
+        disable-swagger-default-url: true  # 기본 URL 비활성화
+    api-docs:
+        path: /v3/api-docs  # API 문서 경로
+    show-actuator: false  # Actuator 엔드포인트 숨기기
+

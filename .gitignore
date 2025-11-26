@@ -49,6 +49,8 @@ docs/
 # QueryDSL
 src/main/generated/
 
+*.env
+
 # VSCode
 .vscode/
 

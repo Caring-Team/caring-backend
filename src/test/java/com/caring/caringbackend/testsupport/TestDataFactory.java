@@ -2,6 +2,7 @@ package com.caring.caringbackend.testsupport;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.review.entity.Review;
@@ -58,13 +59,10 @@ public final class TestDataFactory {
         Institution institution = Institution.createInstitution(
                 "테스트요양원",
                 InstitutionType.NURSING_HOME,
+                11111000006L,
                 "021234567",
                 new Address("서울시", "강남대로", "06100"),
                 new GeoPoint(37.4, 127.1),
-                100,
-                true,
-                null,
-                "09:00-18:00",
                 "123-45-67890",
                 "http://example.com/license.jpg"
         );
@@ -76,7 +74,10 @@ public final class TestDataFactory {
         return InstitutionCounsel.createInstitutionCounsel(
                 institution,
                 "기본 상담",
-                "상담 설명"
+                "상담 설명",
+                0,
+                0,
+                CounselTimeUnit.HALF
                 );
     }
 

@@ -28,7 +28,7 @@ springdoc:
     swagger-ui:
         path: /swagger-ui.html
         tags-sorter: alpha
-        operations-sorter: alpha
+        operations-sorter: order
     packages-to-scan: com.caring.caringbackend
 
 server:

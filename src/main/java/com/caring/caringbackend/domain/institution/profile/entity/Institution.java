@@ -30,7 +30,6 @@ public class Institution extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     // 이름
     @Column(nullable = false, length = 100)
     private String name;
@@ -39,6 +38,9 @@ public class Institution extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private InstitutionType institutionType;
+
+    @Column(nullable = false, unique = true)
+    private Long institutionCode;
 
     // 연락처
     @Column(nullable = false, length = 20)
@@ -104,18 +106,20 @@ public class Institution extends BaseEntity {
     private String description;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Institution(String name, InstitutionType institutionType,
+    private Institution(String name, InstitutionType institutionType, Long institutionCode,
                         String phoneNumber, Address address, GeoPoint location,
                         ApprovalStatus approvalStatus, Integer bedCount,
                         Boolean isAdmissionAvailable,
                         PriceInfo priceInfo, String openingHours,
-                        String businessLicense, String businessLicenseImageUrl,String description) {
+                        String businessLicense, String businessLicenseImageUrl, String description) {
+
 
         // 도메인 비즈니스 규칙 검증
         validate(phoneNumber, bedCount);
         this.name = name;
         this.admins = new ArrayList<>();
         this.institutionType = institutionType;
+        this.institutionCode = institutionCode;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.location = location;
@@ -137,32 +141,23 @@ public class Institution extends BaseEntity {
     public static Institution createInstitution(
             String name,
             InstitutionType institutionType,
+            Long institutionCode,
             String phoneNumber,
             Address address,
             GeoPoint location,
-            Integer bedCount,
-            Boolean isAdmissionAvailable,
-            PriceInfo priceInfo,
-            String openingHours,
             String businessLicense,
-            String businessLicenseImageUrl,
-            String description) {
+            String businessLicenseImageUrl) {
 
-        return new Institution(
-                name,
-                institutionType,
-                phoneNumber,
-                address,
-                location,
-                ApprovalStatus.PENDING,
-                bedCount,
-                isAdmissionAvailable,
-                priceInfo,
-                openingHours,
-                businessLicense,
-                businessLicenseImageUrl,
-                description
-        );
+        return Institution.builder()
+                .name(name)
+                .institutionType(institutionType)
+                .institutionCode(institutionCode)
+                .phoneNumber(phoneNumber)
+                .address(address)
+                .location(location)
+                .businessLicense(businessLicense)
+                .businessLicenseImageUrl(businessLicenseImageUrl)
+                .build();
     }
 
     /**
