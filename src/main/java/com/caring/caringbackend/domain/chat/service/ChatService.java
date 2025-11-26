@@ -441,14 +441,16 @@ public class ChatService {
      * @return 상담 요청 목록
      */
     public ConsultRequestListResponse getInstitutionConsultRequests(
-            Long institutionId, Long adminId, ConsultRequestStatus status, Pageable pageable) {
-        // 1. 기관 관리자 권한 검증
+            Long adminId, ConsultRequestStatus status, Pageable pageable) {
+        // 1. 기관 관리자 조회 및 기관 ID 추출
         InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
-        if (!admin.hasInstitution() || !admin.getInstitution().getId().equals(institutionId)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
+        if (!admin.hasInstitution()) {
+            throw new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION);
         }
+
+        Long institutionId = admin.getInstitution().getId();
 
         // 2. 상담 요청 목록 조회 (페이징)
         Page<ConsultRequest> consultRequests = consultRequestRepository.findByInstitutionIdWithDetailsPaged(

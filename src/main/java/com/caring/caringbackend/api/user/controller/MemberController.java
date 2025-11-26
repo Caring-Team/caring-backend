@@ -1,6 +1,5 @@
 package com.caring.caringbackend.api.user.controller;
 
-import com.caring.caringbackend.api.chat.dto.response.ConsultRequestListResponse;
 import com.caring.caringbackend.api.user.dto.member.request.MemberPreferenceTagRequest;
 import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
@@ -9,13 +8,10 @@ import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageRespons
 import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.api.tag.dto.response.TagListResponse;
-import com.caring.caringbackend.domain.chat.service.ChatService;
-import com.caring.caringbackend.domain.institution.counsel.entity.enums.ConsultRequestStatus;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final ChatService chatService;
 
     /**
      * 내 정보 조회 (토큰 기반)
@@ -230,19 +225,4 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success("선호 태그 설정 성공", null));
     }
 
-    /**
-     * 내 상담 내역 조회
-     */
-    @GetMapping("/me/consult-requests")
-    @Operation(summary = "내 상담 내역 조회", description = "인증된 사용자의 상담 내역 목록을 조회합니다. (페이징, 상태 필터링 지원)")
-    public ResponseEntity<ApiResponse<ConsultRequestListResponse>> getMyConsultRequests(
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            @Parameter(description = "상태 필터 (ACTIVE: 진행 중, CLOSED: 종료됨, null: 전체)")
-            @RequestParam(required = false) ConsultRequestStatus status,
-            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
-
-        ConsultRequestListResponse response = chatService.getMyConsultRequests(
-                memberDetails.getId(), status, pageable);
-        return ResponseEntity.ok(ApiResponse.success("상담 내역 조회 성공", response));
-    }
 }
