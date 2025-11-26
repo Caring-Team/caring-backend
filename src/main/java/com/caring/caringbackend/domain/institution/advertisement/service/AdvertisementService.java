@@ -19,13 +19,12 @@ public interface AdvertisementService {
     /**
      * 광고 신청 (Request 생성)
      */
-    AdvertisementRequestResponseDto createAdvertisementRequest(Long institutionId, AdvertisementCreateRequestDto requestDto, Long adminId);
+    AdvertisementRequestResponseDto createAdvertisementRequest(AdvertisementCreateRequestDto requestDto, Long adminId);
 
     /**
      * 내 기관 신청 목록 조회
      */
     List<AdvertisementSummaryDto> getInstitutionRequests(
-            Long institutionId,
             AdvertisementStatus status,
             AdvertisementType type,
             Long adminId
@@ -34,12 +33,12 @@ public interface AdvertisementService {
     /**
      * 신청 상세 조회
      */
-    AdvertisementRequestDetailDto getRequestDetail(Long institutionId, Long requestId, Long adminId);
+    AdvertisementRequestDetailDto getRequestDetail(Long requestId, Long adminId);
 
     /**
      * 신청 취소 (승인 대기 중에만 가능)
      */
-    void cancelRequest(Long institutionId, Long requestId, Long adminId);
+    void cancelRequest(Long requestId, Long adminId);
 
     // ==================== 기관 승인된 광고 조회 ====================
 
@@ -47,7 +46,6 @@ public interface AdvertisementService {
      * 내 기관의 승인된 광고 목록 조회
      */
     List<AdvertisementSummaryDto> getInstitutionAdvertisements(
-            Long institutionId,
             AdvertisementStatus status,
             Long adminId
     );
@@ -55,12 +53,12 @@ public interface AdvertisementService {
     /**
      * 승인된 광고 상세 조회
      */
-    AdvertisementResponseDto getAdvertisementDetail(Long institutionId, Long adId, Long adminId);
+    AdvertisementResponseDto getAdvertisementDetail(Long advertisementId, Long adminId);
 
     /**
      * 승인된 광고 취소 (PENDING 상태만)
      */
-    AdvertisementResponseDto cancelAdvertisement(Long institutionId, Long adId, String cancelReason, Long adminId);
+    AdvertisementResponseDto cancelAdvertisement(Long advertisementId, String cancelReason, Long adminId);
 
     // ==================== 관리자 신청 심사 ====================
 

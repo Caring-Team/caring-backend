@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/institutions/{institutionId}/advertisements")
+@RequestMapping("/api/v1/institutions/me/advertisements")
 @RequiredArgsConstructor
 @Tag(name = "Institution Advertisement", description = "기관 광고 관리 API")
 public class InstitutionAdvertisementController {
@@ -39,14 +39,12 @@ public class InstitutionAdvertisementController {
      * 광고 신청
      */
     @PostMapping("/requests")
-    @Operation(summary = "광고 신청", description = "기관이 광고를 신청합니다. OWNER 권한 필요.")
+    @Operation(summary = "1. 광고 신청", description = "기관이 광고를 신청합니다. OWNER 권한 필요.")
     public ApiResponse<AdvertisementRequestResponseDto> createAdvertisementRequest(
-            @PathVariable Long institutionId,
             @Valid @RequestBody AdvertisementCreateRequestDto requestDto,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         AdvertisementRequestResponseDto response = advertisementService.createAdvertisementRequest(
-                institutionId,
                 requestDto,
                 adminDetails.getId()
         );
@@ -57,15 +55,13 @@ public class InstitutionAdvertisementController {
      * 내 기관 광고 신청 목록 조회
      */
     @GetMapping("/requests")
-    @Operation(summary = "광고 신청 목록 조회", description = "기관의 광고 신청 목록을 조회합니다.")
+    @Operation(summary = "2. 광고 신청 목록 조회", description = "기관의 광고 신청 목록을 조회합니다.")
     public ApiResponse<List<AdvertisementSummaryDto>> getInstitutionRequests(
-            @PathVariable Long institutionId,
             @Parameter(description = "신청 상태 필터") @RequestParam(required = false) AdvertisementStatus status,
             @Parameter(description = "광고 유형 필터") @RequestParam(required = false) AdvertisementType type,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         List<AdvertisementSummaryDto> response = advertisementService.getInstitutionRequests(
-                institutionId,
                 status,
                 type,
                 adminDetails.getId()
@@ -78,14 +74,12 @@ public class InstitutionAdvertisementController {
      * 광고 신청 상세 조회
      */
     @GetMapping("/requests/{requestId}")
-    @Operation(summary = "광고 신청 상세 조회", description = "특정 광고 신청의 상세 정보를 조회합니다.")
+    @Operation(summary = "3. 광고 신청 상세 조회", description = "특정 광고 신청의 상세 정보를 조회합니다.")
     public ApiResponse<AdvertisementRequestDetailDto> getRequestDetail(
-            @PathVariable Long institutionId,
             @PathVariable Long requestId,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         AdvertisementRequestDetailDto response = advertisementService.getRequestDetail(
-                institutionId,
                 requestId,
                 adminDetails.getId()
         );
@@ -97,13 +91,12 @@ public class InstitutionAdvertisementController {
      * 광고 신청 취소
      */
     @DeleteMapping("/requests/{requestId}")
-    @Operation(summary = "광고 신청 취소", description = "승인 대기 중인 광고 신청을 취소합니다. OWNER 권한 필요.")
+    @Operation(summary = "4. 광고 신청 취소", description = "승인 대기 중인 광고 신청을 취소합니다. OWNER 권한 필요.")
     public ApiResponse<Void> cancelRequest(
-            @PathVariable Long institutionId,
             @PathVariable Long requestId,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        advertisementService.cancelRequest(institutionId, requestId, adminDetails.getId());
+        advertisementService.cancelRequest(requestId, adminDetails.getId());
         return ApiResponse.success("광고 신청이 취소되었습니다.", null);
     }
 
@@ -113,15 +106,13 @@ public class InstitutionAdvertisementController {
      * 내 기관 승인된 광고 목록 조회
      */
     @GetMapping
-    @Operation(summary = "승인된 광고 목록 조회", description = "기관의 승인된 광고 목록을 조회합니다.")
+    @Operation(summary = "5. 승인된 광고 목록 조회", description = "기관의 승인된 광고 목록을 조회합니다.")
     public ApiResponse<List<AdvertisementSummaryDto>> getInstitutionAdvertisements(
-            @PathVariable Long institutionId,
             @Parameter(description = "광고 상태 필터")
             @RequestParam(required = false) AdvertisementStatus status,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         List<AdvertisementSummaryDto> response = advertisementService.getInstitutionAdvertisements(
-                institutionId,
                 status,
                 adminDetails.getId()
         );
@@ -132,16 +123,14 @@ public class InstitutionAdvertisementController {
     /**
      * 광고 상세 조회
      */
-    @GetMapping("/{adId}")
-    @Operation(summary = "광고 상세 조회", description = "승인된 광고의 상세 정보를 조회합니다.")
+    @GetMapping("/{advertisementId}")
+    @Operation(summary = "6. 광고 상세 조회", description = "승인된 광고의 상세 정보를 조회합니다.")
     public ApiResponse<AdvertisementResponseDto> getAdvertisementDetail(
-            @PathVariable Long institutionId,
-            @PathVariable Long adId,
+            @PathVariable Long advertisementId,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         AdvertisementResponseDto response = advertisementService.getAdvertisementDetail(
-                institutionId,
-                adId,
+                advertisementId,
                 adminDetails.getId()
         );
 
@@ -151,17 +140,15 @@ public class InstitutionAdvertisementController {
     /**
      * 광고 취소
      */
-    @PatchMapping("/{adId}/cancel")
-    @Operation(summary = "광고 취소", description = "승인된 광고를 취소합니다. PENDING 상태만 가능. OWNER 권한 필요.")
+    @PatchMapping("/{advertisementId}/cancel")
+    @Operation(summary = "7. 광고 취소", description = "승인된 광고를 취소합니다. PENDING 상태만 가능. OWNER 권한 필요.")
     public ApiResponse<AdvertisementResponseDto> cancelAdvertisement(
-            @PathVariable Long institutionId,
-            @PathVariable Long adId,
+            @PathVariable Long advertisementId,
             @Parameter(description = "취소 사유") @RequestParam(required = false) String cancelReason,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
         AdvertisementResponseDto response = advertisementService.cancelAdvertisement(
-                institutionId,
-                adId,
+                advertisementId,
                 cancelReason,
                 adminDetails.getId()
         );

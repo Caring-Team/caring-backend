@@ -40,15 +40,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     @Transactional
     public AdvertisementRequestResponseDto createAdvertisementRequest(
-            Long institutionId,
             AdvertisementCreateRequestDto requestDto,
             Long adminId
     ) {
         requestDto.validate();
-        validateOwnerPermission(adminId, institutionId);
-
-        Institution institution = institutionRepository.findById(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+        Institution institution = validateOwnerPermissionAndFindInstitution(adminId);
 
         InstitutionAdvertisementRequest request = InstitutionAdvertisementRequest.create(
                 institution,
@@ -66,13 +62,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public List<AdvertisementSummaryDto> getInstitutionRequests(
-            Long institutionId,
             AdvertisementStatus status,
             AdvertisementType type,
             Long adminId
     ) {
-        validateInstitutionAccess(adminId, institutionId);
-        List<InstitutionAdvertisementRequest> institutionAdvertisementRequests = requestRepository.findByInstitutionIdWithFilters(institutionId, status, type);
+        Institution institution = validateOwnerPermissionAndFindInstitution(adminId);
+        List<InstitutionAdvertisementRequest> institutionAdvertisementRequests = requestRepository.findByInstitutionIdWithFilters(institution.getId(), status, type);
 
         return institutionAdvertisementRequests.stream()
                 .map(AdvertisementSummaryDto::fromRequest)
@@ -80,10 +75,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public AdvertisementRequestDetailDto getRequestDetail(Long institutionId, Long requestId, Long adminId) {
-        validateInstitutionAccess(adminId, institutionId);
+    public AdvertisementRequestDetailDto getRequestDetail(Long requestId, Long adminId) {
+        Institution institution = validateOwnerPermissionAndFindInstitution(adminId);
 
-        InstitutionAdvertisementRequest request = requestRepository.findByIdAndInstitutionId(requestId, institutionId)
+        InstitutionAdvertisementRequest request = requestRepository.findByIdAndInstitutionId(requestId, institution.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADVERTISEMENT_NOT_FOUND));
 
         return AdvertisementRequestDetailDto.from(request);
@@ -91,10 +86,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     @Transactional
-    public void cancelRequest(Long institutionId, Long requestId, Long adminId) {
-        validateOwnerPermission(adminId, institutionId);
+    public void cancelRequest(Long requestId, Long adminId) {
+        Institution institution = validateOwnerPermissionAndFindInstitution(adminId);
 
-        InstitutionAdvertisementRequest request = requestRepository.findByIdAndInstitutionId(requestId, institutionId)
+        InstitutionAdvertisementRequest request = requestRepository.findByIdAndInstitutionId(requestId, institution.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADVERTISEMENT_NOT_FOUND));
 
         if (!request.isPending()) {
@@ -108,17 +103,16 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public List<AdvertisementSummaryDto> getInstitutionAdvertisements(
-            Long institutionId,
             AdvertisementStatus status,
             Long adminId
     ) {
-        validateInstitutionAccess(adminId, institutionId);
+        Institution institution = findInstitutionByAdminId(adminId);
         List<InstitutionAdvertisement> advertisements;
 
         if (status != null) {
-            advertisements = advertisementRepository.findByInstitutionIdAndStatus(institutionId, status);
+            advertisements = advertisementRepository.findByInstitutionIdAndStatus(institution.getId(), status);
         } else {
-            advertisements = advertisementRepository.findByInstitutionId(institutionId);
+            advertisements = advertisementRepository.findByInstitutionId(institution.getId());
         }
 
         return advertisements.stream()
@@ -127,11 +121,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public AdvertisementResponseDto getAdvertisementDetail(Long institutionId, Long adId, Long adminId) {
-        log.info("광고 상세 조회 - institutionId: {}, adId: {}", institutionId, adId);
-        validateInstitutionAccess(adminId, institutionId);
+    public AdvertisementResponseDto getAdvertisementDetail(Long advertisementId, Long adminId) {
+        Institution institution = findInstitutionByAdminId(adminId);
 
-        InstitutionAdvertisement advertisement = advertisementRepository.findByIdAndInstitutionId(adId, institutionId)
+        InstitutionAdvertisement advertisement = advertisementRepository.findByIdAndInstitutionId(advertisementId, institution.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADVERTISEMENT_NOT_FOUND));
 
         return AdvertisementResponseDto.from(advertisement);
@@ -140,14 +133,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     @Transactional
     public AdvertisementResponseDto cancelAdvertisement(
-            Long institutionId,
-            Long adId,
+            Long advertisementId,
             String cancelReason,
             Long adminId
     ) {
-        validateOwnerPermission(adminId, institutionId);
+        Institution institution = findInstitutionByAdminId(adminId);
 
-        InstitutionAdvertisement advertisement = advertisementRepository.findByIdAndInstitutionId(adId, institutionId)
+        InstitutionAdvertisement advertisement = advertisementRepository.findByIdAndInstitutionId(advertisementId, institution.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADVERTISEMENT_NOT_FOUND));
 
         advertisement.cancel(cancelReason);
@@ -296,26 +288,21 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     // ==================== 권한 검증 ====================
 
-    private void validateOwnerPermission(Long adminId, Long institutionId) {
-        InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
+    private Institution validateOwnerPermissionAndFindInstitution(Long adminId) {
+        InstitutionAdmin admin = institutionAdminRepository.findByIdWithInstitution(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
-
-        if (!admin.getInstitution().getId().equals(institutionId)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
-        }
 
         if (!admin.isOwner()) {
             throw new BusinessException(ErrorCode.OWNER_PERMISSION_REQUIRED);
         }
+        return admin.getInstitution();
     }
 
-    private void validateInstitutionAccess(Long adminId, Long institutionId) {
-        InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
+    private Institution findInstitutionByAdminId(Long adminId) {
+        InstitutionAdmin admin = institutionAdminRepository.findByIdWithInstitution(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
-        if (!admin.getInstitution().getId().equals(institutionId)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
-        }
+        return admin.getInstitution();
     }
 }
 
