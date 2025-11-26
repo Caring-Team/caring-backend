@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institution.controller.advertisement;
+package com.caring.caringbackend.api.admin.controller;
 
 import com.caring.caringbackend.api.institution.dto.response.advertisement.AdvertisementRequestDetailDto;
 import com.caring.caringbackend.api.institution.dto.response.advertisement.AdvertisementResponseDto;
@@ -38,7 +38,7 @@ public class AdminAdvertisementController {
      * 전체 신청 목록 조회 (관리자용)
      */
     @GetMapping("/requests")
-    @Operation(summary = "전체 광고 신청 목록 조회", description = "관리자가 전체 광고 신청 목록을 조회합니다.")
+    @Operation(summary = "1. 전체 광고 신청 목록 조회", description = "관리자가 전체 광고 신청 목록을 조회합니다.")
     public ApiResponse<Page<AdvertisementSummaryDto>> getAllRequests(
             @Parameter(description = "신청 상태 필터") @RequestParam(required = false) AdvertisementStatus status,
             @Parameter(description = "광고 유형 필터") @RequestParam(required = false) AdvertisementType type,
@@ -59,7 +59,7 @@ public class AdminAdvertisementController {
      * 승인 대기 신청 목록 조회
      */
     @GetMapping("/requests/pending")
-    @Operation(summary = "승인 대기 신청 목록", description = "승인 대기 중인 광고 신청 목록을 조회합니다.")
+    @Operation(summary = "2. 승인 대기 신청 목록", description = "승인 대기 중인 광고 신청 목록을 조회합니다.")
     public ApiResponse<Page<AdvertisementSummaryDto>> getPendingRequests(
             @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
     ) {
@@ -72,7 +72,7 @@ public class AdminAdvertisementController {
      * 신청 상세 조회 (관리자용)
      */
     @GetMapping("/requests/{requestId}")
-    @Operation(summary = "광고 신청 상세 조회 (관리자)", description = "관리자가 특정 광고 신청의 상세 정보를 조회합니다.")
+    @Operation(summary = "3. 광고 신청 상세 조회 (관리자)", description = "관리자가 특정 광고 신청의 상세 정보를 조회합니다.")
     public ApiResponse<AdvertisementRequestDetailDto> getRequestDetail(
             @PathVariable Long requestId
     ) {
@@ -87,7 +87,7 @@ public class AdminAdvertisementController {
      * 광고 신청 승인 (Advertisement 생성)
      */
     @PatchMapping("/requests/{requestId}/approve")
-    @Operation(summary = "광고 신청 승인", description = "관리자가 광고 신청을 승인하고 광고를 생성합니다.")
+    @Operation(summary = "4. 광고 신청 승인", description = "관리자가 광고 신청을 승인하고 광고를 생성합니다.")
     public ApiResponse<AdvertisementResponseDto> approveRequest(
             @PathVariable Long requestId,
             @Parameter(description = "승인 메모") @RequestParam(required = false) String memo
@@ -103,7 +103,7 @@ public class AdminAdvertisementController {
      * 광고 신청 거절
      */
     @PatchMapping("/requests/{requestId}/reject")
-    @Operation(summary = "광고 신청 거절", description = "관리자가 광고 신청을 거절합니다. 거절 사유 필수.")
+    @Operation(summary = "5. 광고 신청 거절", description = "관리자가 광고 신청을 거절합니다. 거절 사유 필수.")
     public ApiResponse<AdvertisementRequestDetailDto> rejectRequest(
             @PathVariable Long requestId,
             @Parameter(description = "거절 사유", required = true) @RequestParam @NotBlank String rejectionReason
@@ -121,7 +121,7 @@ public class AdminAdvertisementController {
      * 전체 광고 목록 조회
      */
     @GetMapping
-    @Operation(summary = "전체 광고 목록 조회", description = "관리자가 승인된 전체 광고 목록을 조회합니다.")
+    @Operation(summary = "6. 전체 광고 목록 조회", description = "관리자가 승인된 전체 광고 목록을 조회합니다.")
     public ApiResponse<Page<AdvertisementSummaryDto>> getAllAdvertisements(
             @Parameter(description = "광고 상태 필터") @RequestParam(required = false) AdvertisementStatus status,
             @Parameter(description = "광고 유형 필터") @RequestParam(required = false) AdvertisementType type,
@@ -142,7 +142,7 @@ public class AdminAdvertisementController {
      * 광고 상세 조회 (관리자용)
      */
     @GetMapping("/{adId}")
-    @Operation(summary = "광고 상세 조회 (관리자)", description = "관리자가 특정 광고의 상세 정보를 조회합니다.")
+    @Operation(summary = "7. 광고 상세 조회 (관리자)", description = "관리자가 특정 광고의 상세 정보를 조회합니다.")
     public ApiResponse<AdvertisementResponseDto> getAdvertisementDetail(
             @PathVariable Long adId
     ) {
@@ -157,7 +157,7 @@ public class AdminAdvertisementController {
      * 광고 강제 종료
      */
     @PatchMapping("/{advertisementId}/force-end")
-    @Operation(summary = "광고 강제 종료", description = "관리자가 진행중인 광고를 강제로 종료합니다.")
+    @Operation(summary = "8. 광고 강제 종료", description = "관리자가 진행중인 광고를 강제로 종료합니다.")
     public ApiResponse<AdvertisementResponseDto> forceEndAdvertisement(
             @PathVariable Long advertisementId,
             @Parameter(description = "종료 사유", required = true) @RequestParam @NotBlank String reason
