@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.repository;
 
-import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;

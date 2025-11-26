@@ -1,10 +1,10 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.institution.dto.request.InstitutionCreateRequestDto;
-import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
-import com.caring.caringbackend.api.institution.dto.request.InstitutionUpdateRequestDto;
-import com.caring.caringbackend.api.institution.dto.response.InstitutionDetailResponseDto;
-import com.caring.caringbackend.api.institution.dto.response.InstitutionProfileResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,18 +38,16 @@ public interface InstitutionService {
     /**
      * 기관 정보 수정
      * @param adminId 관리자 ID
-     * @param institutionId 기관 ID
      * @param requestDto    기관 수정 요청 DTO
      */
-    void updateInstitution(Long adminId, Long institutionId, InstitutionUpdateRequestDto requestDto);
+    void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto);
 
     /**
      * 입소 가능 여부 변경
      * @param adminId 관리자 ID
-     * @param institutionId         기관 ID
      * @param isAdmissionAvailable  입소 가능 여부
      */
-    void changeAdmissionAvailability(Long adminId, Long institutionId, Boolean isAdmissionAvailable);
+    void changeAdmissionAvailability(Long adminId, Boolean isAdmissionAvailable);
 
     /**
      * 기관 승인 처리
@@ -62,16 +60,16 @@ public interface InstitutionService {
      * 기관 삭제 (Soft Delete)
      *
      * @param adminId 관리자 ID
-     * @param institutionId 기관 ID
      */
-    void deleteInstitution(Long adminId, Long institutionId);
+    void deleteInstitution(Long adminId);
 
     /**
      * 기관 태그 설정
      *
      * @param adminId 관리자 ID
-     * @param institutionId 기관 ID
      * @param tagIds 태그 ID 목록
      */
-    void setInstitutionTags(Long adminId, Long institutionId, List<Long> tagIds);
+    void setInstitutionTags(Long adminId, List<Long> tagIds);
+
+    InstitutionDetailResponseDto getMyInstitution(Long adminId);
 }

@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.caring.caringbackend.IntegrationTestBase;
-import com.caring.caringbackend.api.user.dto.elderly.request.ElderlyProfileCreateRequest;
-import com.caring.caringbackend.api.user.dto.elderly.request.ElderlyProfileCreateRequest.AddressDto;
-import com.caring.caringbackend.api.user.dto.elderly.request.ElderlyProfileUpdateRequest;
-import com.caring.caringbackend.api.user.dto.elderly.response.ElderlyProfileResponse;
+import com.caring.caringbackend.api.internal.Member.dto.elderly.request.ElderlyProfileCreateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.elderly.request.ElderlyProfileCreateRequest.AddressDto;
+import com.caring.caringbackend.api.internal.Member.dto.elderly.request.ElderlyProfileUpdateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.elderly.response.ElderlyProfileResponse;
 import com.caring.caringbackend.domain.user.elderly.entity.ActivityLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.CognitiveLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;

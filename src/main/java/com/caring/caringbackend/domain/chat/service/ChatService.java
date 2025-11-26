@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.chat.service;
 
-import com.caring.caringbackend.api.chat.dto.response.ConsultRequestListResponse;
+import com.caring.caringbackend.api.internal.chat.dto.response.ConsultRequestListResponse;
 import com.caring.caringbackend.domain.chat.entity.ChatMessage;
 import com.caring.caringbackend.domain.chat.entity.ChatRoom;
 import com.caring.caringbackend.domain.chat.entity.SenderType;

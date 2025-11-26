@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

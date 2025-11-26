@@ -67,7 +67,7 @@ springdoc:
         path: /swagger-ui.html
         enabled: true
         tags-sorter: alpha
-        operations-sorter: alpha
+        operations-sorter: order
     packages-to-scan: com.caring.caringbackend
 
 server:

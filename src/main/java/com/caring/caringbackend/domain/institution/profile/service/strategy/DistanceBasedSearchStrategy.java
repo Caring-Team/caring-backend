@@ -1,6 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.service.strategy;
 
-import com.caring.caringbackend.api.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionSearchStrategy;

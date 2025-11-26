@@ -129,6 +129,25 @@ public class InstitutionCounselDetail extends BaseEntity {
         this.timeSlotsBitmask = new String(bits);
     }
 
+    /**
+     * 예약 취소 시 해당 슬롯을 다시 예약 가능 상태로 변경
+     *
+     * @param slotIndex 슬롯 인덱스 (0~47)
+     */
+    public void releaseSlot(int slotIndex) {
+        markSlotAsAvailable(slotIndex);
+    }
+
+    /**
+     * LocalTime을 슬롯 인덱스로 변환
+     *
+     * @param time 시간
+     * @return 슬롯 인덱스 (0~47)
+     */
+    public int calculateSlotIndex(java.time.LocalTime time) {
+        return time.getHour() * 2 + (time.getMinute() / 30);
+    }
+
     private void validateSlotIndex(int slotIndex) {
         if (slotIndex < 0 || slotIndex >= 48) {
             throw new BusinessException(ErrorCode.INVALID_TIME_SLOT);

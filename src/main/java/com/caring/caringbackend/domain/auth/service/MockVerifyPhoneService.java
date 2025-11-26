@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.auth.service;
 
-import com.caring.caringbackend.api.auth.dto.request.SendCertificationCodeRequest;
-import com.caring.caringbackend.api.auth.dto.request.VerifyPhoneRequest;
+import com.caring.caringbackend.api.internal.auth.dto.request.SendCertificationCodeRequest;
+import com.caring.caringbackend.api.internal.auth.dto.request.VerifyPhoneRequest;
 import com.caring.caringbackend.domain.auth.entity.CertificationCode;
 import com.caring.caringbackend.domain.auth.repository.CertificationCodeRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
