@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/recommendations")
+@RequestMapping("/api/v1/members/me/recommendations")
 @Tag(name = "🤖 AI Recommendation", description = "AI 기관 추천 API")
 public class RecommendationsController {
 
@@ -26,7 +26,7 @@ public class RecommendationsController {
      * @return 추천 기관 목록
      */
     @PostMapping
-    @Operation(summary = "1. AI 기관 추천 받기", description = "어르신 프로필을 기반으로 AI가 최적의 기관을 추천합니다.")
+    @Operation(summary = "AI 기관 추천", description = "회원과 어르신 프로필을 기반으로 AI가 최적의 기관을 추천합니다.")
     public ApiResponse<RecommendationResponseDto> getRecommendations(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @RequestBody RecommendRequestDto recommendRequestDto
