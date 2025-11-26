@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -103,7 +102,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/tags/**").hasRole("ADMIN")  // 태그 관리는 시스템 관리자만
 
                         // 채팅 API (인증 필요 - 회원 또는 기관 관리자)
-                        .requestMatchers("/api/v1/chat/**").authenticated()  // 상담 채팅 API
+                        .requestMatchers(
+                                "/api/v1/member/chat/**",
+                                "/api/v1/institution/chat/**",
+                                "/api/v1/member/consult-requests",
+                                "/api/v1/institution/consult-requests"
+                        ).authenticated()
 
                         // 테스트 경로 (개발 환경)
                         .requestMatchers("/api/v1/test/**").permitAll()
