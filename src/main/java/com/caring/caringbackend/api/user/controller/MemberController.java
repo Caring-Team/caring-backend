@@ -10,7 +10,7 @@ import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.api.tag.dto.response.TagListResponse;
 import com.caring.caringbackend.domain.chat.service.ChatService;
-import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequestStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.ConsultRequestStatus;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;

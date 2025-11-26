@@ -1,5 +1,7 @@
 package com.caring.caringbackend.domain.institution.counsel.entity;
 
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselReservationStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.BaseEntity;
@@ -35,6 +37,10 @@ public class InstitutionCounselDetail extends BaseEntity {
     @JoinColumn(name = "institution_counsel_id", nullable = false)
     private InstitutionCounsel institutionCounsel;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CounselTimeUnit unit;
+
     // 상담 서비스 제공 날짜
     @Column(nullable = false)
     private LocalDate serviceDate;
@@ -43,7 +49,7 @@ public class InstitutionCounselDetail extends BaseEntity {
      *
      * 저장 형식: 이진수 문자열 (48자리, 예: "111111111111111111111111111111111111111111111111")
      * - 48비트 사용 (0~23시 30분 단위)
-     * - 각 비트: 1 = 예약 가능, 0 = 예약됨
+     * - 각 비트: 2 = 예약 불가, 1 = 예약 가능, 0 = 예약됨
      *
      * - "111111111111111111111111111111111111111111111111" = 모든 시간 예약 가능 (48개 1)
      * - "011111111111111111111111111111111111111111111111" = 00:00-00:30만 예약됨
@@ -56,15 +62,17 @@ public class InstitutionCounselDetail extends BaseEntity {
     private String timeSlotsBitmask;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public InstitutionCounselDetail(InstitutionCounsel institutionCounsel, LocalDate serviceDate, String timeSlotsBitmask) {
+    public InstitutionCounselDetail(InstitutionCounsel institutionCounsel, CounselTimeUnit unit, LocalDate serviceDate, String timeSlotsBitmask) {
         this.institutionCounsel = institutionCounsel;
+        this.unit = unit;
         this.serviceDate = serviceDate;
         this.timeSlotsBitmask = timeSlotsBitmask;
     }
 
-    public static InstitutionCounselDetail create(InstitutionCounsel institutionCounsel, LocalDate serviceDate, String timeSlotsBitmask) {
+    public static InstitutionCounselDetail create(InstitutionCounsel institutionCounsel,  LocalDate serviceDate, String timeSlotsBitmask) {
         return InstitutionCounselDetail.builder()
                 .institutionCounsel(institutionCounsel)
+                .unit(institutionCounsel.getUnit())
                 .serviceDate(serviceDate)
                 .timeSlotsBitmask(timeSlotsBitmask)
                 .build();
@@ -74,7 +82,7 @@ public class InstitutionCounselDetail extends BaseEntity {
      * 비트마스크 업데이트
      * 예약/취소 시 사용
      *
-     * @param newBitmask 이진수 문자열 (48자리)
+     * @param newBitmask 예약 상태 문자열 (48자리)
      */
     public void updateTimeSlotsBitmask(String newBitmask) {
         this.timeSlotsBitmask = newBitmask;
@@ -90,26 +98,7 @@ public class InstitutionCounselDetail extends BaseEntity {
         validateSlotIndex(slotIndex);
 
         // 이진수 문자열에서 해당 인덱스의 비트 확인 (1 = 예약 가능)
-        return timeSlotsBitmask.charAt(slotIndex) == '1';
-    }
-
-    /**
-     * 비트마스크를 Long 타입으로 반환 (비트 연산용)
-     *
-     * @return 비트마스크 Long 값
-     */
-    public long getTimeSlotsBitmaskAsLong() {
-        return Long.parseLong(timeSlotsBitmask, 2); // 2진수 → Long
-    }
-
-    /**
-     * Long 타입 비트마스크를 이진수 문자열로 변환하여 저장
-     *
-     * @param bitmaskLong 비트마스크 Long 값
-     */
-    public void updateTimeSlotsBitmaskFromLong(long bitmaskLong) {
-        // Long → 이진수 문자열 (48자리로 패딩)
-        this.timeSlotsBitmask = String.format("%48s", Long.toBinaryString(bitmaskLong)).replace(' ', '0');
+        return timeSlotsBitmask.charAt(slotIndex) == CounselReservationStatus.AVAILABLE.getCode();
     }
 
     /**
@@ -122,7 +111,7 @@ public class InstitutionCounselDetail extends BaseEntity {
 
         // 문자열의 해당 위치를 '0'으로 변경
         char[] bits = timeSlotsBitmask.toCharArray();
-        bits[slotIndex] = '0';
+        bits[slotIndex] = CounselReservationStatus.RESERVED.getCode();
         this.timeSlotsBitmask = new String(bits);
     }
 
@@ -136,7 +125,7 @@ public class InstitutionCounselDetail extends BaseEntity {
 
         // 문자열의 해당 위치를 '1'로 변경
         char[] bits = timeSlotsBitmask.toCharArray();
-        bits[slotIndex] = '1';
+        bits[slotIndex] = CounselReservationStatus.AVAILABLE.getCode();
         this.timeSlotsBitmask = new String(bits);
     }
 

@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.counsel.repository;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequest;
-import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequestStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.ConsultRequestStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

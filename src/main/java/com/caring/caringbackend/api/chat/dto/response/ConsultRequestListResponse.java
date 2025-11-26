@@ -1,7 +1,7 @@
 package com.caring.caringbackend.api.chat.dto.response;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequest;
-import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequestStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.ConsultRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

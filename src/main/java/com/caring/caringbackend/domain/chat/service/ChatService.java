@@ -7,7 +7,7 @@ import com.caring.caringbackend.domain.chat.entity.SenderType;
 import com.caring.caringbackend.domain.chat.repository.ChatMessageRepository;
 import com.caring.caringbackend.domain.chat.repository.ChatRoomRepository;
 import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequest;
-import com.caring.caringbackend.domain.institution.counsel.entity.ConsultRequestStatus;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.ConsultRequestStatus;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.repository.ConsultRequestRepository;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselRepository;

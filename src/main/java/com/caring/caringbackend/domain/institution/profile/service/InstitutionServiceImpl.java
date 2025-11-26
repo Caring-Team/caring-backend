@@ -79,12 +79,6 @@ public class InstitutionServiceImpl implements InstitutionService {
         GeoPoint location = geocodingService.convertAddressToGeoPoint(address);
 
         // PriceInfo 생성
-        PriceInfo priceInfo = PriceInfo.builder()
-                .monthlyBaseFee(requestDto.getMonthlyBaseFee())
-                .admissionFee(requestDto.getAdmissionFee())
-                .monthlyMealCost(requestDto.getMonthlyMealCost())
-                .priceNotes(requestDto.getPriceNotes())
-                .build();
 
         // 사업자등록증 파일 업로드 (임시 저장 - referenceId는 null)
         File uploadedFile = fileService.uploadAndLinkBusinessLicense(file, null);
@@ -94,16 +88,12 @@ public class InstitutionServiceImpl implements InstitutionService {
         Institution institution = Institution.createInstitution(
                 requestDto.getName(),
                 requestDto.getInstitutionType(),
+                requestDto.getInstitutionCode(),
                 requestDto.getPhoneNumber(),
                 address,
                 location,
-                requestDto.getBedCount(),
-                requestDto.getIsAdmissionAvailable(),
-                priceInfo,
-                requestDto.getOpeningHours(),
                 requestDto.getBusinessLicense(),
-                uploadedFile.getFileUrl(),
-                requestDto.getDescription()
+                uploadedFile.getFileUrl()
         );
 
         Institution savedInstitution = institutionRepository.save(institution);
@@ -112,11 +102,6 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 파일의 참조 정보 업데이트 (기관 ID와 연결)
         if (uploadedFile.getId() != null) {
             fileService.updateFileReference(uploadedFile.getId(), savedInstitution.getId(), INSTITUTION);
-        }
-        
-        // 태그 연결 (InstitutionTag 생성)
-        if (requestDto.getTagIds() != null && !requestDto.getTagIds().isEmpty()) {
-            saveInstitutionTags(savedInstitution, requestDto.getTagIds());
         }
         
         log.info("기관 등록 완료: institutionId={}, adminId={}", savedInstitution.getId(), adminId);
