@@ -3,8 +3,8 @@ package com.caring.caringbackend.domain.user.guardian.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.caring.caringbackend.IntegrationTestBase;
-import com.caring.caringbackend.api.internal.user.dto.member.response.MemberMyPageResponse;
-import com.caring.caringbackend.api.internal.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberMyPageResponse;
+import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;

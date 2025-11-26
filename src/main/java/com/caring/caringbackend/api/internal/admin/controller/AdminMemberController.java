@@ -1,9 +1,9 @@
 package com.caring.caringbackend.api.internal.admin.controller;
 
-import com.caring.caringbackend.api.internal.user.dto.member.request.MemberUpdateRequest;
-import com.caring.caringbackend.api.internal.user.dto.member.response.MemberDetailResponse;
-import com.caring.caringbackend.api.internal.user.dto.member.response.MemberListResponse;
-import com.caring.caringbackend.api.internal.user.dto.member.response.MemberResponse;
+import com.caring.caringbackend.api.internal.Member.dto.member.request.MemberUpdateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberDetailResponse;
+import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberListResponse;
+import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberResponse;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

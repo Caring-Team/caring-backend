@@ -4,7 +4,7 @@ import com.caring.caringbackend.api.internal.institution.dto.request.Institution
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
-import com.caring.caringbackend.api.internal.user.dto.review.response.ReviewListResponse;
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import com.caring.caringbackend.domain.review.service.ReviewService;

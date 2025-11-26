@@ -1,10 +1,10 @@
 package com.caring.caringbackend.domain.review.service;
 
-import com.caring.caringbackend.api.internal.user.dto.review.request.ReviewCreateRequest;
-import com.caring.caringbackend.api.internal.user.dto.review.request.ReviewReportRequest;
-import com.caring.caringbackend.api.internal.user.dto.review.request.ReviewUpdateRequest;
-import com.caring.caringbackend.api.internal.user.dto.review.response.ReviewListResponse;
-import com.caring.caringbackend.api.internal.user.dto.review.response.ReviewResponse;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewCreateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewReportRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewUpdateRequest;
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewResponse;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
