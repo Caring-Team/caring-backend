@@ -100,6 +100,8 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION-001", "예약을 찾을 수 없습니다"),
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "RESERVATION-002", "완료된 예약만 리뷰를 작성할 수 있습니다"),
     RESERVATION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "RESERVATION-003", "해당 예약에 접근할 수 없습니다"),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "RESERVATION-004", "이미 취소된 예약입니다"),
+    RESERVATION_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "RESERVATION-005", "이미 완료된 예약은 취소할 수 없습니다"),
 
     // ⭐ Review Domain Errors (REVIEW-xxx)
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "리뷰를 찾을 수 없습니다"),

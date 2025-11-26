@@ -1,9 +1,12 @@
 package com.caring.caringbackend.domain.reservation.service;
 
 import com.caring.caringbackend.api.internal.reservation.dto.request.MemberReservationCreateRequestDto;
+import com.caring.caringbackend.api.internal.reservation.dto.response.MemberReservationDetailResponseDto;
+import com.caring.caringbackend.api.internal.reservation.dto.response.MemberReservationResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselDetailRepository;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
+import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
@@ -12,6 +15,8 @@ import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +60,49 @@ public class MemberReservationServiceImpl implements MemberReservationService {
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new BusinessException(RESERVATION_TIME_NOT_AVAILABLE);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MemberReservationResponseDto> getMyReservations(Long memberId, Pageable pageable) {
+        // 회원 검증
+        getMember(memberId);
+
+        // 예약 목록 조회 (최신순 정렬)
+        return reservationRepository.findByMemberIdWithDetails(memberId, pageable)
+                .map(MemberReservationResponseDto::from);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberReservationDetailResponseDto getMyReservationDetail(Long memberId, Long reservationId) {
+        Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        return MemberReservationDetailResponseDto.from(reservation);
+    }
+
+    @Override
+    public void cancelMyReservation(Long memberId, Long reservationId) {
+        Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        // 이미 취소된 예약인지 확인
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
+        }
+
+        // 이미 완료된 예약은 취소 불가
+        if (reservation.getStatus() == ReservationStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_COMPLETED);
+        }
+
+        // 예약 상태를 취소로 변경
+        reservation.updateStatus(ReservationStatus.CANCELLED);
+
+        // 해당 시간대 비트마스크 복원 (다시 예약 가능하도록)
+        InstitutionCounselDetail counselDetail = reservation.getCounselDetail();
+        counselDetail.releaseSlot(counselDetail.calculateSlotIndex(reservation.getReservationTime()));
     }
 
     private ElderlyProfile getElderlyProfile(Long memberId, MemberReservationCreateRequestDto requestDto) {

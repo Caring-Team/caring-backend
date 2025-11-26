@@ -32,8 +32,29 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * @param memberId 회원 ID
      * @return 예약
      */
-    @EntityGraph(attributePaths = {"counselDetail", "counselDetail.institutionCounsel", "counselDetail.institutionCounsel.institution"})
+    @EntityGraph(attributePaths = {"counselDetail", "counselDetail.institutionCounsel", "counselDetail.institutionCounsel.institution", "elderlyProfile"})
     Optional<Reservation> findByIdAndMemberId(Long reservationId, Long memberId);
+
+    /**
+     * 회원 ID로 예약 목록 조회 (상세 정보 포함)
+     *
+     * @param memberId 회원 ID
+     * @param pageable 페이징 정보
+     * @return 예약 페이지
+     */
+    @Query("""
+        SELECT r FROM Reservation r
+        JOIN FETCH r.counselDetail cd
+        JOIN FETCH cd.institutionCounsel ic
+        JOIN FETCH ic.institution i
+        JOIN FETCH r.elderlyProfile ep
+        WHERE r.member.id = :memberId
+        ORDER BY cd.serviceDate DESC, r.createdAt DESC
+        """)
+    Page<Reservation> findByMemberIdWithDetails(
+            @Param("memberId") Long memberId,
+            Pageable pageable
+    );
 
     /**
      * 회원 ID와 예약 상태 목록으로 활성 예약 존재 여부 확인
