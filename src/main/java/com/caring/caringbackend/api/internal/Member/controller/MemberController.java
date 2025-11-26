@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/members/me")
 @RequiredArgsConstructor
-@Tag(name = "👤 Member", description = "회원(보호자) 관리 API")
+@Tag(name = "03. 👤 Member", description = "회원 프로필 관리 API | 내 정보 조회/수정, 선호 태그 관리")
 public class MemberController {
 
     private final MemberService memberService;

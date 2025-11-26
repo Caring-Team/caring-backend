@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/me")
-@Tag(name = "🏥 Institution Profile", description = "내 기관 프로필 관리 API")
+@Tag(name = "10. 🏥 Institution Profile", description = "기관 프로필 관리 API | 내 기관 정보 조회/수정, 태그 관리")
 public class InstitutionController {
     private final InstitutionService institutionService;
 

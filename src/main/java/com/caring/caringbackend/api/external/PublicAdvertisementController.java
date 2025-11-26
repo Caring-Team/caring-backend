@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/public/advertisements")
 @RequiredArgsConstructor
-@Tag(name = "Public Advertisement", description = "공개 광고 조회 API")
+@Tag(name = "18. 📺 Public Advertisement", description = "공개 광고 API | 광고 조회 (인증 불필요)")
 public class PublicAdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -29,7 +29,7 @@ public class PublicAdvertisementController {
      * 현재 진행중인 광고 목록 조회
      */
     @GetMapping
-    @Operation(summary = "현재 진행중인 광고 목록", description = "현재 진행중인 모든 광고를 조회합니다. (공개 API)")
+    @Operation(summary = "1. 현재 진행중인 광고 목록", description = "현재 진행중인 모든 광고를 조회합니다. (공개 API)")
     public ApiResponse<List<ActiveAdvertisementDto>> getActiveAdvertisements() {
         log.info("현재 진행중인 광고 목록 조회 (공개 API)");
 
@@ -42,7 +42,7 @@ public class PublicAdvertisementController {
      * 유형별 진행중인 광고 조회
      */
     @GetMapping("/type/{type}")
-    @Operation(summary = "유형별 진행중인 광고 조회", description = "특정 유형의 진행중인 광고를 조회합니다. (공개 API)")
+    @Operation(summary = "2. 유형별 진행중인 광고 조회", description = "특정 유형의 진행중인 광고를 조회합니다. (공개 API)")
     public ApiResponse<List<ActiveAdvertisementDto>> getActiveAdvertisementsByType(
             @Parameter(description = "광고 유형") @PathVariable AdvertisementType type
     ) {

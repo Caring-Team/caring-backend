@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/tags")
-@io.swagger.v3.oas.annotations.tags.Tag(name = "🏷 Public Tag", description = "공개 태그 조회 API")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "19. 🏷 Public Tag", description = "공개 태그 API | 태그 조회 (인증 불필요)")
 public class PublicTagController {
 
     private final TagService tagService;

@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/institutions/me/caregivers")
-@Tag(name = "👩‍⚕️ CareGiver", description = "요양보호사 관리 API")
+@Tag(name = "11. 👩‍⚕️ Institution CareGiver", description = "기관 요양보호사 관리 API | 요양보호사 등록/수정/삭제")
 public class CareGiverController {
 
     private final CareGiverService careGiverService;

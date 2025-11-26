@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/institutions/me/counsels")
 @RequiredArgsConstructor
-@Tag(name = "💬 Institution Counsel", description = "기관 상담 관리 API")
+@Tag(name = "12. 💬 Institution Counsel", description = "기관 상담 서비스 관리 API | 상담 서비스 등록/수정/삭제, 시간 관리")
 public class InstitutionCounselController {
 
     private final InstitutionCounselService institutionCounselService;

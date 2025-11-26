@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/institutions/me/chat")
 @RequiredArgsConstructor
-@Tag(name = "🏥 Institution Chat", description = "기관 상담 채팅 API")
+@Tag(name = "15. 🏥 Institution Chat", description = "기관 채팅 API | 회원과의 실시간 상담 채팅")
 @SecurityRequirement(name = "bearerAuth")
 public class InstitutionChatController {
 
@@ -43,7 +43,7 @@ public class InstitutionChatController {
     private final MemberRepository memberRepository;
 
     @PostMapping("/rooms/{chatRoomId}/messages")
-    @Operation(summary = "메시지 전송", description = "기관 관리자가 채팅 메시지를 전송합니다. 메시지는 기관명으로 표시됩니다.")
+    @Operation(summary = "1. 메시지 전송", description = "기관 관리자가 채팅 메시지를 전송합니다. 메시지는 기관명으로 표시됩니다.")
     public ResponseEntity<ApiResponse<ChatMessageResponse>> sendMessage(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId,
@@ -68,7 +68,7 @@ public class InstitutionChatController {
     }
 
     @GetMapping("/rooms/{chatRoomId}/messages")
-    @Operation(summary = "메시지 목록 조회", description = "기관 관리자가 채팅방의 메시지 목록을 조회합니다. (페이징)")
+    @Operation(summary = "2. 메시지 목록 조회", description = "기관 관리자가 채팅방의 메시지 목록을 조회합니다. (페이징)")
     public ResponseEntity<ApiResponse<ChatMessageListResponse>> getMessages(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId,
@@ -90,7 +90,7 @@ public class InstitutionChatController {
     }
 
     @GetMapping("/rooms/{chatRoomId}/messages/poll")
-    @Operation(summary = "롱 폴링", description = "기관 관리자가 신규 메시지를 대기합니다. 타임아웃: 30초")
+    @Operation(summary = "3. 롱 폴링", description = "기관 관리자가 신규 메시지를 대기합니다. 타임아웃: 30초")
     public ResponseEntity<ApiResponse<List<ChatMessageResponse>>> pollMessages(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId,
@@ -111,7 +111,7 @@ public class InstitutionChatController {
     }
 
     @DeleteMapping("/rooms/{chatRoomId}/messages/{messageId}")
-    @Operation(summary = "메시지 삭제", description = "기관 관리자가 본인이 보낸 메시지를 삭제합니다. (Soft Delete)")
+    @Operation(summary = "4. 메시지 삭제", description = "기관 관리자가 본인이 보낸 메시지를 삭제합니다. (Soft Delete)")
     public ResponseEntity<ApiResponse<Void>> deleteMessage(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId,
@@ -122,7 +122,7 @@ public class InstitutionChatController {
     }
 
     @GetMapping("/rooms/{chatRoomId}")
-    @Operation(summary = "채팅방 정보 조회", description = "기관 관리자가 채팅방 정보를 조회합니다.")
+    @Operation(summary = "5. 채팅방 정보 조회", description = "기관 관리자가 채팅방 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<ChatRoomInfoResponse>> getChatRoomInfo(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId) {
@@ -133,7 +133,7 @@ public class InstitutionChatController {
     }
 
     @PostMapping("/rooms/{chatRoomId}/close")
-    @Operation(summary = "상담 종료", description = "기관 관리자가 상담을 종료합니다.")
+    @Operation(summary = "6. 상담 종료", description = "기관 관리자가 상담을 종료합니다.")
     public ResponseEntity<ApiResponse<Void>> closeChat(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long chatRoomId) {

@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/members/me/reviews")
 @RequiredArgsConstructor
-@Tag(name = "⭐ Review", description = "리뷰 관리 API")
+@Tag(name = "08. ⭐ Member Review", description = "리뷰 관리 API | 리뷰 작성/수정/삭제/신고")
 @SecurityRequirement(name = "bearerAuth")
 public class MemberReviewController {
 

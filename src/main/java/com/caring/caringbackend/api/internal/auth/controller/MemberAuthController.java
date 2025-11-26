@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 @RestController
-@Tag(name = "🧑‍🤝‍🧑 Member Auth", description = "회원 인증 API")
+@Tag(name = "01. 🧑‍🤝‍🧑 Member Auth", description = "회원 인증 API | 회원가입, 로그인, 토큰 관리")
 public class MemberAuthController {
 
     private final AuthService authService;

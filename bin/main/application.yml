@@ -28,3 +28,11 @@ decorator:
   datasource:
     p6spy:
       enable-logging: true
+
+# 📚 Swagger/OpenAPI 설정
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha  # 태그를 알파벳 순으로 정렬 (번호를 앞에 붙여서 순서 제어)
+    # operations-sorter는 커스텀 JS로 처리 (summary 번호 순서)
+    custom-js-url: /swagger-custom.js  # 커스텀 정렬 스크립트
+

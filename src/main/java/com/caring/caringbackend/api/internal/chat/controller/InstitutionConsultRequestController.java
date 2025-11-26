@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/institutions/me")
 @RequiredArgsConstructor
-@Tag(name = "🏥 Institution Consult Requests", description = "기관 상담 내역 API")
+@Tag(name = "16. 🏥 Institution Consult Requests", description = "기관 상담 내역 API | 상담 요청 내역 조회")
 @SecurityRequirement(name = "bearerAuth")
 public class InstitutionConsultRequestController {
 
     private final ChatService chatService;
 
     @GetMapping("/consult-requests")
-    @Operation(summary = "기관 상담 요청 목록 조회", description = "기관 관리자가 소속 기관의 상담 요청 목록을 조회합니다. (페이징, 상태 필터링 지원)")
+    @Operation(summary = "1. 기관 상담 요청 목록 조회", description = "기관 관리자가 소속 기관의 상담 요청 목록을 조회합니다. (페이징, 상태 필터링 지원)")
     public ResponseEntity<ApiResponse<ConsultRequestListResponse>> getInstitutionConsultRequests(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @Parameter(description = "상태 필터 (ACTIVE: 진행 중, CLOSED: 종료됨, null: 전체)")

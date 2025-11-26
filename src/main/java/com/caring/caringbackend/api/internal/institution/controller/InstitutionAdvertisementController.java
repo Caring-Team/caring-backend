@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/institutions/me/advertisements")
 @RequiredArgsConstructor
-@Tag(name = "Institution Advertisement", description = "기관 광고 관리 API")
+@Tag(name = "13. 📺 Institution Advertisement", description = "기관 광고 관리 API | 광고 신청/조회/수정")
 public class InstitutionAdvertisementController {
 
     private final AdvertisementService advertisementService;

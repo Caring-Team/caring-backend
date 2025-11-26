@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/advertisements")
 @RequiredArgsConstructor
-@Tag(name = "Admin Advertisement", description = "관리자 광고 심사 및 관리 API")
+@Tag(name = "21. Admin Advertisement", description = "관리자 광고 관리 API | 광고 심사/승인/거절")
 public class AdminAdvertisementController {
 
     private final AdvertisementService advertisementService;

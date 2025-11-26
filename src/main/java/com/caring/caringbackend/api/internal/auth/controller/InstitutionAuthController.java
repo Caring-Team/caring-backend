@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth/institution")
 @RestController
-@Tag(name = "🏥 Institution Auth", description = "기관 관리자 인증 API")
+@Tag(name = "02. 🏥 Institution Auth", description = "기관 인증 API | 기관 회원가입, 로그인, 토큰 관리")
 public class InstitutionAuthController {
 
     private final AuthService authService;

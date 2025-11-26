@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/institutions/me/reservations")
 @RequiredArgsConstructor
-@Tag(name = "🏥 Institution Reservation", description = "기관 예약 관리 API")
+@Tag(name = "14. 🏥 Institution Reservation", description = "기관 예약 관리 API | 예약 조회/상태 변경")
 public class InstitutionReservationController {
 
     private final InstitutionReservationService institutionReservationService;
@@ -53,7 +53,7 @@ public class InstitutionReservationController {
     }
 
     @GetMapping("/{reservationId}")
-    @Operation(summary = "내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
+    @Operation(summary = "2. 내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> getMyInstitutionReservationDetail(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 
@@ -67,7 +67,7 @@ public class InstitutionReservationController {
     }
 
     @PatchMapping("/{reservationId}/status")
-    @Operation(summary = "내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
+    @Operation(summary = "3. 내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> updateMyInstitutionReservationStatus(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 

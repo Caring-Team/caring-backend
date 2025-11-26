@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/members")
 @RequiredArgsConstructor
-@Tag(name = "Admin Member", description = "관리자 회원 관리 API")
+@Tag(name = "22. Admin Member", description = "관리자 회원 관리 API | 회원 조회/관리")
 public class AdminMemberController {
 
     private final MemberService memberService;
@@ -84,7 +84,7 @@ public class AdminMemberController {
      * 모든 필드가 업데이트되므로 전체 정보를 전달해야 합니다.
      */
     @PutMapping("/{memberId}")
-    @Operation(summary = "회원 수정", description = "회원의 기본 정보를 수정합니다.")
+    @Operation(summary = "4. 회원 수정", description = "회원의 기본 정보를 수정합니다.")
     public ResponseEntity<ApiResponse<MemberResponse>> updateMember(
             @PathVariable Long memberId,
             @Valid @RequestBody MemberUpdateRequest request) {

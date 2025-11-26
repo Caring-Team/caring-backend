@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/members/me/elderly-profiles")
 @RequiredArgsConstructor
-@Tag(name = "👵 Elderly Profile", description = "어르신 프로필 관리 API")
+@Tag(name = "04. 👵 Elderly Profile", description = "어르신 프로필 관리 API | 어르신 등록/수정/삭제, 케어 정보 관리")
 public class ElderlyProfileController {
 
     private final ElderlyProfileService elderlyProfileService;

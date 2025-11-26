@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/institutions")
 @RequiredArgsConstructor
-@Tag(name = "Admin Institution", description = "관리자 기관 관리 API")
+@Tag(name = "20. Admin Institution", description = "관리자 기관 관리 API | 기관 승인/거절/조회")
 public class AdminInstitutionController {
 
     private final InstitutionService institutionService;
@@ -24,7 +24,7 @@ public class AdminInstitutionController {
      * 기관 승인 처리 (관리자 전용)
      */
     @PatchMapping("/{institutionId}/approval")
-    @Operation(summary = "기관 승인", description = "관리자가 기관 등록 요청을 승인합니다.")
+    @Operation(summary = "1. 기관 승인", description = "관리자가 기관 등록 요청을 승인합니다.")
     public ApiResponse<Void> approveInstitution(
             @PathVariable Long institutionId
     ) {

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/members/me/reservations")
 @RequiredArgsConstructor
-@Tag(name = "🧑‍🤝‍🧑 Member Reservation", description = "회원 예약 관리 API")
+@Tag(name = "05. 🧑‍🤝‍🧑 Member Reservation", description = "회원 예약 관리 API | 예약 생성/조회/취소")
 public class MemberReservationController {
 
     private final MemberReservationService memberReservationService;
