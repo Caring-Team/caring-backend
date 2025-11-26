@@ -58,6 +58,9 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
     @Override
     public void createInstitutionCounsel(Long adminId,
                                          InstitutionCounselCreateRequestDto requestDto) {
+        validateReservableDays(requestDto.getMinReservableDaysBefore(), requestDto.getMaxReservableDaysBefore());
+        validateCounselHour(requestDto.getUnit(), requestDto.getCounselHours());
+
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validateInstitution(admin);
         Institution institution = admin.getInstitution();
@@ -170,6 +173,7 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
                                          InstitutionCounselUpdateRequestDto requestDto) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validateInstitution(admin);
+
         Institution institution = admin.getInstitution();
 
         InstitutionCounsel counsel = findInstitutionCounselById(counselId);
@@ -179,6 +183,7 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
                 requestDto.getMinReservableDaysBefore(), requestDto.getMaxReservableDaysBefore());
 
         if (requestDto.getCounselHours() != null && !requestDto.getCounselHours().isEmpty()) {
+            validateCounselHour(counsel.getUnit(), requestDto.getCounselHours());
             counselHoursRepository.deleteAllByCounselId(counselId);
             makeCounselHours(counsel, requestDto.getCounselHours());
         }
@@ -188,7 +193,6 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
 
     private void makeCounselHours(InstitutionCounsel counsel,
                                   Set<CounselHourDto> dto) {
-        validateTimes(counsel.getUnit(), dto);
         List<CounselHours> counsels = new ArrayList<>();
 
         for (var counselHour : dto) {
@@ -276,7 +280,16 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
         }
     }
 
-    private void validateTimes(CounselTimeUnit unit, Set<CounselHourDto> dto) {
+    private void validateReservableDays(Integer min, Integer max) {
+        if (min == null || max == null) {
+            throw new IllegalArgumentException("최소, 최대 예약일은 필수입니다.");
+        }
+        if (max < min) {
+            throw new IllegalArgumentException("최대 예약일은 최소 예약일보다 작을 수 없습니다.");
+        }
+    }
+
+    private void validateCounselHour(CounselTimeUnit unit, Set<CounselHourDto> dto) {
         Map<DayOfWeek, boolean[]> map = new HashMap<>();
 
         for (var day : DayOfWeek.values()) {

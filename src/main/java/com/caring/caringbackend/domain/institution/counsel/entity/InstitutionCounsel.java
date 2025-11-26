@@ -124,12 +124,19 @@ public class InstitutionCounsel extends BaseEntity {
             this.description = description;
         }
 
-        if (minReservableDaysBefore != null) {
-            this.minReservableDaysBefore = minReservableDaysBefore;
+        int newMin = (minReservableDaysBefore != null)
+                ? minReservableDaysBefore
+                : this.minReservableDaysBefore;
+
+        int newMax = (maxReservableDaysBefore != null)
+                ? maxReservableDaysBefore
+                : this.maxReservableDaysBefore;
+
+        if (newMax < newMin) {
+            throw new IllegalArgumentException("최대 예약일은 최소 예약일보다 작을 수 없습니다.");
         }
 
-        if (maxReservableDaysBefore != null) {
-            this.minReservableDaysBefore = minReservableDaysBefore;
-        }
+        this.minReservableDaysBefore = newMin;
+        this.maxReservableDaysBefore = newMax;
     }
 }
