@@ -27,13 +27,12 @@ public class CareGiverController {
      * 요양보호사 등록
      */
     @PostMapping
-    @Operation(summary = "요양보호사 등록", description = "해당 기관에 새로운 요양보호사를 등록합니다. (OWNER/MANAGER 권한 필요)")
+    @Operation(summary = "1. 요양보호사 등록", description = "해당 기관에 새로운 요양보호사를 등록합니다. (OWNER/MANAGER 권한 필요)")
     public ApiResponse<Void> registerCareGiver(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @PathVariable Long institutionId,
             @Valid @RequestBody CareGiverCreateRequestDto requestDto) {
 
-        careGiverService.registerCareGiver(adminDetails.getId(), institutionId, requestDto);
+        careGiverService.registerCareGiver(adminDetails.getId(), requestDto);
         return ApiResponse.success();
     }
 
@@ -41,11 +40,12 @@ public class CareGiverController {
      * 요양보호사 목록 조회
      */
     @GetMapping
-    @Operation(summary = "요양보호사 목록 조회", description = "해당 기관에 소속된 요양보호사들의 전체 목록을 조회합니다. (공개 API)")
+    @Operation(summary = "2. 내 기관 요양보호사 목록 조회", description = "해당 기관에 소속된 요양보호사들의 전체 목록을 조회합니다. (공개 API)")
     public ApiResponse<List<CareGiverResponseDto>> getCareGiversByInstitution(
-            @PathVariable Long institutionId) {
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+            ) {
 
-        List<CareGiverResponseDto> careGivers = careGiverService.getCareGiversByInstitution(institutionId);
+        List<CareGiverResponseDto> careGivers = careGiverService.getCareGiversByInstitution(adminDetails.getId());
         return ApiResponse.success(careGivers);
     }
 
@@ -53,12 +53,12 @@ public class CareGiverController {
      * 요양보호사 상세 조회
      */
     @GetMapping("/{careGiverId}")
-    @Operation(summary = "요양보호사 상세 조회", description = "요양보호사의 상세 정보를 조회합니다. (공개 API)")
+    @Operation(summary = "3. 내 기관 요양보호사 상세 조회", description = "요양보호사의 상세 정보를 조회합니다. (공개 API)")
     public ApiResponse<CareGiverResponseDto> getCareGiverDetail(
-            @PathVariable Long institutionId,
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long careGiverId) {
 
-        CareGiverResponseDto careGiver = careGiverService.getCareGiverDetail(institutionId, careGiverId);
+        CareGiverResponseDto careGiver = careGiverService.getCareGiverDetail(adminDetails.getId(), careGiverId);
         return ApiResponse.success(careGiver);
     }
 
@@ -66,14 +66,13 @@ public class CareGiverController {
      * 요양보호사 정보 수정
      */
     @PutMapping("/{careGiverId}")
-    @Operation(summary = "요양보호사 정보 수정", description = "요양보호사의 정보를 수정합니다. (OWNER/MANAGER 권한 필요)")
+    @Operation(summary = "4. 내 기관 요양보호사 정보 수정", description = "요양보호사의 정보를 수정합니다. (OWNER/MANAGER 권한 필요)")
     public ApiResponse<Void> updateCareGiver(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @PathVariable Long institutionId,
             @PathVariable Long careGiverId,
             @Valid @RequestBody CareGiverUpdateRequestDto requestDto) {
 
-        careGiverService.updateCareGiver(adminDetails.getId(), institutionId, careGiverId, requestDto);
+        careGiverService.updateCareGiver(adminDetails.getId(), careGiverId, requestDto);
         return ApiResponse.success();
     }
 
@@ -81,13 +80,12 @@ public class CareGiverController {
      * 요양보호사 삭제
      */
     @DeleteMapping("/{careGiverId}")
-    @Operation(summary = "요양보호사 삭제", description = "요양보호사를 삭제합니다. Soft Delete로 처리됩니다. (OWNER 권한 필요)")
+    @Operation(summary = "5. 내 기관 요양보호사 삭제", description = "요양보호사를 삭제합니다. Soft Delete로 처리됩니다. (OWNER 권한 필요)")
     public ApiResponse<Void> deleteCareGiver(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @PathVariable Long institutionId,
             @PathVariable Long careGiverId) {
 
-        careGiverService.deleteCareGiver(adminDetails.getId(), institutionId, careGiverId);
+        careGiverService.deleteCareGiver(adminDetails.getId(), careGiverId);
         return ApiResponse.success();
     }
 }

@@ -29,15 +29,16 @@ public class CareGiverServiceImpl implements CareGiverService {
     private final InstitutionAdminRepository institutionAdminRepository;
     private final InstitutionRepository institutionRepository;
 
+    /**
+     * 요양보호사 등록
+     * */
     @Override
     public void registerCareGiver(
-            Long adminId, Long institutionId,
-            CareGiverCreateRequestDto requestDto) {
-
+            Long adminId, CareGiverCreateRequestDto requestDto
+    ) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
-        validate(institutionId, admin);
-
-        Institution institution = findInstitutionById(institutionId);
+        validate(admin);
+        Institution institution = admin.getInstitution();
 
         CareGiver careGiver = CareGiver.createCareGiver(
                 institution,
@@ -54,34 +55,39 @@ public class CareGiverServiceImpl implements CareGiverService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CareGiverResponseDto> getCareGiversByInstitution(Long institutionId) {
-
-        findInstitutionById(institutionId);
-        List<CareGiver> careGivers = careGiverRepository.findByInstitutionIdOrderByCreatedAtDesc(institutionId);
+    public List<CareGiverResponseDto> getCareGiversByInstitution(Long adminId) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(admin);
+        Institution institution = admin.getInstitution();
+        List<CareGiver> careGivers = careGiverRepository.findByInstitutionIdOrderByCreatedAtDesc(institution.getId());
 
         return careGivers.stream()
                 .map(CareGiverResponseDto::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CareGiverResponseDto getCareGiverDetail(Long institutionId, Long careGiverId) {
-        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
+    public CareGiverResponseDto getCareGiverDetail(Long adminId, Long careGiverId) {
+        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        validate(admin);
+        Institution institution = admin.getInstitution();
+
+        CareGiver careGiver = getCareGiver(institution.getId(), careGiverId);
         return CareGiverResponseDto.from(careGiver);
     }
 
 
 
     @Override
-    public void updateCareGiver(Long adminId, Long institutionId, Long careGiverId,
+    public void updateCareGiver(Long adminId, Long careGiverId,
                                 CareGiverUpdateRequestDto requestDto) {
-
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
-        validate(institutionId, admin);
+        validate(admin);
+        Institution institution = admin.getInstitution();
 
         // 2. 요양보호사 조회 (기관 소속 확인)
-        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
+        CareGiver careGiver = getCareGiver(institution.getId(), careGiverId);
 
         // 3. 정보 수정 (null이 아닌 값만)
         careGiver.updateCareGiver(
@@ -92,18 +98,14 @@ public class CareGiverServiceImpl implements CareGiverService {
                 requestDto.birthDate(),
                 requestDto.experienceDetails()
         );
-
-        log.info("요양보호사 정보 수정 완료: institutionId={}, careGiverId={}", institutionId, careGiverId);
     }
 
     @Override
-    public void deleteCareGiver(Long adminId, Long institutionId, Long careGiverId) {
+    public void deleteCareGiver(Long adminId, Long careGiverId) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
-        validate(institutionId, admin);
-        CareGiver careGiver = getCareGiver(institutionId, careGiverId);
-        careGiver.softDelete();
-
-        log.info("요양보호사 삭제 완료: institutionId={}, careGiverId={}", institutionId, careGiverId);
+        validate(admin);
+        Institution institution = admin.getInstitution();
+        getCareGiver(institution.getId(), careGiverId).softDelete();
     }
 
     private CareGiver getCareGiver(Long institutionId, Long careGiverId) {
@@ -112,13 +114,9 @@ public class CareGiverServiceImpl implements CareGiverService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CAREGIVER_NOT_FOUND));
     }
 
-    private void validate(Long institutionId, InstitutionAdmin admin) {
+    private void validate(InstitutionAdmin admin) {
         if (!admin.hasInstitution()) {
             throw new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION);
-        }
-
-        if (!admin.belongsToInstitution(institutionId)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
         }
     }
 
@@ -128,7 +126,7 @@ public class CareGiverServiceImpl implements CareGiverService {
     }
 
     private InstitutionAdmin findInstitutionAdminById(Long institutionId) {
-        return institutionAdminRepository.findById(institutionId)
+        return institutionAdminRepository.findByIdWithInstitution(institutionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
     }
 }
