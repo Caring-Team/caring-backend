@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2025-10-28
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/members/me/elderly-profiles")
 @RequiredArgsConstructor
 @Tag(name = "👵 Elderly Profile", description = "어르신 프로필 관리 API")
 public class ElderlyProfileController {
@@ -35,8 +35,8 @@ public class ElderlyProfileController {
     /**
      * 어르신 프로필 생성 (인증 사용자)
      */
-    @PostMapping("/me/elderly-profiles")
-    @Operation(summary = "내 어르신 프로필 생성", description = "인증된 사용자가 자신의 어르신 프로필을 신규 등록합니다.")
+    @PostMapping
+    @Operation(summary = "1. 내 어르신 프로필 생성", description = "인증된 사용자가 자신의 어르신 프로필을 신규 등록합니다.")
     public ResponseEntity<ApiResponse<ElderlyProfileResponse>> createProfile(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @Valid @RequestBody ElderlyProfileCreateRequest request) {
@@ -49,8 +49,8 @@ public class ElderlyProfileController {
     /**
      * 내 어르신 프로필 목록 조회
      */
-    @GetMapping("/me/elderly-profiles")
-    @Operation(summary = "내 어르신 프로필 목록 조회", description = "인증된 사용자의 모든 어르신 프로필을 조회합니다.")
+    @GetMapping
+    @Operation(summary = "2. 내 어르신 프로필 목록 조회", description = "인증된 사용자의 모든 어르신 프로필을 조회합니다.")
     public ResponseEntity<ApiResponse<ElderlyProfileListResponse>> getProfiles(
             @AuthenticationPrincipal MemberDetails memberDetails) {
 
@@ -61,8 +61,8 @@ public class ElderlyProfileController {
     /**
      * 내 어르신 프로필 단건 조회
      */
-    @GetMapping("/me/elderly-profiles/{profileId}")
-    @Operation(summary = "내 어르신 프로필 조회", description = "인증된 사용자의 특정 어르신 프로필을 조회합니다.")
+    @GetMapping("/{profileId}")
+    @Operation(summary = "3. 내 어르신 프로필 조회", description = "인증된 사용자의 특정 어르신 프로필을 조회합니다.")
     public ResponseEntity<ApiResponse<ElderlyProfileResponse>> getProfile(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long profileId) {
@@ -74,8 +74,8 @@ public class ElderlyProfileController {
     /**
      * 내 어르신 프로필 수정
      */
-    @PutMapping("/me/elderly-profiles/{profileId}")
-    @Operation(summary = "내 어르신 프로필 수정", description = "인증된 사용자의 특정 어르신 프로필을 수정합니다.")
+    @PutMapping("/{profileId}")
+    @Operation(summary = "4. 내 어르신 프로필 수정", description = "인증된 사용자의 특정 어르신 프로필을 수정합니다.")
     public ResponseEntity<ApiResponse<ElderlyProfileResponse>> updateProfile(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long profileId,
@@ -88,8 +88,8 @@ public class ElderlyProfileController {
     /**
      * 내 어르신 프로필 삭제 (소프트 삭제)
      */
-    @DeleteMapping("/me/elderly-profiles/{profileId}")
-    @Operation(summary = "내 어르신 프로필 삭제", description = "인증된 사용자의 특정 어르신 프로필을 삭제합니다(소프트 삭제).")
+    @DeleteMapping("/{profileId}")
+    @Operation(summary = "5. 내 어르신 프로필 삭제", description = "인증된 사용자의 특정 어르신 프로필을 삭제합니다(소프트 삭제).")
     public ResponseEntity<ApiResponse<Void>> deleteProfile(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long profileId) {
