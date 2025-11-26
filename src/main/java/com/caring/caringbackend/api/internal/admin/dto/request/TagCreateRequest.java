@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.tag.dto.request;
+package com.caring.caringbackend.api.internal.admin.dto.request;
 
 import com.caring.caringbackend.domain.tag.entity.TagCategory;
 import jakarta.validation.constraints.NotBlank;

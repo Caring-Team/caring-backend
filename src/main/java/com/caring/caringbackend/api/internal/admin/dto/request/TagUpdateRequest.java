@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.tag.dto.request;
+package com.caring.caringbackend.api.internal.admin.dto.request;
 
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

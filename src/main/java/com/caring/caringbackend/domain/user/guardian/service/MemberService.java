@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.user.guardian.service;
 
-import com.caring.caringbackend.api.internal.tag.dto.response.TagListResponse;
-import com.caring.caringbackend.api.internal.tag.dto.response.TagResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagResponse;
 import com.caring.caringbackend.api.internal.Member.dto.member.request.MemberPreferenceTagRequest;
 import com.caring.caringbackend.api.internal.Member.dto.member.request.MemberUpdateRequest;
 import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberDetailResponse;

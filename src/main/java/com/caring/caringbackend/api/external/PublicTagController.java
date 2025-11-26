@@ -1,6 +1,6 @@
 package com.caring.caringbackend.api.external;
 
-import com.caring.caringbackend.api.internal.tag.dto.response.TagListResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.entity.TagCategory;
 import com.caring.caringbackend.domain.tag.service.TagService;

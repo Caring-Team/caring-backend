@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.tag.dto.response;
+package com.caring.caringbackend.api.internal.admin.dto.response;
 
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.entity.TagCategory;

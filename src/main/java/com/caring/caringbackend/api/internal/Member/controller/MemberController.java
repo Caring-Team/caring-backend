@@ -6,7 +6,7 @@ import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberDe
 import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberMyPageResponse;
 import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberResponse;
 import com.caring.caringbackend.api.internal.Member.dto.member.response.MemberStatisticsResponse;
-import com.caring.caringbackend.api.internal.tag.dto.response.TagListResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.domain.user.guardian.service.MemberService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;

@@ -1,8 +1,8 @@
 package com.caring.caringbackend.api.internal.admin.controller;
 
-import com.caring.caringbackend.api.internal.tag.dto.request.TagCreateRequest;
-import com.caring.caringbackend.api.internal.tag.dto.request.TagUpdateRequest;
-import com.caring.caringbackend.api.internal.tag.dto.response.TagResponse;
+import com.caring.caringbackend.api.internal.admin.dto.request.TagCreateRequest;
+import com.caring.caringbackend.api.internal.admin.dto.request.TagUpdateRequest;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagResponse;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.service.TagService;
 import com.caring.caringbackend.global.response.ApiResponse;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminTagController {
 
     private final TagService tagService;
-    
+
     /**
      * 태그 생성 (Admin Only)
      */
