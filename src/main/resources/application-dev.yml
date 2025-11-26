@@ -60,8 +60,7 @@ springdoc:
         path: /v3/api-docs
     swagger-ui:
         path: /swagger-ui.html
-        tags-sorter: alpha
-        operations-sorter: alpha
+        custom-js: swagger-ui/custom-sorter.js
     packages-to-scan: com.caring.caringbackend
 
 # 로깅 설정

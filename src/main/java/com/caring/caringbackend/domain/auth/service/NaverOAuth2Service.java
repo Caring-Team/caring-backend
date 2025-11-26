@@ -1,11 +1,11 @@
 package com.caring.caringbackend.domain.auth.service;
 
 import com.caring.caringbackend.domain.auth.annotation.OAuth2Provider;
-import com.caring.caringbackend.api.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
-import com.caring.caringbackend.api.auth.dto.response.NaverTokenResponse;
-import com.caring.caringbackend.api.auth.dto.response.NaverUserInfoResponse;
-import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderTokenResponse;
-import com.caring.caringbackend.api.auth.dto.response.OAuth2ProviderUserInfoResponse;
+import com.caring.caringbackend.api.internal.auth.dto.request.user.oauth.UserOAuth2LoginRequest;
+import com.caring.caringbackend.api.internal.auth.dto.response.NaverTokenResponse;
+import com.caring.caringbackend.api.internal.auth.dto.response.NaverUserInfoResponse;
+import com.caring.caringbackend.api.internal.auth.dto.response.OAuth2ProviderTokenResponse;
+import com.caring.caringbackend.api.internal.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties;
 import com.caring.caringbackend.domain.auth.properties.OAuth2ProviderProperties.ProviderProperties;
 import com.caring.caringbackend.global.exception.BusinessException;

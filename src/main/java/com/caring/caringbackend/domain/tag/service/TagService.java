@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.tag.service;
 
-import com.caring.caringbackend.api.tag.dto.request.TagCreateRequest;
-import com.caring.caringbackend.api.tag.dto.request.TagUpdateRequest;
+import com.caring.caringbackend.api.internal.tag.dto.request.TagCreateRequest;
+import com.caring.caringbackend.api.internal.tag.dto.request.TagUpdateRequest;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.entity.TagCategory;
 import com.caring.caringbackend.domain.tag.repository.TagRepository;

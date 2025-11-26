@@ -1,14 +1,14 @@
 package com.caring.caringbackend.domain.user.guardian.service;
 
-import com.caring.caringbackend.api.tag.dto.response.TagListResponse;
-import com.caring.caringbackend.api.tag.dto.response.TagResponse;
-import com.caring.caringbackend.api.user.dto.member.request.MemberPreferenceTagRequest;
-import com.caring.caringbackend.api.user.dto.member.request.MemberUpdateRequest;
-import com.caring.caringbackend.api.user.dto.member.response.MemberDetailResponse;
-import com.caring.caringbackend.api.user.dto.member.response.MemberListResponse;
-import com.caring.caringbackend.api.user.dto.member.response.MemberMyPageResponse;
-import com.caring.caringbackend.api.user.dto.member.response.MemberResponse;
-import com.caring.caringbackend.api.user.dto.member.response.MemberStatisticsResponse;
+import com.caring.caringbackend.api.internal.tag.dto.response.TagListResponse;
+import com.caring.caringbackend.api.internal.tag.dto.response.TagResponse;
+import com.caring.caringbackend.api.internal.user.dto.member.request.MemberPreferenceTagRequest;
+import com.caring.caringbackend.api.internal.user.dto.member.request.MemberUpdateRequest;
+import com.caring.caringbackend.api.internal.user.dto.member.response.MemberDetailResponse;
+import com.caring.caringbackend.api.internal.user.dto.member.response.MemberListResponse;
+import com.caring.caringbackend.api.internal.user.dto.member.response.MemberMyPageResponse;
+import com.caring.caringbackend.api.internal.user.dto.member.response.MemberResponse;
+import com.caring.caringbackend.api.internal.user.dto.member.response.MemberStatisticsResponse;
 import com.caring.caringbackend.domain.tag.entity.MemberPreferenceTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.repository.MemberPreferenceTagRepository;

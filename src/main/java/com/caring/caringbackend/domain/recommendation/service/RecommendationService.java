@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.recommendation.service;
 
-import com.caring.caringbackend.api.recommendation.dto.request.RecommendRequestDto;
-import com.caring.caringbackend.api.recommendation.dto.response.RecommendationResponseDto;
+import com.caring.caringbackend.api.internal.recommendation.dto.request.RecommendRequestDto;
+import com.caring.caringbackend.api.internal.recommendation.dto.response.RecommendationResponseDto;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
