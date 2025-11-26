@@ -292,7 +292,7 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
 
             for (var day : counselHour.getDays()) {
                 boolean[] booleans = map.get(day);
-                for (int i = startSlot; i < endTime; i++) {
+                for (int i = startSlot; i <= endTime; i++) {
                     if (booleans[i]) {
                         throw new IllegalArgumentException("예약 가능 시간은 중복될 수 없습니다.");
                     }

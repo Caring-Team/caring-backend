@@ -37,6 +37,7 @@ public class InstitutionCounselDetail extends BaseEntity {
     @JoinColumn(name = "institution_counsel_id", nullable = false)
     private InstitutionCounsel institutionCounsel;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CounselTimeUnit unit;
 

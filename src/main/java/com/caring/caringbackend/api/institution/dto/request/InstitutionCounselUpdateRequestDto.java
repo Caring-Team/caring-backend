@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.institution.dto.request;
 
 import com.caring.caringbackend.api.institution.dto.CounselHourDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.Set;
@@ -22,13 +23,14 @@ public class InstitutionCounselUpdateRequestDto {
     @Min(0)
     @Max(7)
     @JsonProperty("min_reservable_days_before")
-    Integer minReservableDaysBefore;
+    private Integer minReservableDaysBefore;
 
     @Min(0)
     @Max(30)
     @JsonProperty("max_reservable_days_before")
-    Integer maxReservableDaysBefore;
+    private Integer maxReservableDaysBefore;
 
+    @Valid
     @JsonProperty("counsel_hours")
     private Set<CounselHourDto> counselHours;
 

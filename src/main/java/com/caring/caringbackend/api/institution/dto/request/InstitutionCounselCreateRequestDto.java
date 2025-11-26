@@ -36,13 +36,13 @@ public class InstitutionCounselCreateRequestDto {
     @Max(7)
     @NotNull
     @JsonProperty("min_reservable_days_before")
-    Integer minReservableDaysBefore;
+    private Integer minReservableDaysBefore;
 
     @Min(0)
     @Max(30)
     @NotNull
     @JsonProperty("max_reservable_days_before")
-    Integer maxReservableDaysBefore;
+    private Integer maxReservableDaysBefore;
 
     @NotNull
     private CounselTimeUnit unit;
