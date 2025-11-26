@@ -36,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "⭐ Review", description = "리뷰 관리 API")
 @SecurityRequirement(name = "bearerAuth")
-public class ReviewController {
+public class MemberReviewController {
 
     private final ReviewService reviewService;
 
