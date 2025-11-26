@@ -3,6 +3,7 @@ package com.caring.caringbackend.api.file;
 import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import static com.caring.caringbackend.global.exception.ErrorCode.FILE_SIZE_EXCE
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/files")
 @Tag(name = "📁 File", description = "파일 업로드 API")
+@Hidden
 public class FileController {
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
