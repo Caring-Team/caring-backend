@@ -73,7 +73,7 @@ public class Review extends BaseEntity {
      * 리뷰 내용 및 별점 수정
      *
      * @param content 수정할 리뷰 내용
-     * @param rating 수정할 별점 (1~5)
+     * @param rating  수정할 별점 (1~5)
      */
     public void updateContent(String content, int rating) {
         this.content = content;
@@ -92,5 +92,12 @@ public class Review extends BaseEntity {
      */
     public void clearReport() {
         this.reported = false;
+    }
+
+    /**
+     * 리뷰 소유자 검증
+     * */
+    public boolean isOwnedBy(Long memberId) {
+        return this.member.getId().equals(memberId);
     }
 }

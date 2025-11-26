@@ -32,7 +32,7 @@ import java.util.List;
  * @since 2025-11-05
  */
 @RestController
-@RequestMapping("/api/v1/reviews")
+@RequestMapping("/api/v1/members/me/reviews")
 @RequiredArgsConstructor
 @Tag(name = "⭐ Review", description = "리뷰 관리 API")
 @SecurityRequirement(name = "bearerAuth")
@@ -44,7 +44,7 @@ public class ReviewController {
      * 리뷰 작성
      */
     @PostMapping(consumes = {"multipart/form-data"})
-    @Operation(summary = "리뷰 작성", description = "완료된 예약에 대한 리뷰를 작성합니다. (이미지 최대 5개)")
+    @Operation(summary = "1. 리뷰 작성", description = "완료된 예약에 대한 리뷰를 작성합니다. (이미지 최대 5개)")
     public ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @Valid @RequestPart("request") ReviewCreateRequest request,
@@ -58,8 +58,8 @@ public class ReviewController {
     /**
      * 내가 작성한 리뷰 목록 조회
      */
-    @GetMapping("/my")
-    @Operation(summary = "내가 작성한 리뷰 목록", description = "인증된 사용자가 작성한 리뷰 목록을 조회합니다.")
+    @GetMapping
+    @Operation(summary = "2. 내가 작성한 리뷰 목록 조회", description = "인증된 사용자가 작성한 리뷰 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<ReviewListResponse>> getMyReviews(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
@@ -69,22 +69,35 @@ public class ReviewController {
     }
 
     /**
-     * 리뷰 상세 조회
+     * 내 리뷰 상세 조회
      */
     @GetMapping("/{reviewId}")
-    @Operation(summary = "리뷰 상세 조회", description = "특정 리뷰의 상세 정보를 조회합니다. (공개)")
-    public ResponseEntity<ApiResponse<ReviewResponse>> getReview(
-            @PathVariable Long reviewId) {
-
-        ReviewResponse review = reviewService.getReview(reviewId);
+    @Operation(summary = "3. 내 리뷰 상세 조회", description = "내 리뷰의 상세 정보를 조회합니다.")
+    public ResponseEntity<ApiResponse<ReviewResponse>> getMyReview(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        ReviewResponse review = reviewService.getMyReview(reviewId, memberDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("리뷰 조회 성공", review));
     }
+
+//    /**
+//     * 리뷰 상세 조회
+//     */
+//    @GetMapping("/{reviewId}")
+//    @Operation(summary = "리뷰 상세 조회", description = "특정 리뷰의 상세 정보를 조회합니다. (공개)")
+//    public ResponseEntity<ApiResponse<ReviewResponse>> getReview(
+//            @PathVariable Long reviewId) {
+//
+//        ReviewResponse review = reviewService.getReview(reviewId);
+//        return ResponseEntity.ok(ApiResponse.success("리뷰 조회 성공", review));
+//    }
 
     /**
      * 리뷰 수정
      */
     @PutMapping(value = "/{reviewId}", consumes = {"multipart/form-data"})
-    @Operation(summary = "리뷰 수정", description = "본인이 작성한 리뷰를 수정합니다. (작성 후 30일 이내만 수정 가능, 이미지 최대 5개)")
+    @Operation(summary = "4. 내 리뷰 수정", description = "본인이 작성한 리뷰를 수정합니다. (작성 후 30일 이내만 수정 가능, 이미지 최대 5개)")
     public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long reviewId,
@@ -99,7 +112,7 @@ public class ReviewController {
      * 리뷰 삭제
      */
     @DeleteMapping("/{reviewId}")
-    @Operation(summary = "리뷰 삭제", description = "본인이 작성한 리뷰를 삭제합니다. (Soft Delete)")
+    @Operation(summary = "5. 내 리뷰 삭제", description = "본인이 작성한 리뷰를 삭제합니다. (Soft Delete)")
     public ResponseEntity<ApiResponse<Void>> deleteReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long reviewId) {
@@ -112,7 +125,7 @@ public class ReviewController {
      * 리뷰 신고
      */
     @PostMapping("/{reviewId}/report")
-    @Operation(summary = "리뷰 신고", description = "부적절한 리뷰를 신고합니다. (본인 리뷰는 신고 불가, 중복 신고 방지)")
+    @Operation(summary = "6. 리뷰 신고", description = "부적절한 리뷰를 신고합니다. (본인 리뷰는 신고 불가, 중복 신고 방지)")
     public ResponseEntity<ApiResponse<Void>> reportReview(
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long reviewId,
