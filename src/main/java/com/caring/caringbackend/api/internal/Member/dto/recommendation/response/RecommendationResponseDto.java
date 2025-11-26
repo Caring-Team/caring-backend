@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.recommendation.dto.response;
+package com.caring.caringbackend.api.internal.Member.dto.recommendation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

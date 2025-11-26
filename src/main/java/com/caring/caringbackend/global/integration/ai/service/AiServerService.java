@@ -1,6 +1,6 @@
 package com.caring.caringbackend.global.integration.ai.service;
 
-import com.caring.caringbackend.api.internal.recommendation.dto.response.RecommendationResponseDto;
+import com.caring.caringbackend.api.internal.Member.dto.recommendation.response.RecommendationResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;

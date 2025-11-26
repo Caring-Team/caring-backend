@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.recommendation.dto.request;
+package com.caring.caringbackend.api.internal.Member.dto.recommendation.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

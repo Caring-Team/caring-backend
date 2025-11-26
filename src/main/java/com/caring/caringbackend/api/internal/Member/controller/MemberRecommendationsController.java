@@ -1,7 +1,7 @@
-package com.caring.caringbackend.api.internal.recommendation.controller;
+package com.caring.caringbackend.api.internal.Member.controller;
 
-import com.caring.caringbackend.api.internal.recommendation.dto.request.RecommendRequestDto;
-import com.caring.caringbackend.api.internal.recommendation.dto.response.RecommendationResponseDto;
+import com.caring.caringbackend.api.internal.Member.dto.recommendation.request.RecommendRequestDto;
+import com.caring.caringbackend.api.internal.Member.dto.recommendation.response.RecommendationResponseDto;
 import com.caring.caringbackend.domain.recommendation.service.RecommendationService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.MemberDetails;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/members/me/recommendations")
 @Tag(name = "🤖 AI Recommendation", description = "AI 기관 추천 API")
-public class RecommendationsController {
+public class MemberRecommendationsController {
 
     private final RecommendationService recommendationService;
 
