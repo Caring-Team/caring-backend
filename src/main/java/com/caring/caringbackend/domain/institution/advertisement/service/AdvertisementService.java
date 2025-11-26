@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.advertisement.service;
 
-import com.caring.caringbackend.api.institution.dto.request.advertisement.AdvertisementCreateRequestDto;
-import com.caring.caringbackend.api.institution.dto.response.advertisement.*;
+import com.caring.caringbackend.api.internal.institution.dto.request.advertisement.AdvertisementCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.advertisement.*;
 import com.caring.caringbackend.domain.institution.advertisement.entity.AdvertisementStatus;
 import com.caring.caringbackend.domain.institution.advertisement.entity.AdvertisementType;
 import org.springframework.data.domain.Page;

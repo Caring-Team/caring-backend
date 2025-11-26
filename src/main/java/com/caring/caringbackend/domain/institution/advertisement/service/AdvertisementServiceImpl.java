@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.advertisement.service;
 
-import com.caring.caringbackend.api.institution.dto.request.advertisement.AdvertisementCreateRequestDto;
-import com.caring.caringbackend.api.institution.dto.response.advertisement.*;
+import com.caring.caringbackend.api.internal.institution.dto.request.advertisement.AdvertisementCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.advertisement.*;
 import com.caring.caringbackend.domain.institution.advertisement.entity.*;
 import com.caring.caringbackend.domain.institution.advertisement.repository.InstitutionAdvertisementRepository;
 import com.caring.caringbackend.domain.institution.advertisement.repository.InstitutionAdvertisementRequestRepository;

@@ -1,6 +1,5 @@
 package com.caring.caringbackend.domain.institution.advertisement.repository;
 
-import com.caring.caringbackend.api.institution.dto.response.advertisement.AdvertisementResponseDto;
 import com.caring.caringbackend.domain.institution.advertisement.entity.AdvertisementStatus;
 import com.caring.caringbackend.domain.institution.advertisement.entity.AdvertisementType;
 import com.caring.caringbackend.domain.institution.advertisement.entity.InstitutionAdvertisement;

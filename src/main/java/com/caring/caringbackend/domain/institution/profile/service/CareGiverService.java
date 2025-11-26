@@ -1,8 +1,8 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.institution.dto.request.CareGiverCreateRequestDto;
-import com.caring.caringbackend.api.institution.dto.request.CareGiverUpdateRequestDto;
-import com.caring.caringbackend.api.institution.dto.response.CareGiverResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverUpdateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.CareGiverResponseDto;
 
 import java.util.List;
 
