@@ -1,9 +1,13 @@
 package com.caring.caringbackend.api.external;
 
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
+import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
+import com.caring.caringbackend.api.user.dto.review.response.ReviewListResponse;
+import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
+import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -24,7 +31,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "🏥 Public Institution", description = "공개 기관 정보 조회 API")
 public class PublicInstitutionController {
 
-    private InstitutionService institutionService;
+    private final InstitutionService institutionService;
+    private final InstitutionCounselService institutionCounselService;
+    private final ReviewService reviewService;
 
     /**
      * 기관 목록 조회 (검색, 필터링, 페이징, 정렬)
@@ -74,10 +83,45 @@ public class PublicInstitutionController {
     public ApiResponse<InstitutionDetailResponseDto> getInstitutionDetail(
             @PathVariable Long institutionId
     ) {
+        // TODO: 기관 상담 목록 데이터 추가
         InstitutionDetailResponseDto institutionDetail = institutionService.getInstitutionDetail(institutionId);
         return ApiResponse.success(institutionDetail);
     }
 
-    // 기관 리뷰 조회
+    // 상담을 통해 세부 정보를 누를때 detail 동적 생성
+    @GetMapping("/{counselId}/details")
+    @Operation(summary = "3. 상담 예약 가능 시간 조회", description = "상담 예약 가능 시간을 조회합니다.")
+    public ApiResponse<InstitutionCounselReservationDetailResponseDto> getInstitutionCounselDetail(
+            @PathVariable Long counselId,
+            @RequestParam("date") LocalDate date
+    ) {
+        InstitutionCounselReservationDetailResponseDto responseDto =
+                institutionCounselService.getOrCreateCounselDetail(counselId, date);
+        return ApiResponse.success(responseDto);
+    }
 
+    /**
+     * 기관의 리뷰 목록 조회 (공개)
+     *
+     * 정렬 옵션:
+     * - createdAt,desc (최신순, 기본값)
+     * - rating,desc (별점 높은 순)
+     * - rating,asc (별점 낮은 순)
+     */
+    @GetMapping("/{institutionId}/reviews")
+    @Operation(
+            summary = "4. 기관 리뷰 목록 조회",
+            description = "특정 기관의 리뷰 목록을 조회합니다. (공개, 삭제되지 않은 리뷰만)\n\n" +
+                    "**정렬 옵션:**\n" +
+                    "- `sort=createdAt,desc` (최신순, 기본값)\n" +
+                    "- `sort=rating,desc` (별점 높은 순)\n" +
+                    "- `sort=rating,asc` (별점 낮은 순)"
+    )
+    public ResponseEntity<ApiResponse<ReviewListResponse>> getInstitutionReviews(
+            @PathVariable Long institutionId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+
+        ReviewListResponse reviews = reviewService.getInstitutionReviews(institutionId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("기관 리뷰 목록 조회 성공", reviews));
+    }
 }

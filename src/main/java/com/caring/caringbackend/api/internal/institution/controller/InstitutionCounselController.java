@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/institutions/counsels")
+@RequestMapping("/api/v1/institutions/me/counsels")
 @RequiredArgsConstructor
 @Tag(name = "💬 Institution Counsel", description = "기관 상담 관리 API")
 public class InstitutionCounselController {
@@ -29,40 +29,27 @@ public class InstitutionCounselController {
 
     // 기관 상담 서비스 등록
     @PostMapping
-    @Operation(summary = "기관 상담 서비스 등록")
+    @Operation(summary = "1. 내 기관 상담 서비스 등록", description = "내 기관의 상담 서비스를 등록합니다.")
     public ApiResponse<Void> createInstitutionCounsel(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @Valid @RequestBody InstitutionCounselCreateRequestDto requestDto) {
+            @Valid @RequestBody InstitutionCounselCreateRequestDto requestDto
+    ) {
         institutionCounselService.createInstitutionCounsel(adminDetails.getId(), requestDto);
         return ApiResponse.success();
     }
 
     // 기관 상담 서비스 목록 조회
     @GetMapping
-    @Operation(summary = "기관 상담 서비스 목록 조회")
+    @Operation(summary = "2. 내 기관 상담 서비스 목록 조회", description = "내 기관의 상담 서비스 목록을 조회합니다.")
     public ApiResponse<List<InstitutionCounselResponseDto>> getInstitutionCounsels(
-            @AuthenticationPrincipal InstitutionAdminDetails adminDetails) {
-        List<InstitutionCounselResponseDto> responseDto =
-                institutionCounselService.getInstitutionCounsels(adminDetails.getId());
-        return ApiResponse.success(responseDto);
-    }
-
-
-    // 기관 상담 서비스 상세 조회 -> 상담 예약 가능 시간 데이터 중요
-    // 상담을 통해 세부 정보를 누를때 detail 동적 생성
-    @GetMapping("/{counselId}/details")
-    @Operation(summary = "상담 예약 가능 시간 조회")
-    public ApiResponse<InstitutionCounselReservationDetailResponseDto> getInstitutionCounselDetail(
-            @PathVariable Long counselId,
-            @RequestParam("date") LocalDate date
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        InstitutionCounselReservationDetailResponseDto responseDto =
-                institutionCounselService.getOrCreateCounselDetail(counselId, date);
+        List<InstitutionCounselResponseDto> responseDto = institutionCounselService.getInstitutionCounsels(adminDetails.getId());
         return ApiResponse.success(responseDto);
     }
 
     @GetMapping("/{counselId}")
-    @Operation(summary = "상담 서비스 정보 조회")
+    @Operation(summary = "3. 내 상담 서비스 정보 조회", description = "내 기관의 상담 서비스 상세 정보를 조회합니다.")
     public ApiResponse<InstitutionCounselDetailResponseDto> getInstitutionCounselDetail(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long counselId
@@ -72,24 +59,22 @@ public class InstitutionCounselController {
         return ApiResponse.success(responseDto);
     }
 
-
     // 상담 서비스 정보 수정
     @PatchMapping("/{counselId}")
-    @Operation(summary = "상담 서비스 정보 수정")
+    @Operation(summary = "4. 내 상담 서비스 정보 수정", description = "내 기관의 상담 서비스 정보를 수정합니다.")
     public ApiResponse<Void> updateInstitutionCounsel(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long counselId,
             @Valid @RequestBody InstitutionCounselUpdateRequestDto requestDto) {
 
-        institutionCounselService.updateInstitutionCounsel(
-                adminDetails.getId(), counselId, requestDto);
+        institutionCounselService.updateInstitutionCounsel(adminDetails.getId(), counselId, requestDto);
 
         return ApiResponse.success();
     }
 
     // 상담 서비스 제공 여부 변경
     @PatchMapping("/{counselId}/status")
-    @Operation(summary = "상담 서비스 제공 여부 토글")
+    @Operation(summary = "5. 상담 서비스 제공 여부 토글", description = "내 기관의 상담 서비스 제공 여부를 토글합니다.")
     public ApiResponse<CounselStatus> toggleInstitutionCounselStatus(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long counselId) {
@@ -102,7 +87,7 @@ public class InstitutionCounselController {
 
     // 상담 서비스 삭제 (soft delete)
     @DeleteMapping("/{counselId}")
-    @Operation(summary = "상담 서비스 삭제 (soft delete)")
+    @Operation(summary = "6. 상담 서비스 삭제 (soft delete)", description = "내 기관의 상담 서비스를 삭제합니다. (soft delete)")
     public ApiResponse<Void> deleteInstitutionCounsel(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @PathVariable Long counselId) {
