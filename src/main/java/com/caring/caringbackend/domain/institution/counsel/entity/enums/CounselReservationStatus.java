@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum CounselStatus {
-    ACTIVE("활성화 상태"),
-    INACTIVE("비활성화 상태");
+public enum CounselReservationStatus {
 
-    private final String description;
+    RESERVED('0'),
+    AVAILABLE('1'),
+    UNAVAILABLE('2');
+
+    private final char code;
 
 }

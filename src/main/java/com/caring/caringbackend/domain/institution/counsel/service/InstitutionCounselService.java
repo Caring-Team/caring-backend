@@ -3,24 +3,25 @@ package com.caring.caringbackend.domain.institution.counsel.service;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselCreateRequestDto;
 import com.caring.caringbackend.api.institution.dto.request.InstitutionCounselUpdateRequestDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselDetailResponseDto;
+import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
 import com.caring.caringbackend.api.institution.dto.response.InstitutionCounselResponseDto;
-import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
-import jakarta.validation.Valid;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselStatus;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface InstitutionCounselService {
-    void createInstitutionCounsel(Long adminId, Long institutionId, InstitutionCounselCreateRequestDto requestDto);
+    void createInstitutionCounsel(Long adminId, InstitutionCounselCreateRequestDto requestDto);
 
-    List<InstitutionCounselResponseDto> getInstitutionCounsels(Long institutionId);
+    List<InstitutionCounselResponseDto> getInstitutionCounsels(Long adminId);
 
-    CounselStatus toggleInstitutionCounselStatus(Long adminId, Long institutionId, Long counselId);
+    CounselStatus toggleInstitutionCounselStatus(Long adminId, Long counselId);
 
-    void deleteCounselByCouncelId(Long adminId, Long institutionId, Long counselId);
+    void deleteCounselByCounselId(Long adminId, Long counselId);
 
-    InstitutionCounselDetailResponseDto getOrCreateCounselDetail(Long counselId, LocalDate date);
+    InstitutionCounselDetailResponseDto getCounselDetail(Long adminId, Long counselId);
 
-    void updateInstitutionCounsel(Long adminId, Long institutionId, Long counselId, InstitutionCounselUpdateRequestDto requestDto);
+    InstitutionCounselReservationDetailResponseDto getOrCreateCounselDetail(Long counselId, LocalDate date);
+
+    void updateInstitutionCounsel(Long adminId, Long counselId, InstitutionCounselUpdateRequestDto requestDto);
 }

@@ -2,6 +2,7 @@ package com.caring.caringbackend.testsupport;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.review.entity.Review;
@@ -73,7 +74,10 @@ public final class TestDataFactory {
         return InstitutionCounsel.createInstitutionCounsel(
                 institution,
                 "기본 상담",
-                "상담 설명"
+                "상담 설명",
+                0,
+                0,
+                CounselTimeUnit.HALF
                 );
     }
 
