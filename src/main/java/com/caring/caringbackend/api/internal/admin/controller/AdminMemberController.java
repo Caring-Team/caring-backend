@@ -30,7 +30,7 @@ public class AdminMemberController {
      * 기본값: 한 페이지당 20개, 생성일시 기준 정렬
      */
     @GetMapping
-    @Operation(summary = "회원 목록 조회", description = "모든 회원 목록을 페이징 형태로 조회합니다.")
+    @Operation(summary = "1. 회원 목록 조회", description = "모든 회원 목록을 페이징 형태로 조회합니다.")
     public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(
             @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
 
@@ -48,7 +48,7 @@ public class AdminMemberController {
      * 어르신 프로필은 포함되지 않습니다.
      */
     @GetMapping("/{memberId}")
-    @Operation(summary = "회원 조회", description = "특정 회원의 기본 정보를 조회합니다.")
+    @Operation(summary = "2. 회원 조회", description = "특정 회원의 기본 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<MemberResponse>> getMember(
             @PathVariable Long memberId) {
 
@@ -66,7 +66,7 @@ public class AdminMemberController {
      * 등록된 모든 어르신 프로필 정보를 포함합니다.
      */
     @GetMapping("/{memberId}/detail")
-    @Operation(summary = "회원 상세 조회", description = "회원 정보와 등록된 어르신 프로필 목록을 함께 조회합니다.")
+    @Operation(summary = "3. 회원 상세 조회", description = "회원 정보와 등록된 어르신 프로필 목록을 함께 조회합니다.")
     public ResponseEntity<ApiResponse<MemberDetailResponse>> getMemberDetail(
             @PathVariable Long memberId) {
 
@@ -103,7 +103,7 @@ public class AdminMemberController {
      * 삭제된 회원은 조회되지 않으며, 필요 시 복구 가능합니다.
      */
     @DeleteMapping("/{memberId}")
-    @Operation(summary = "회원 삭제", description = "회원 정보를 삭제(소프트 삭제)합니다.")
+    @Operation(summary = "5. 회원 삭제", description = "회원 정보를 삭제(소프트 삭제)합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteMember(
             @PathVariable Long memberId) {
 
@@ -111,4 +111,6 @@ public class AdminMemberController {
 
         return ResponseEntity.ok(ApiResponse.success("회원 삭제 성공", null));
     }
+
+    // TODO: 관지라 회원 예약 관리 API 추가
 }

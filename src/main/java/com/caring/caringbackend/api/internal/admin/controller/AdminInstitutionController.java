@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin Institution", description = "관리자 기관 관리 API")
 public class AdminInstitutionController {
 
-    private InstitutionService institutionService;
+    private final InstitutionService institutionService;
 
     /**
      * 기관 승인 처리 (관리자 전용)
@@ -32,4 +32,15 @@ public class AdminInstitutionController {
         institutionService.approveInstitution(institutionId);
         return ApiResponse.success(null);
     }
+
+    // 목록 조회
+
+
+    // 상세 조회
+
+
+    // 등록 거절
+
+
+    // 기관 삭제
 }
