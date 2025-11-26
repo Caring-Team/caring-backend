@@ -32,7 +32,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/member/chat")
+@RequestMapping("/api/v1/members/chat/me")
 @RequiredArgsConstructor
 @Tag(name = "💬 Member Chat", description = "회원 상담 채팅 API")
 @SecurityRequirement(name = "bearerAuth")

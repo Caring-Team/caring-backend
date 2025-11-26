@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/v1/members/me")
 @RequiredArgsConstructor
 @Tag(name = "💬 Member Consult Requests", description = "회원 상담 내역 API")
 @SecurityRequirement(name = "bearerAuth")

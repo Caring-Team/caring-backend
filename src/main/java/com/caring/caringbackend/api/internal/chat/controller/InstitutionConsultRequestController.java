@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/institution")
+@RequestMapping("/api/v1/institutions/me")
 @RequiredArgsConstructor
 @Tag(name = "🏥 Institution Consult Requests", description = "기관 상담 내역 API")
 @SecurityRequirement(name = "bearerAuth")
