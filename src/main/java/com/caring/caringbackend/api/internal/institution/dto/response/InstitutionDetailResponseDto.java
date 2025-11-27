@@ -87,23 +87,47 @@ public record InstitutionDetailResponseDto(
                 institution.getLocation(),                  // 위치
                 institution.getPriceInfo(),                 // 가격 정보
                 extractSpecializedConditions(institution),  // 전문 질환 목록
-                institution.getCounsels().stream()
-                        .map(InstitutionCounselResponseDto::from)
-                        .toList(),              // 기관 상담 서비스 목록
-                institution.getCareGivers().stream()
-                        .map(careGiver -> {
-                            String presignedUrl = fileService.generatePresignedUrl(careGiver.getPhotoUrl());
-                            return CareGiverResponseDto.fromWithPresignedUrl(careGiver, presignedUrl);
-                        }).toList(),            // 요양보호사 목록
+                extractCounsels(institution),              // 기관 상담 서비스 목록
+                extractCareGiver(institution, fileService),            // 요양보호사 목록
                 institution.getDescription(),   // 설명
                 fileService.generatePresignedUrl(institution.getMainImageUrl()), // 대표 사진
-                institution.getTags().stream()
-                        .map(tag -> TagResponse.from(tag.getTag()))
-                        .toList(),              // 태그들
+                extractTags(institution),              // 태그들
                 reviews,                        // 리뷰들
                 institution.getCreatedAt(),     // 생성일
                 institution.getUpdatedAt()      // 수정일
         );
+    }
+
+    private static List<InstitutionCounselResponseDto> extractCounsels(Institution institution) {
+        if (institution.getCounsels() == null) {
+            return List.of();
+        }
+
+        return institution.getCounsels().stream()
+                .map(InstitutionCounselResponseDto::from)
+                .toList();
+    }
+
+    private static List<CareGiverResponseDto> extractCareGiver(Institution institution, FileService fileService) {
+        if (institution.getCareGivers() == null) {
+            return List.of();
+        }
+
+        return institution.getCareGivers().stream()
+                .map(careGiver -> {
+                    String presignedUrl = fileService.generatePresignedUrl(careGiver.getPhotoUrl());
+                    return CareGiverResponseDto.fromWithPresignedUrl(careGiver, presignedUrl);
+                }).toList();
+    }
+
+    private static List<TagResponse> extractTags(Institution institution) {
+        if (institution.getTags() == null) {
+            return List.of();
+        }
+
+        return institution.getTags().stream()
+                .map(tag -> TagResponse.from(tag.getTag()))
+                .toList();
     }
 
 
