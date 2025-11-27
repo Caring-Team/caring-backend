@@ -146,7 +146,8 @@ public enum ErrorCode {
     INVALID_SENDER_TYPE(HttpStatus.BAD_REQUEST, "CHAT-007", "유효하지 않은 발신자 유형입니다"),
 
     // AI Server Errors (AI-xxx)
-    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI-001", "AI 서버와의 통신에 실패했습니다");
+    AI_SERVER_COMMUNICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI-001", "AI 서버와의 통신에 실패했습니다"),
+
 
     private final HttpStatus httpStatus;
     private final String code;

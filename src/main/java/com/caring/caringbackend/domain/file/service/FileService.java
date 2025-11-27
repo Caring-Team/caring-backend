@@ -36,6 +36,7 @@ public class FileService {
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
     private static final Duration PRESIGNED_URL_DURATION = Duration.ofHours(1); // PreSigned URL 유효시간: 1시간
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/png", "image/webp");
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -161,12 +162,13 @@ public class FileService {
     /**
      * 사업자등록증 업로드 및 기관과 연결 (편의 메서드)
      *
-     * @param file 사업자등록증 파일
+     * @param file          사업자등록증 파일
      * @param institutionId 기관 ID
      * @return 저장된 File 엔티티
      */
     @Transactional
     public File uploadAndLinkBusinessLicense(MultipartFile file, Long institutionId) {
+        validateFileFormat(file);
         return uploadFileWithMetadata(
                 file,
                 FileCategory.BUSINESS_LICENSE,
@@ -177,12 +179,19 @@ public class FileService {
 
     @Transactional
     public File uploadCareGiverPhoto(MultipartFile file, Long careGiverId) {
+        validateFileFormat(file);
         return uploadFileWithMetadata(
                 file,
                 FileCategory.CAREGIVER_PHOTO,
                 careGiverId,
                 ReferenceType.CAREGIVER
         );
+    }
+
+    private static void validateFileFormat(MultipartFile file) {
+        if (!ALLOWED_IMAGE_TYPES.contains(file.getContentType())) {
+            throw new BusinessException(INVALID_FILE_FORMAT);
+        }
     }
 
     /**
@@ -252,8 +261,8 @@ public class FileService {
 
     private String buildFileUrl(String key) {
         return "https://" + bucketName + ".s3." +
-               s3Client.serviceClientConfiguration().region().id() +
-               ".amazonaws.com/" + key;
+                s3Client.serviceClientConfiguration().region().id() +
+                ".amazonaws.com/" + key;
     }
 
     private static void validate(MultipartFile file) {
