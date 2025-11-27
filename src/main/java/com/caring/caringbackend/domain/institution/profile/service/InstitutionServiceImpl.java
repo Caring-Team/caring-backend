@@ -6,6 +6,7 @@ import com.caring.caringbackend.api.internal.institution.dto.request.Institution
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.domain.file.entity.File;
+import com.caring.caringbackend.domain.file.entity.FileCategory;
 import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
@@ -62,7 +63,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     public void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto, MultipartFile file) {
         // 관리자 조회
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
-        
+
         // 이미 기관이 등록되어 있는지 확인
         if (admin.getInstitution() != null) {
             throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_REGISTERED);
@@ -167,7 +168,11 @@ public class InstitutionServiceImpl implements InstitutionService {
      */
     @Override
     @Transactional
-    public void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto) {
+    public void updateInstitution(
+            Long adminId,
+            InstitutionUpdateRequestDto requestDto,
+            MultipartFile mainImage
+    ) {
         InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
@@ -179,6 +184,20 @@ public class InstitutionServiceImpl implements InstitutionService {
         GeoPoint updatedLocation = calculateUpdatedLocation(requestDto, updatedAddress);
         PriceInfo updatedPriceInfo = buildUpdatedPriceInfo(requestDto, institution);
 
+        // 기관 메인 이미지 업데이트
+        if (mainImage != null && !mainImage.isEmpty()) {
+            // 기존 이미지 삭제
+            fileService.deleteFileByReference(
+                    institution.getId(),
+                    INSTITUTION,
+                    FileCategory.INSTITUTION_PROFILE);
+        }
+
+        File uploadedFile = null;
+        if (mainImage != null && !mainImage.isEmpty()) {
+            uploadedFile = fileService.uploadInstitutionMainImage(mainImage, institution.getId());
+        }
+
         institution.updateInstitution(
                 requestDto.getName(),
                 requestDto.getPhoneNumber(),
@@ -187,7 +206,9 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getBedCount(),
                 requestDto.getIsAdmissionAvailable(),
                 updatedPriceInfo,
-                requestDto.getOpeningHours()
+                requestDto.getOpeningHours(),
+                requestDto.getDescription(),
+                uploadedFile != null ? uploadedFile.getFileUrl() : null
         );
         
         // 태그 업데이트 (기존 태그 삭제 후 재생성)

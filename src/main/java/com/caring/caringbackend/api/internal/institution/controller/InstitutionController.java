@@ -65,14 +65,16 @@ public class InstitutionController {
      *
      * @param adminDetails                인증된 기관 관리자 정보
      * @param institutionUpdateRequestDto 기관 수정 요청 DTO
+     *
      */
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "3. 기관 정보 수정", description = "기관의 정보를 수정합니다. (OWNER 권한 필요)")
     public ApiResponse<Void> updateInstitution(
+            @RequestPart(value = "file", required = false) MultipartFile mainImage,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @Valid @RequestBody InstitutionUpdateRequestDto institutionUpdateRequestDto
     ) {
-        institutionService.updateInstitution(adminDetails.getId(), institutionUpdateRequestDto);
+        institutionService.updateInstitution(adminDetails.getId(), institutionUpdateRequestDto, mainImage);
         return ApiResponse.success(null);
     }
 

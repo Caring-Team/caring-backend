@@ -111,6 +111,10 @@ public class Institution extends BaseEntity {
     @Column(length = 1000)
     private String description;
 
+    // 대표 사진
+    @Column(nullable = false)
+    private String mainImageUrl;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Institution(String name, InstitutionType institutionType, Long institutionCode,
                         String phoneNumber, Address address, GeoPoint location,
@@ -237,7 +241,10 @@ public class Institution extends BaseEntity {
             Integer bedCount,
             Boolean isAdmissionAvailable,
             PriceInfo priceInfo,
-            String openingHours) {
+            String openingHours,
+            String description,
+            String mainImageUrl
+            ) {
 
         // 비즈니스 규칙 검증
         if (phoneNumber != null) {
@@ -266,6 +273,12 @@ public class Institution extends BaseEntity {
         }
         if (openingHours != null) {
             this.openingHours = openingHours;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (mainImageUrl != null) {
+            this.mainImageUrl = mainImageUrl;
         }
     }
 
