@@ -323,7 +323,7 @@ public class InstitutionServiceImpl implements InstitutionService {
      * @return InstitutionAdmin 엔티티
      */
     private InstitutionAdmin findInstitutionAdminById(Long adminId) {
-        return institutionAdminRepository.findByIdWithInstitution(adminId)
+        return institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
     }
 
