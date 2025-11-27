@@ -210,16 +210,6 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getDescription(),
                 uploadedFile != null ? uploadedFile.getFileUrl() : null
         );
-        
-        // 태그 업데이트 (기존 태그 삭제 후 재생성)
-        if (requestDto.getTagIds() != null) {
-            institutionTagRepository.deleteByInstitutionId(institution.getId());
-            if (!requestDto.getTagIds().isEmpty()) {
-                saveInstitutionTags(institution, requestDto.getTagIds());
-            }
-        }
-
-        log.info("기관 정보 수정 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
     }
 
     /**

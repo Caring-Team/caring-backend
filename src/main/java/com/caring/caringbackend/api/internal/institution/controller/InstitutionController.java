@@ -72,7 +72,7 @@ public class InstitutionController {
     public ApiResponse<Void> updateInstitution(
             @RequestPart(value = "file", required = false) MultipartFile mainImage,
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @Valid @RequestBody InstitutionUpdateRequestDto institutionUpdateRequestDto
+            @Valid @RequestPart InstitutionUpdateRequestDto institutionUpdateRequestDto
     ) {
         institutionService.updateInstitution(adminDetails.getId(), institutionUpdateRequestDto, mainImage);
         return ApiResponse.success(null);
