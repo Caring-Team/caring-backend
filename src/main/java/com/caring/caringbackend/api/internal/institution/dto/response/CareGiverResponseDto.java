@@ -18,6 +18,9 @@ public record CareGiverResponseDto(
         String experienceDetails,
         String photoUrl
 ) {
+    /**
+     * CareGiver 엔티티를 DTO로 변환 (원본 photoUrl 사용)
+     */
     public static CareGiverResponseDto from(CareGiver careGiver) {
         return new CareGiverResponseDto(
                 careGiver.getId(),
@@ -28,6 +31,26 @@ public record CareGiverResponseDto(
                 careGiver.getBirthDate(),
                 careGiver.getExperienceDetails(),
                 careGiver.getPhotoUrl()
+        );
+    }
+
+    /**
+     * CareGiver 엔티티를 DTO로 변환 (PreSigned URL 사용)
+     *
+     * @param careGiver CareGiver 엔티티
+     * @param presignedPhotoUrl PreSigned URL (Service에서 생성)
+     * @return CareGiverResponseDto
+     */
+    public static CareGiverResponseDto fromWithPresignedUrl(CareGiver careGiver, String presignedPhotoUrl) {
+        return new CareGiverResponseDto(
+                careGiver.getId(),
+                careGiver.getName(),
+                careGiver.getEmail(),
+                careGiver.getPhoneNumber(),
+                careGiver.getGender(),
+                careGiver.getBirthDate(),
+                careGiver.getExperienceDetails(),
+                presignedPhotoUrl
         );
     }
 }

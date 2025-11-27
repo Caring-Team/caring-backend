@@ -13,9 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +36,11 @@ public class FileService {
     private String bucketName;
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+    private static final Duration PRESIGNED_URL_DURATION = Duration.ofHours(1); // PreSigned URL 유효시간: 1시간
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/png", "image/webp");
+
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     private final FileRepository fileRepository;
 
     /**
@@ -98,9 +108,7 @@ public class FileService {
                 referenceType
         );
 
-        File savedFile = fileRepository.save(fileEntity);
-
-        return savedFile;
+        return fileRepository.save(fileEntity);
     }
 
     /**
@@ -155,12 +163,13 @@ public class FileService {
     /**
      * 사업자등록증 업로드 및 기관과 연결 (편의 메서드)
      *
-     * @param file 사업자등록증 파일
+     * @param file          사업자등록증 파일
      * @param institutionId 기관 ID
      * @return 저장된 File 엔티티
      */
     @Transactional
     public File uploadAndLinkBusinessLicense(MultipartFile file, Long institutionId) {
+        validateFileFormat(file);
         return uploadFileWithMetadata(
                 file,
                 FileCategory.BUSINESS_LICENSE,
@@ -169,26 +178,142 @@ public class FileService {
         );
     }
 
+    @Transactional
+    public File uploadCareGiverPhoto(MultipartFile file, Long careGiverId) {
+        validateFileFormat(file);
+        return uploadFileWithMetadata(
+                file,
+                FileCategory.CAREGIVER_PHOTO,
+                careGiverId,
+                ReferenceType.CAREGIVER
+        );
+    }
+
+    private static void validateFileFormat(MultipartFile file) {
+        if (!ALLOWED_IMAGE_TYPES.contains(file.getContentType())) {
+            throw new BusinessException(INVALID_FILE_FORMAT);
+        }
+    }
+
     /**
-     * 파일 삭제
+     * 파일 삭제 (DB + S3)
      */
     @Transactional
     public void deleteFile(Long fileId) {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new BusinessException(FILE_NOT_FOUND));
 
-        // TODO: S3에서 파일 삭제 (필요 시 구현)
+        // S3에서 파일 삭제
+        deleteFromS3(file.getFileUrl());
 
+        // DB에서 파일 메타데이터 삭제
         fileRepository.delete(file);
         log.info("파일 삭제 완료 - FileId: {}, 파일명: {}", fileId, file.getOriginalFilename());
+    }
+
+    /**
+     * referenceId와 category로 파일 삭제 (요양보호사 사진 등)
+     *
+     * @param referenceId 참조 ID (CareGiverId 등)
+     * @param referenceType 참조 타입
+     * @param category 파일 카테고리
+     */
+    @Transactional
+    public void deleteFileByReference(Long referenceId, ReferenceType referenceType, FileCategory category) {
+        List<File> files = fileRepository.findByReferenceIdAndReferenceTypeAndCategory(
+                referenceId, referenceType, category
+        );
+
+        if (files.isEmpty()) {
+            log.info("삭제할 파일이 없음 - ReferenceId: {}, Type: {}, Category: {}",
+                    referenceId, referenceType, category);
+            return;
+        }
+
+        for (File file : files) {
+            // S3에서 파일 삭제
+            deleteFromS3(file.getFileUrl());
+
+            // DB에서 파일 메타데이터 삭제
+            fileRepository.delete(file);
+            log.info("파일 삭제 완료 - FileId: {}, 파일명: {}", file.getId(), file.getOriginalFilename());
+        }
+    }
+
+    /**
+     * S3에서 파일 삭제 (공통 로직)
+     */
+    private void deleteFromS3(String fileUrl) {
+        try {
+            String key = extractKeyFromUrl(fileUrl);
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(deleteRequest);
+            log.info("S3 파일 삭제 성공 - Key: {}", key);
+        } catch (Exception e) {
+            log.error("S3 파일 삭제 실패 - URL: {}", fileUrl, e);
+            // S3 삭제 실패해도 계속 진행 (orphan 파일은 나중에 정리)
+        }
+    }
+
+    /**
+     * S3 URL을 PreSigned URL로 변환
+     *
+     * @param s3Url S3 URL
+     * @return PreSigned URL (1시간 유효)
+     */
+    public String generatePresignedUrl(String s3Url) {
+        if (s3Url == null || s3Url.isEmpty()) {
+            return null;
+        }
+
+        try {
+            // S3 URL에서 key 추출
+            String key = extractKeyFromUrl(s3Url);
+
+            // PreSigned URL 생성
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(PRESIGNED_URL_DURATION)
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url().toString();
+        } catch (Exception e) {
+            log.error("PreSigned URL 생성 실패: {}", s3Url, e);
+            return s3Url; // 실패 시 원본 URL 반환
+        }
+    }
+
+    /**
+     * S3 URL에서 key 추출
+     */
+    private String extractKeyFromUrl(String s3Url) {
+        int keyStartIndex = s3Url.indexOf(".amazonaws.com/");
+
+        if (keyStartIndex != -1) {
+            return s3Url.substring(keyStartIndex + ".amazonaws.com/".length());
+        }
+
+        // URL 형식이 다를 경우 처리
+        throw new IllegalArgumentException("Invalid S3 URL format: " + s3Url);
     }
 
     // ============== private methods ==============
 
     private String buildFileUrl(String key) {
         return "https://" + bucketName + ".s3." +
-               s3Client.serviceClientConfiguration().region().id() +
-               ".amazonaws.com/" + key;
+                s3Client.serviceClientConfiguration().region().id() +
+                ".amazonaws.com/" + key;
     }
 
     private static void validate(MultipartFile file) {
