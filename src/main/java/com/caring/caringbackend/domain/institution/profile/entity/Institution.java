@@ -76,16 +76,17 @@ public class Institution extends BaseEntity {
     private Boolean isAdmissionAvailable;
 
     // 전문 질환 목록
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstitutionSpecializedCondition> specializedConditions = new ArrayList<>();
 
     // 기관 계정 목록 (OWNER, ADMIN, STAFF 포함) -> 기관장은 Role로 확인
-    @BatchSize(size = 100)
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstitutionAdmin> admins = new ArrayList<>();
 
     // 요양사 목록
-    @BatchSize(size = 100)
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGiver> careGivers = new ArrayList<>();
 

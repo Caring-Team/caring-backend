@@ -83,7 +83,6 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 사업자등록증 파일 업로드 (임시 저장 - referenceId는 null)
         File uploadedFile = fileService.uploadAndLinkBusinessLicense(file, null);
 
-
         // Institution 생성 및 저장
         Institution institution = Institution.createInstitution(
                 requestDto.getName(),
@@ -146,17 +145,18 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 승인 여부 검사
         validateIsApproved(institution);
 
-        return InstitutionDetailResponseDto.entityToDto(institution);
+        return InstitutionDetailResponseDto.from(institution, fileService);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InstitutionDetailResponseDto getMyInstitution(Long adminId) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         if (admin.getInstitution() == null) {
             throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
         }
 
-        return InstitutionDetailResponseDto.entityToDto(admin.getInstitution());
+        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.caring.caringbackend.api.internal.institution.dto.response;
 
+import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
@@ -42,10 +43,12 @@ public record InstitutionDetailResponseDto(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+
     /**
-     * Entity Institution → DTO 변환
+     * Entity Institution → DTO 변환 (기존 메서드 - PreSigned URL 생성 포함)
+     *
      */
-    public static InstitutionDetailResponseDto entityToDto(Institution institution) {
+    public static InstitutionDetailResponseDto from(Institution institution, FileService fileService) {
         if (institution == null) {
             return null;
         }
@@ -66,12 +69,16 @@ public record InstitutionDetailResponseDto(
                         .map(InstitutionCounselResponseDto::from)
                         .toList(),
                 institution.getCareGivers().stream()
-                        .map(CareGiverResponseDto::from)
+                        .map(careGiver -> {
+                            String presignedUrl = fileService.generatePresignedUrl(careGiver.getPhotoUrl());
+                            return CareGiverResponseDto.fromWithPresignedUrl(careGiver, presignedUrl);
+                        })
                         .toList(),
                 institution.getCreatedAt(),
                 institution.getUpdatedAt()
         );
     }
+
 
     /**
      * 전문 질환 목록 추출
