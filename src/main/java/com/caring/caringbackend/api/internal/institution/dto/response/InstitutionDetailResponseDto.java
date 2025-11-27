@@ -32,8 +32,11 @@ public record InstitutionDetailResponseDto(
         // 전문 질환 목록
         List<String> specializedConditions,
 
+        // 기관 상담 서비스 목록
+        List<InstitutionCounselResponseDto> counselServices,
+
         // 요양보호사 목록
-        // TODO: 추후 요양보호사 목록 추가
+        List<CareGiverResponseDto> careGivers,
 
         // 생성/수정 정보
         LocalDateTime createdAt,
@@ -59,6 +62,12 @@ public record InstitutionDetailResponseDto(
                 institution.getLocation(),
                 institution.getPriceInfo(),
                 extractSpecializedConditions(institution),
+                institution.getCounsels().stream()
+                        .map(InstitutionCounselResponseDto::from)
+                        .toList(),
+                institution.getCareGivers().stream()
+                        .map(CareGiverResponseDto::from)
+                        .toList(),
                 institution.getCreatedAt(),
                 institution.getUpdatedAt()
         );

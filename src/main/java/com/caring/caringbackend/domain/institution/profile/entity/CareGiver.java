@@ -76,7 +76,7 @@ public class CareGiver extends BaseEntity {
      */
     public static CareGiver createCareGiver(Institution institution, String name, String email,
                                            String phoneNumber, Gender gender, LocalDate birthDate,
-                                           String experienceDetails) {
+                                           String experienceDetails, String photoUrl) {
         CareGiver careGiver = CareGiver.builder()
                 .institution(institution)
                 .name(name)
@@ -85,6 +85,7 @@ public class CareGiver extends BaseEntity {
                 .gender(gender)
                 .birthDate(birthDate)
                 .experienceDetails(experienceDetails)
+                .photoUrl(photoUrl)
                 .build();
 
         // 양방향 연관관계 설정
