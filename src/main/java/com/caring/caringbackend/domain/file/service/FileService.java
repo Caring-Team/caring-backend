@@ -189,6 +189,17 @@ public class FileService {
         );
     }
 
+    @Transactional
+    public File uploadInstitutionMainImage(MultipartFile file, Long institutionId) {
+        validateFileFormat(file);
+        return uploadFileWithMetadata(
+                file,
+                FileCategory.INSTITUTION_PROFILE,
+                institutionId,
+                ReferenceType.INSTITUTION
+        );
+    }
+
     private static void validateFileFormat(MultipartFile file) {
         if (!ALLOWED_IMAGE_TYPES.contains(file.getContentType())) {
             throw new BusinessException(INVALID_FILE_FORMAT);

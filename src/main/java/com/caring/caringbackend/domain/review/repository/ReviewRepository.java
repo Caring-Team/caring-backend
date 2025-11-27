@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -79,5 +80,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @return 리뷰
      */
     Optional<Review> findByIdAndDeletedFalse(Long reviewId);
+
+    @Query("""
+            select r 
+            from Review r
+            left join fetch r.member m
+            left join fetch r.institution i
+            left join fetch r.reservation res
+            where i.id = :institutionId
+            and r.deleted = false
+            order by r.createdAt desc
+            """)
+    List<Review> findByIdWithFetches(Long institutionId);
 }
 

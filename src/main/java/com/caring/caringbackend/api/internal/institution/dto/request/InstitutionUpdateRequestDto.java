@@ -38,10 +38,6 @@ public class InstitutionUpdateRequestDto {
 
     // 입소 가능 여부
     private Boolean isAdmissionAvailable;
-    
-    // 태그 ID 목록 (선택, 최대 20개)
-    @Size(max = 20, message = "태그는 최대 20개까지 선택할 수 있습니다")
-    private List<Long> tagIds;
 
     // 가격 정보
     @Min(value = 0, message = "월 기본 요금은 0 이상이어야 합니다")
@@ -57,4 +53,8 @@ public class InstitutionUpdateRequestDto {
 
     // 운영 시간
     private String openingHours;
+
+    // 기관 설명
+    @Size(max = 1000, message = "기관 설명은 1000자를 초과할 수 없습니다")
+    private String description;
 }
