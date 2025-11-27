@@ -55,7 +55,7 @@ public record InstitutionDetailResponseDto(
         List<TagResponse> tags,
 
         // 리뷰 (이름, 평점, 내용, 태그들)
-        InstitutionReviewsResponseDto reviews,
+        InstitutionReviewsResponseDto reviewData,
         //---------------------------------------
 
         // 생성/수정 정보
