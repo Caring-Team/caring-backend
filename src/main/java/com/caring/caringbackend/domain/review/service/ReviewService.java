@@ -5,6 +5,8 @@ import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewRep
 import com.caring.caringbackend.api.internal.Member.dto.review.request.ReviewUpdateRequest;
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewResponse;
+import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
@@ -37,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -196,6 +199,17 @@ public class ReviewService {
 
         // 3. 응답 반환
         return ReviewListResponse.of(reviewResponses, reviewPage);
+    }
+
+    public InstitutionReviewsResponseDto getInstitutionDetailReviews(Long institutionId) {
+        // 리뷰에 reservation, member, institution를 한번에 다 가져온다.
+        List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
+
+        List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
+                .map(InstitutionReviewResponseDto::from)
+                .toList();
+
+        return InstitutionReviewsResponseDto.of(reviewResponses);
     }
 
     /**

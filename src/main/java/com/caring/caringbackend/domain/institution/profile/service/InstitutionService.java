@@ -40,7 +40,7 @@ public interface InstitutionService {
      * @param adminId 관리자 ID
      * @param requestDto    기관 수정 요청 DTO
      */
-    void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto);
+    void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto, MultipartFile mainImage);
 
     /**
      * 입소 가능 여부 변경

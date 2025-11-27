@@ -1,17 +1,21 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
 import com.caring.caringbackend.domain.file.entity.File;
+import com.caring.caringbackend.domain.file.entity.FileCategory;
 import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
+import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
@@ -49,6 +53,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final TagRepository tagRepository;
     private final InstitutionTagRepository institutionTagRepository;
     private final AiServerService aiServerService;
+    private final ReviewService reviewService;
 
     /**
      * 기관 등록
@@ -145,18 +150,22 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 승인 여부 검사
         validateIsApproved(institution);
 
-        return InstitutionDetailResponseDto.from(institution, fileService);
+        // 리뷰 조회
+        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institutionId);
+
+        return InstitutionDetailResponseDto.from(institution, fileService, institutionDetailReviews);
     }
 
     @Override
     @Transactional(readOnly = true)
     public InstitutionDetailResponseDto getMyInstitution(Long adminId) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         if (admin.getInstitution() == null) {
             throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
         }
-
-        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService);
+        // 리뷰 조회
+        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(admin.getInstitution().getId());
+        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService, institutionDetailReviews);
     }
 
     /**
@@ -167,8 +176,12 @@ public class InstitutionServiceImpl implements InstitutionService {
      */
     @Override
     @Transactional
-    public void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+    public void updateInstitution(
+            Long adminId,
+            InstitutionUpdateRequestDto requestDto,
+            MultipartFile mainImage
+    ) {
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -179,6 +192,20 @@ public class InstitutionServiceImpl implements InstitutionService {
         GeoPoint updatedLocation = calculateUpdatedLocation(requestDto, updatedAddress);
         PriceInfo updatedPriceInfo = buildUpdatedPriceInfo(requestDto, institution);
 
+        // 기관 메인 이미지 업데이트
+        if (mainImage != null && !mainImage.isEmpty()) {
+            // 기존 이미지 삭제
+            fileService.deleteFileByReference(
+                    institution.getId(),
+                    INSTITUTION,
+                    FileCategory.INSTITUTION_PROFILE);
+        }
+
+        File uploadedFile = null;
+        if (mainImage != null && !mainImage.isEmpty()) {
+            uploadedFile = fileService.uploadInstitutionMainImage(mainImage, institution.getId());
+        }
+
         institution.updateInstitution(
                 requestDto.getName(),
                 requestDto.getPhoneNumber(),
@@ -187,18 +214,10 @@ public class InstitutionServiceImpl implements InstitutionService {
                 requestDto.getBedCount(),
                 requestDto.getIsAdmissionAvailable(),
                 updatedPriceInfo,
-                requestDto.getOpeningHours()
+                requestDto.getOpeningHours(),
+                requestDto.getDescription(),
+                uploadedFile != null ? uploadedFile.getFileUrl() : null
         );
-        
-        // 태그 업데이트 (기존 태그 삭제 후 재생성)
-        if (requestDto.getTagIds() != null) {
-            institutionTagRepository.deleteByInstitutionId(institution.getId());
-            if (!requestDto.getTagIds().isEmpty()) {
-                saveInstitutionTags(institution, requestDto.getTagIds());
-            }
-        }
-
-        log.info("기관 정보 수정 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
     }
 
     /**
@@ -240,7 +259,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void changeAdmissionAvailability(Long adminId, Boolean isAdmissionAvailable) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -258,7 +277,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void deleteInstitution(Long adminId) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -278,7 +297,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void setInstitutionTags(Long adminId, List<Long> tagIds) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -318,12 +337,24 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     /**
      * 기관 관리자 조회 내부 메서드
+     * 기관 정보도 함께 로드
+     *
+     * @param adminId 관리자 ID
+     * @return InstitutionAdmin 엔티티
+     */
+    private InstitutionAdmin findInstitutionAdminByIdWithInstitution(Long adminId) {
+        return institutionAdminRepository.findByIdWithInstitution(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
+    }
+
+    /**
+     * 기관 관리자 조회 내부 메서드
      *
      * @param adminId 관리자 ID
      * @return InstitutionAdmin 엔티티
      */
     private InstitutionAdmin findInstitutionAdminById(Long adminId) {
-        return institutionAdminRepository.findByIdWithInstitution(adminId)
+        return institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
     }
 
