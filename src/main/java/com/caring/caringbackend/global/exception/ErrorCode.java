@@ -148,6 +148,7 @@ public enum ErrorCode {
     // AI Server Errors (AI-xxx)
     AI_SERVER_COMMUNICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI-001", "AI 서버와의 통신에 실패했습니다");
 
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

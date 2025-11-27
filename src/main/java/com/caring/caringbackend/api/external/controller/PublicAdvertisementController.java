@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.external;
+package com.caring.caringbackend.api.external.controller;
 
 import com.caring.caringbackend.api.internal.institution.dto.response.advertisement.ActiveAdvertisementDto;
 import com.caring.caringbackend.domain.institution.advertisement.entity.AdvertisementType;

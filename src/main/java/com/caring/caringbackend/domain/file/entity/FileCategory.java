@@ -33,7 +33,12 @@ public enum FileCategory {
     /**
      * 리뷰 첨부 이미지
      */
-    REVIEW_IMAGE("리뷰 첨부 이미지");
+    REVIEW_IMAGE("리뷰 첨부 이미지"),
+
+    /**
+     * 요양 보호사 사진
+     */
+    CAREGIVER_PHOTO("요양 보호사 사진");
 
     private final String description;
 

@@ -3,7 +3,9 @@ package com.caring.caringbackend.domain.institution.profile.repository;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -78,7 +80,7 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long>,
     /**
      * Native Query - 거리 기반 검색
      * PostgreSQL의 Haversine Formula 사용
-     *
+     * <p>
      * Note: 거리 계산 결과로 정렬하기 위해 ORDER BY를 쿼리에 포함
      * Pageable의 Sort는 무시되고 거리순으로 정렬됨
      */
@@ -103,16 +105,16 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long>,
             ORDER BY distance
             """,
             countQuery = """
-            SELECT COUNT(*) FROM institution i
-            WHERE i.deleted = false
-            AND (6371 * acos(
-                cos(radians(:latitude)) 
-                * cos(radians(i.latitude)) 
-                * cos(radians(i.longitude) - radians(:longitude)) 
-                + sin(radians(:latitude)) 
-                * sin(radians(i.latitude))
-            )) <= :radiusKm
-            """,
+                    SELECT COUNT(*) FROM institution i
+                    WHERE i.deleted = false
+                    AND (6371 * acos(
+                        cos(radians(:latitude)) 
+                        * cos(radians(i.latitude)) 
+                        * cos(radians(i.longitude) - radians(:longitude)) 
+                        + sin(radians(:latitude)) 
+                        * sin(radians(i.latitude))
+                    )) <= :radiusKm
+                    """,
             nativeQuery = true)
     Page<Institution> findByDistanceNative(
             @Param("latitude") Double latitude,

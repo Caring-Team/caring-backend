@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,13 +28,14 @@ public class CareGiverController {
     /**
      * 요양보호사 등록
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "1. 요양보호사 등록", description = "해당 기관에 새로운 요양보호사를 등록합니다. (OWNER/MANAGER 권한 필요)")
     public ApiResponse<Void> registerCareGiver(
-            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
-            @Valid @RequestBody CareGiverCreateRequestDto requestDto) {
-
-        careGiverService.registerCareGiver(adminDetails.getId(), requestDto);
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @Valid @RequestPart(value = "data") CareGiverCreateRequestDto requestDto,
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+    ) {
+        careGiverService.registerCareGiver(adminDetails.getId(), requestDto, photo);
         return ApiResponse.success();
     }
 
@@ -73,6 +76,20 @@ public class CareGiverController {
             @Valid @RequestBody CareGiverUpdateRequestDto requestDto) {
 
         careGiverService.updateCareGiver(adminDetails.getId(), careGiverId, requestDto);
+        return ApiResponse.success();
+    }
+
+    /**
+     * 요양보호사 사진 수정
+     */
+    @PatchMapping(value = "/{careGiverId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "4-1. 내 기관 요양보호사 사진 수정", description = "요양보호사의 사진을 수정합니다. (OWNER/MANAGER 권한 필요)")
+    public ApiResponse<Void> updateCareGiverPhoto(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
+            @PathVariable Long careGiverId,
+            @RequestPart("photo") MultipartFile photo) {
+
+        careGiverService.updateCareGiverPhoto(adminDetails.getId(), careGiverId, photo);
         return ApiResponse.success();
     }
 
