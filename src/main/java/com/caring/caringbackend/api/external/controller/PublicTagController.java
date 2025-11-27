@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.external;
+package com.caring.caringbackend.api.external.controller;
 
 import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.domain.tag.entity.Tag;
