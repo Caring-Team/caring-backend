@@ -4,6 +4,8 @@ import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverCr
 import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.CareGiverResponseDto;
 import com.caring.caringbackend.domain.file.entity.File;
+import com.caring.caringbackend.domain.file.entity.FileCategory;
+import com.caring.caringbackend.domain.file.entity.ReferenceType;
 import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.CareGiver;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
@@ -116,11 +118,18 @@ public class CareGiverServiceImpl implements CareGiverService {
         // 요양보호사 조회
         CareGiver careGiver = getCareGiver(institution.getId(), careGiverId);
 
-        // 사진 업로드 및 URL 업데이트
+        // 기존 사진 삭제
+        fileService.deleteFileByReference(
+                careGiverId,
+                ReferenceType.CAREGIVER,
+                FileCategory.CAREGIVER_PHOTO
+        );
+
         if (photo != null && !photo.isEmpty()) {
             File uploadedFile = fileService.uploadCareGiverPhoto(photo, careGiverId);
             careGiver.updatePhotoUrl(uploadedFile.getFileUrl());
-            log.info("요양보호사 사진 업데이트 완료 - CareGiverId: {}", careGiverId);
+        } else {
+            careGiver.updatePhotoUrl(null);
         }
     }
 

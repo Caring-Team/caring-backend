@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -195,17 +196,67 @@ public class FileService {
     }
 
     /**
-     * 파일 삭제
+     * 파일 삭제 (DB + S3)
      */
     @Transactional
     public void deleteFile(Long fileId) {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new BusinessException(FILE_NOT_FOUND));
 
-        // TODO: S3에서 파일 삭제 (필요 시 구현)
+        // S3에서 파일 삭제
+        deleteFromS3(file.getFileUrl());
 
+        // DB에서 파일 메타데이터 삭제
         fileRepository.delete(file);
         log.info("파일 삭제 완료 - FileId: {}, 파일명: {}", fileId, file.getOriginalFilename());
+    }
+
+    /**
+     * referenceId와 category로 파일 삭제 (요양보호사 사진 등)
+     *
+     * @param referenceId 참조 ID (CareGiverId 등)
+     * @param referenceType 참조 타입
+     * @param category 파일 카테고리
+     */
+    @Transactional
+    public void deleteFileByReference(Long referenceId, ReferenceType referenceType, FileCategory category) {
+        List<File> files = fileRepository.findByReferenceIdAndReferenceTypeAndCategory(
+                referenceId, referenceType, category
+        );
+
+        if (files.isEmpty()) {
+            log.info("삭제할 파일이 없음 - ReferenceId: {}, Type: {}, Category: {}",
+                    referenceId, referenceType, category);
+            return;
+        }
+
+        for (File file : files) {
+            // S3에서 파일 삭제
+            deleteFromS3(file.getFileUrl());
+
+            // DB에서 파일 메타데이터 삭제
+            fileRepository.delete(file);
+            log.info("파일 삭제 완료 - FileId: {}, 파일명: {}", file.getId(), file.getOriginalFilename());
+        }
+    }
+
+    /**
+     * S3에서 파일 삭제 (공통 로직)
+     */
+    private void deleteFromS3(String fileUrl) {
+        try {
+            String key = extractKeyFromUrl(fileUrl);
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(deleteRequest);
+            log.info("S3 파일 삭제 성공 - Key: {}", key);
+        } catch (Exception e) {
+            log.error("S3 파일 삭제 실패 - URL: {}", fileUrl, e);
+            // S3 삭제 실패해도 계속 진행 (orphan 파일은 나중에 정리)
+        }
     }
 
     /**
