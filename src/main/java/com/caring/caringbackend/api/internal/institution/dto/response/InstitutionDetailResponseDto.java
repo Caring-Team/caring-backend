@@ -76,33 +76,33 @@ public record InstitutionDetailResponseDto(
         }
 
         return new InstitutionDetailResponseDto(
-                institution.getName(), // 이름
-                institution.getInstitutionType(), // 기관 타입
-                institution.getPhoneNumber(), // 전화번호
-                institution.getApprovalStatus(), // 승인 상태
-                institution.getIsAdmissionAvailable(), // 입소 가능 여부
-                institution.getBedCount(), // 병상 수
-                institution.getOpeningHours(), // 운영 시간
-                institution.getAddress(), // 주소
-                institution.getLocation(), // 위치
-                institution.getPriceInfo(), // 가격 정보
-                extractSpecializedConditions(institution), // 전문 질환 목록
+                institution.getName(),                      // 이름
+                institution.getInstitutionType(),           // 기관 타입
+                institution.getPhoneNumber(),               // 전화번호
+                institution.getApprovalStatus(),            // 승인 상태
+                institution.getIsAdmissionAvailable(),      // 입소 가능 여부
+                institution.getBedCount(),                  // 병상 수
+                institution.getOpeningHours(),              // 운영 시간
+                institution.getAddress(),                   // 주소
+                institution.getLocation(),                  // 위치
+                institution.getPriceInfo(),                 // 가격 정보
+                extractSpecializedConditions(institution),  // 전문 질환 목록
                 institution.getCounsels().stream()
                         .map(InstitutionCounselResponseDto::from)
-                        .toList(), // 기관 상담 서비스 목록
+                        .toList(),              // 기관 상담 서비스 목록
                 institution.getCareGivers().stream()
                         .map(careGiver -> {
                             String presignedUrl = fileService.generatePresignedUrl(careGiver.getPhotoUrl());
                             return CareGiverResponseDto.fromWithPresignedUrl(careGiver, presignedUrl);
-                        }).toList(), // 요양보호사 목록
-                institution.getDescription(), // 설명
+                        }).toList(),            // 요양보호사 목록
+                institution.getDescription(),   // 설명
                 fileService.generatePresignedUrl(institution.getMainImageUrl()), // 대표 사진
                 institution.getTags().stream()
                         .map(tag -> TagResponse.from(tag.getTag()))
-                        .toList(), // 태그들
-                reviews, // 리뷰들
-                institution.getCreatedAt(), // 생성일
-                institution.getUpdatedAt() // 수정일
+                        .toList(),              // 태그들
+                reviews,                        // 리뷰들
+                institution.getCreatedAt(),     // 생성일
+                institution.getUpdatedAt()      // 수정일
         );
     }
 
