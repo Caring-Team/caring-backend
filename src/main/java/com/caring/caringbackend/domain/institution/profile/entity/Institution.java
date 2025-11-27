@@ -112,7 +112,7 @@ public class Institution extends BaseEntity {
     private String description;
 
     // 대표 사진
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String mainImageUrl;
 
     @Builder(access = AccessLevel.PRIVATE)
