@@ -7,6 +7,9 @@ public record InstitutionReviewsResponseDto(
         int totalCount
 ) {
     public static InstitutionReviewsResponseDto of(List<InstitutionReviewResponseDto> reviews) {
+        if (reviews == null) {
+            return new InstitutionReviewsResponseDto(List.of(), 0);
+        }
         return new InstitutionReviewsResponseDto(reviews, reviews.size());
     }
 }
