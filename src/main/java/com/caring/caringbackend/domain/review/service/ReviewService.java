@@ -203,8 +203,7 @@ public class ReviewService {
 
     public InstitutionReviewsResponseDto getInstitutionDetailReviews(Long institutionId) {
         // 리뷰에 reservation, member, institution를 한번에 다 가져온다.
-        List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+        List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
 
         List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
                 .map(InstitutionReviewResponseDto::from)

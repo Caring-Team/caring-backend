@@ -91,6 +91,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             and r.deleted = false
             order by r.createdAt desc
             """)
-    Optional<List<Review>> findByIdWithFetches(Long institutionId);
+    List<Review> findByIdWithFetches(Long institutionId);
 }
 
