@@ -1,6 +1,5 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
@@ -150,6 +149,9 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 승인 여부 검사
         validateIsApproved(institution);
 
+        // Lazy 컬렉션 초기화
+        initializeLazyCollections(institution);
+
         // 리뷰 조회
         InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institutionId);
 
@@ -163,9 +165,15 @@ public class InstitutionServiceImpl implements InstitutionService {
         if (admin.getInstitution() == null) {
             throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
         }
+
+        Institution institution = admin.getInstitution();
+
+        // Lazy 컬렉션 초기화 (트랜잭션 내)
+        initializeLazyCollections(institution);
+
         // 리뷰 조회
-        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(admin.getInstitution().getId());
-        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService, institutionDetailReviews);
+        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institution.getId());
+        return InstitutionDetailResponseDto.from(institution, fileService, institutionDetailReviews);
     }
 
     /**
@@ -317,6 +325,23 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     // ============ private methods ============
+
+    /**
+     * Institution의 Lazy 컬렉션 강제 초기화
+     * BatchSize 덕분에 각 컬렉션을 효율적으로 로딩
+     */
+    private void initializeLazyCollections(Institution institution) {
+        // tags 초기화 (InstitutionTag 로딩)
+        if (institution.getTags() != null) {
+            institution.getTags().size();
+
+            institution.getTags().forEach(institutionTag -> {
+                if (institutionTag.getTag() != null) {
+                    institutionTag.getTag().getName(); // Tag 프록시 초기화
+                }
+            });
+        }
+    }
 
     private static void validateHasInstitution(InstitutionAdmin admin) {
         if (!admin.hasInstitution()) {

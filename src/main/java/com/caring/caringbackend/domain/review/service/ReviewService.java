@@ -204,7 +204,7 @@ public class ReviewService {
     public InstitutionReviewsResponseDto getInstitutionDetailReviews(Long institutionId) {
         // 리뷰에 reservation, member, institution를 한번에 다 가져온다.
         List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
-
+        initializeLazyCollection(reviews);
         List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
                 .map(InstitutionReviewResponseDto::from)
                 .toList();
@@ -461,6 +461,19 @@ public class ReviewService {
         if (!review.isOwnedBy(memberId)) {
             throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
         }
+    }
+
+    private static void initializeLazyCollection(List<Review> reviews) {
+        reviews.forEach(review -> {
+            if (review.getReviewTags() != null && !review.getReviewTags().isEmpty()) {
+
+                review.getReviewTags().size();
+                review.getReviewTags().forEach(reviewTag -> {
+                    Tag tag = reviewTag.getTag();
+                    tag.getName();
+                });
+            }
+        });
     }
 }
 

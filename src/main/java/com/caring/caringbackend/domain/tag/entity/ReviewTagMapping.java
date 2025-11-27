@@ -35,7 +35,6 @@ public class ReviewTagMapping extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id", nullable = false)
-    @BatchSize(size = 100)
     private Tag tag;
 
     @Builder
