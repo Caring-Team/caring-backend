@@ -83,7 +83,6 @@ public class PublicInstitutionController {
     public ApiResponse<InstitutionDetailResponseDto> getInstitutionDetail(
             @PathVariable Long institutionId
     ) {
-        // TODO: 기관 상담 목록 데이터 추가
         InstitutionDetailResponseDto institutionDetail = institutionService.getInstitutionDetail(institutionId);
         return ApiResponse.success(institutionDetail);
     }

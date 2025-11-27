@@ -153,7 +153,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 리뷰 조회
         InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institutionId);
 
-        return InstitutionDetailResponseDto.from(institution, fileService);
+        return InstitutionDetailResponseDto.from(institution, fileService, institutionDetailReviews);
     }
 
     @Override
@@ -163,8 +163,9 @@ public class InstitutionServiceImpl implements InstitutionService {
         if (admin.getInstitution() == null) {
             throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
         }
-
-        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService);
+        // 리뷰 조회
+        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(admin.getInstitution().getId());
+        return InstitutionDetailResponseDto.from(admin.getInstitution(), fileService, institutionDetailReviews);
     }
 
     /**

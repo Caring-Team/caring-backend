@@ -2,7 +2,6 @@ package com.caring.caringbackend.domain.review.entity;
 
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
-import com.caring.caringbackend.domain.tag.entity.ReviewTag;
 import com.caring.caringbackend.domain.tag.entity.ReviewTagMapping;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.global.model.BaseEntity;
