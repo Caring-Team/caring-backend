@@ -1,10 +1,12 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
+import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
 import com.caring.caringbackend.domain.file.entity.File;
 import com.caring.caringbackend.domain.file.entity.FileCategory;
 import com.caring.caringbackend.domain.file.service.FileService;
@@ -13,6 +15,7 @@ import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdm
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
+import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
@@ -50,6 +53,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final TagRepository tagRepository;
     private final InstitutionTagRepository institutionTagRepository;
     private final AiServerService aiServerService;
+    private final ReviewService reviewService;
 
     /**
      * 기관 등록
@@ -145,6 +149,9 @@ public class InstitutionServiceImpl implements InstitutionService {
         validateIsActive(institution);
         // 승인 여부 검사
         validateIsApproved(institution);
+
+        // 리뷰 조회
+        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institutionId);
 
         return InstitutionDetailResponseDto.from(institution, fileService);
     }
