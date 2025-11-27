@@ -118,4 +118,11 @@ public class CareGiver extends BaseEntity {
             this.experienceDetails = experienceDetails;
         }
     }
+
+    /**
+     * 사진 URL 업데이트
+     */
+    public void updatePhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 }
