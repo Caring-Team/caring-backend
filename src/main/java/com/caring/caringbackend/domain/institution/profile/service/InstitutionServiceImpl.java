@@ -62,7 +62,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     public void registerInstitution(Long adminId, InstitutionCreateRequestDto requestDto, MultipartFile file) {
         // 관리자 조회
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
-
+        
         // 이미 기관이 등록되어 있는지 확인
         if (admin.getInstitution() != null) {
             throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_REGISTERED);
@@ -151,7 +151,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional(readOnly = true)
     public InstitutionDetailResponseDto getMyInstitution(Long adminId) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         if (admin.getInstitution() == null) {
             throw new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND);
         }
@@ -168,7 +168,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void updateInstitution(Long adminId, InstitutionUpdateRequestDto requestDto) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -240,7 +240,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void changeAdmissionAvailability(Long adminId, Boolean isAdmissionAvailable) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -258,7 +258,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void deleteInstitution(Long adminId) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -278,7 +278,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     @Transactional
     public void setInstitutionTags(Long adminId, List<Long> tagIds) {
-        InstitutionAdmin admin = findInstitutionAdminById(adminId);
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();
 
@@ -314,6 +314,18 @@ public class InstitutionServiceImpl implements InstitutionService {
     private Institution findInstitutionById(Long institutionId) {
         return institutionRepository.findById(institutionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
+    }
+
+    /**
+     * 기관 관리자 조회 내부 메서드
+     * 기관 정보도 함께 로드
+     *
+     * @param adminId 관리자 ID
+     * @return InstitutionAdmin 엔티티
+     */
+    private InstitutionAdmin findInstitutionAdminByIdWithInstitution(Long adminId) {
+        return institutionAdminRepository.findByIdWithInstitution(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
     }
 
     /**
