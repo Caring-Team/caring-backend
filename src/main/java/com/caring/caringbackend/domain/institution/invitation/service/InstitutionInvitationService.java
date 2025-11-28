@@ -181,7 +181,7 @@ public class InstitutionInvitationService {
                 .existsByInstitutionAndInviteeAndStatus(institution, invitee, InstitutionInvitationStatus.PENDING);
 
         if (hasActiveInvitation) {
-            throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.INSTITUTION_INVITATION_ALREADY_EXIST);
         }
     }
 }
