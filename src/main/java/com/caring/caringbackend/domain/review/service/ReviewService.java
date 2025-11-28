@@ -368,15 +368,20 @@ public class ReviewService {
      * @param tagIds 태그 ID 목록
      */
     private void saveReviewTags(Review review, List<Long> tagIds) {
-        // 1. 태그 조회
+        // 1. 태그 개수 검증 (최대 5개)
+        if (tagIds.size() > 5) {
+            throw new BusinessException(ErrorCode.REVIEW_TAG_LIMIT_EXCEEDED);
+        }
+
+        // 2. 태그 조회
         List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
 
-        // 2. 존재하지 않는 태그 ID 검증
+        // 3. 존재하지 않는 태그 ID 검증
         if (tags.size() != tagIds.size()) {
             throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
         }
 
-        // 3. ReviewTagMapping 생성 및 저장
+        // 4. ReviewTagMapping 생성 및 저장
         List<ReviewTagMapping> mappings = tags.stream()
                 .map(tag -> ReviewTagMapping.builder()
                         .review(review)
