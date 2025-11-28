@@ -97,7 +97,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         );
 
         Institution savedInstitution = institutionRepository.save(institution);
-        admin.linkInstitution(savedInstitution);
+        admin.assignAsOwner(savedInstitution);
 
         // 파일의 참조 정보 업데이트 (기관 ID와 연결)
         if (uploadedFile.getId() != null) {
