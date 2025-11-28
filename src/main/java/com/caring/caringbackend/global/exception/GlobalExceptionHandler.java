@@ -255,7 +255,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.FORBIDDEN;
         ApiResponse<Object> response = ApiResponse.builder()
                 .success(false)
-                .code(errorCode.getMessage())
+                .code(errorCode.getCode())
                 .message("해당 요청을 처리할 권한이 없습니다.")
                 .build();
 
