@@ -60,6 +60,11 @@ public enum ErrorCode {
     UNAUTHORIZED_INSTITUTION_ACCESS(HttpStatus.FORBIDDEN, "INST-012", "해당 기관에 대한 접근 권한이 없습니다"),
     OWNER_PERMISSION_REQUIRED(HttpStatus.FORBIDDEN, "INST-013", "기관장(OWNER) 권한이 필요합니다"),
     ADMIN_HAS_NO_INSTITUTION(HttpStatus.BAD_REQUEST, "INST-014", "기관에 소속되어 있지 않습니다. 먼저 기관을 등록해주세요"),
+    INSTITUTION_INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-015", "해당 초대를 찾을 수 없습니다."),
+    INSTITUTION_INVITATION_FORBIDDEN(HttpStatus.FORBIDDEN, "INST-016", "해당 초대를 처리할 권한이 없습니다."),
+    INSTITUTION_INVITATION_ALREADY_EXIST(HttpStatus.FORBIDDEN, "INST-017", "이미 초대한 유저입니다."),
+    INSTITUTION_INVITATION_ALREADY_SOLVED(HttpStatus.CONFLICT, "INST-018", "이미 처리한 초대입니다."),
+    INSTITUTION_INVITATION_USERNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "INST-019", "해당 아이디로 유저를 찾을 수 없습니다."),
 
     // 📋 Care Domain Errors (CARE-xxx)
     CARE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "CARE-001", "케어 요청을 찾을 수 없습니다"),
