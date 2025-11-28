@@ -32,7 +32,7 @@ public class InstitutionInvitationService {
         validateInvitee(invitee);
 
         List<InstitutionInvitation> invitations = institutionInvitationRepository
-                .findAllByInviteeAndStatus(invitee, InstitutionInvitationStatus.PENDING);
+                .findAllByInvitee(invitee);
 
         return invitations.stream().map(InstitutionAdminInvitationResponseDto::from).toList();
     }
@@ -45,7 +45,7 @@ public class InstitutionInvitationService {
         validateInvitee(invitee);
 
         List<InstitutionInvitation> invitations = institutionInvitationRepository
-                .findAllByInviteeAndStatus(invitee, InstitutionInvitationStatus.PENDING);
+                .findAllByInviteeAndStatus(invitee, status);
 
         return invitations.stream().map(InstitutionAdminInvitationResponseDto::from).toList();
     }
@@ -92,7 +92,7 @@ public class InstitutionInvitationService {
         InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
-        Institution institution = Optional.of(admin.getInstitution())
+        Institution institution = Optional.ofNullable(admin.getInstitution())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION));
 
         validateInstitutionApproved(institution);
@@ -112,7 +112,7 @@ public class InstitutionInvitationService {
         InstitutionAdmin institutionAdmin = institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
-        Institution institution = Optional.of(institutionAdmin.getInstitution())
+        Institution institution = Optional.ofNullable(institutionAdmin.getInstitution())
                 .orElseThrow((() -> new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION)));
 
         validateInstitutionApproved(institution);
@@ -138,7 +138,7 @@ public class InstitutionInvitationService {
         InstitutionAdmin admin = institutionAdminRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
-        Institution institution = Optional.of(admin.getInstitution())
+        Institution institution = Optional.ofNullable(admin.getInstitution())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION));
 
         validateInstitutionApproved(institution);
