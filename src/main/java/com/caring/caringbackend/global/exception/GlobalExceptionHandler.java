@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -242,6 +243,20 @@ public class GlobalExceptionHandler {
                 .success(false)
                 .code(errorCode.getCode())
                 .message("데이터 무결성 제약 조건을 위반했습니다")
+                .build();
+
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAuthorizationDenied(
+            AuthorizationDeniedException ex, HttpServletRequest request) {
+
+        ErrorCode errorCode = ErrorCode.FORBIDDEN;
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .code(errorCode.getCode())
+                .message("해당 요청을 처리할 권한이 없습니다.")
                 .build();
 
         return ResponseEntity.status(errorCode.getHttpStatus()).body(response);

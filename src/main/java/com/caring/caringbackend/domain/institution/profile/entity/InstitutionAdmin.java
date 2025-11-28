@@ -108,7 +108,7 @@ public class InstitutionAdmin extends BaseEntity {
      *
      * @param institution 연결할 기관
      */
-    public void linkInstitution(Institution institution) {
+    public void assignAsOwner(Institution institution) {
         if (this.institution != null) {
             throw new IllegalStateException("이미 기관이 연결되어 있습니다.");
         }
@@ -119,5 +119,17 @@ public class InstitutionAdmin extends BaseEntity {
 
         // 기관 등록 시 자동으로 OWNER로 역할 변경
         this.role = InstitutionAdminRole.OWNER;
+    }
+
+    public void linkInstitution(Institution institution) {
+        if (this.institution != null) {
+            throw new IllegalStateException("이미 기관이 연결되어 있습니다.");
+        }
+
+        // 양방향 연관관계 설정
+        this.institution = institution;
+        institution.addAdmin(this);
+
+        this.role = InstitutionAdminRole.STAFF;
     }
 }
