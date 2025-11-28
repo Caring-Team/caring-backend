@@ -28,19 +28,19 @@ public class InstitutionInvitation extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "invitee_id", nullable = false)
-    InstitutionAdmin invitee;
+    private InstitutionAdmin invitee;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "institution_id", nullable = false)
-    Institution institution;
+    private Institution institution;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    InstitutionInvitationStatus status = InstitutionInvitationStatus.PENDING;
+    private InstitutionInvitationStatus status = InstitutionInvitationStatus.PENDING;
 
     @Builder
     public InstitutionInvitation(InstitutionAdmin invitee, Institution institution) {
