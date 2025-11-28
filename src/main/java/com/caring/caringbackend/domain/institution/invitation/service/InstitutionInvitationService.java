@@ -31,7 +31,21 @@ public class InstitutionInvitationService {
 
         validateInvitee(invitee);
 
-        List<InstitutionInvitation> invitations = institutionInvitationRepository.findAllByInvitee(invitee);
+        List<InstitutionInvitation> invitations = institutionInvitationRepository
+                .findAllByInviteeAndStatus(invitee, InstitutionInvitationStatus.PENDING);
+
+        return invitations.stream().map(InstitutionAdminInvitationResponseDto::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<InstitutionAdminInvitationResponseDto> getInstitutionAdminInvitations(Long adminId, InstitutionInvitationStatus status) {
+        InstitutionAdmin invitee = institutionAdminRepository.findById(adminId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
+
+        validateInvitee(invitee);
+
+        List<InstitutionInvitation> invitations = institutionInvitationRepository
+                .findAllByInviteeAndStatus(invitee, InstitutionInvitationStatus.PENDING);
 
         return invitations.stream().map(InstitutionAdminInvitationResponseDto::from).toList();
     }

@@ -16,5 +16,6 @@ public interface InstitutionInvitationRepository extends JpaRepository<Instituti
 
 
     List<InstitutionInvitation> findAllByInvitee(InstitutionAdmin invitee);
+    List<InstitutionInvitation> findAllByInviteeAndStatus(InstitutionAdmin invitee, InstitutionInvitationStatus status);
     List<InstitutionInvitation> findAllByInstitution(Institution institution);
 }
