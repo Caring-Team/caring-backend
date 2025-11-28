@@ -69,7 +69,7 @@ public class InstitutionInvitation extends BaseEntity {
 
     private void ensurePending() {
         if (!isPending()) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(ErrorCode.INSTITUTION_INVITATION_ALREADY_SOLVED);
         }
     }
 
