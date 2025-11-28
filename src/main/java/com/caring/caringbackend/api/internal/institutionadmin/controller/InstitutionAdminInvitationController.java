@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institutionadmin.controller;
+package com.caring.caringbackend.api.internal.institutionadmin.controller;
 
 import com.caring.caringbackend.domain.institution.invitation.entity.enums.InstitutionInvitationStatus;
 import com.caring.caringbackend.domain.institution.invitation.service.InstitutionInvitationService;

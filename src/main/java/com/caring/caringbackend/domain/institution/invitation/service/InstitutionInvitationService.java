@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.invitation.service;
 
-import com.caring.caringbackend.api.institution.dto.response.InstitutionInvitationResponseDto;
-import com.caring.caringbackend.api.institutionadmin.dto.response.InstitutionAdminInvitationResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionInvitationResponseDto;
+import com.caring.caringbackend.api.internal.institutionadmin.dto.response.InstitutionAdminInvitationResponseDto;
 import com.caring.caringbackend.domain.institution.invitation.entity.InstitutionInvitation;
 import com.caring.caringbackend.domain.institution.invitation.entity.enums.InstitutionInvitationStatus;
 import com.caring.caringbackend.domain.institution.invitation.repository.InstitutionInvitationRepository;

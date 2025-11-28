@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institutionadmin.dto.response;
+package com.caring.caringbackend.api.internal.institutionadmin.dto.response;
 
 import com.caring.caringbackend.domain.institution.invitation.entity.InstitutionInvitation;
 import com.fasterxml.jackson.annotation.JsonProperty;

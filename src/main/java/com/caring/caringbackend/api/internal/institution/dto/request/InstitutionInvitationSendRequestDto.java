@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institution.dto.request;
+package com.caring.caringbackend.api.internal.institution.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

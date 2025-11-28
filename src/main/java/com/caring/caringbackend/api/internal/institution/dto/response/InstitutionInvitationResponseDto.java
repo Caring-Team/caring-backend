@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.institution.dto.response;
+package com.caring.caringbackend.api.internal.institution.dto.response;
 
 import com.caring.caringbackend.domain.institution.invitation.entity.InstitutionInvitation;
 import com.caring.caringbackend.domain.institution.invitation.entity.enums.InstitutionInvitationStatus;

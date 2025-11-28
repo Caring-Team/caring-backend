@@ -1,6 +1,6 @@
-package com.caring.caringbackend.api.institution.controller.profile;
+package com.caring.caringbackend.api.internal.institution.controller;
 
-import com.caring.caringbackend.api.institution.dto.request.InstitutionInvitationSendRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionInvitationSendRequestDto;
 import com.caring.caringbackend.domain.institution.invitation.service.InstitutionInvitationService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
