@@ -38,7 +38,7 @@ public class InstitutionInvitationController {
         return ApiResponse.success();
     }
 
-    @PostMapping("{id}/cancel")
+    @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancelInvitation(@AuthenticationPrincipal InstitutionAdminDetails adminDetails,
                                               @PathVariable("id") Long invitationId) {
         institutionInvitationService.cancelInstitutionInvitation(adminDetails.getId(), invitationId);
