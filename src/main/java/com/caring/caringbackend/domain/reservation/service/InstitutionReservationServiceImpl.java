@@ -12,16 +12,13 @@ import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * 기관 예약 관리 서비스 구현
@@ -36,19 +33,20 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
     private final InstitutionAdminRepository institutionAdminRepository;
 
     @Override
-    public Page<InstitutionReservationResponseDto> getMyInstitutionReservations(
+    public List<InstitutionReservationResponseDto> getMyInstitutionReservations(
             Long adminId,
             ReservationStatus status,
             LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable) {
+            LocalDate endDate
+    ) {
 
         // adminId로 institutionId 조회
         Long institutionId = getInstitutionIdByAdminId(adminId);
 
-        Page<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(institutionId, status, startDate, endDate, pageable);
-
-        return reservations.map(InstitutionReservationResponseDto::from);
+        List<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(institutionId, status, startDate, endDate);
+        return reservations.stream()
+                .map(InstitutionReservationResponseDto::from)
+                .toList();
     }
 
     @Override

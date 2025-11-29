@@ -73,7 +73,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * @param status        예약 상태 (null 가능)
      * @param startDate     시작일 (null 가능)
      * @param endDate       종료일 (null 가능)
-     * @param pageable      페이징 정보
      * @return 예약 페이지
      */
     @Query("""
@@ -87,12 +86,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             AND (:endDate IS NULL OR cd.serviceDate <= :endDate)
             ORDER BY cd.serviceDate DESC, r.createdAt DESC
             """)
-    Page<Reservation> findByInstitutionIdWithFilters(
+    List<Reservation> findByInstitutionIdWithFilters(
             @Param("institutionId") Long institutionId,
             @Param("status") ReservationStatus status,
             @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            Pageable pageable
+            @Param("endDate") LocalDate endDate
     );
 
     @Query("""

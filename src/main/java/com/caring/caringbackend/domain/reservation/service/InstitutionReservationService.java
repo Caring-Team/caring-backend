@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,15 +23,13 @@ public interface InstitutionReservationService {
      * @param status 예약 상태 필터 (선택)
      * @param startDate 시작 날짜 필터 (선택)
      * @param endDate 종료 날짜 필터 (선택)
-     * @param pageable 페이징 정보
      * @return 예약 목록
      */
-    Page<InstitutionReservationResponseDto> getMyInstitutionReservations(
+    List<InstitutionReservationResponseDto> getMyInstitutionReservations(
             Long adminId,
             ReservationStatus status,
             LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable
+            LocalDate endDate
     );
 
     /**
