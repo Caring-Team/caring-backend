@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/v1/public/institutions")
 @RequiredArgsConstructor
-@Tag(name = "17. 🏥 Public Institution", description = "공개 기관 API | 기관 검색/조회 (인증 불필요)")
+@Tag(name = "20. 🏥 Public Institution", description = "공개 기관 API | 기관 검색/조회 (인증 불필요)")
 public class PublicInstitutionController {
 
     private final InstitutionService institutionService;
