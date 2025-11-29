@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,7 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long>, ReservationRepositoryCustom {
 
     /**
      * 예약 ID와 회원 ID로 예약 조회
@@ -66,32 +65,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      */
     boolean existsByMemberIdAndStatusIn(Long memberId, List<ReservationStatus> statuses);
 
-    /**
-     * 기관 ID와 필터 조건으로 예약 목록 조회
-     *
-     * @param institutionId 기관 ID
-     * @param status        예약 상태 (null 가능)
-     * @param startDate     시작일 (null 가능)
-     * @param endDate       종료일 (null 가능)
-     * @return 예약 페이지
-     */
-    @Query("""
-            SELECT r FROM Reservation r
-            JOIN FETCH r.counselDetail cd
-            JOIN FETCH cd.institutionCounsel ic
-            JOIN FETCH ic.institution i
-            WHERE i.id = :institutionId
-            AND (:status IS NULL OR r.status = :status)
-            AND (:startDate IS NULL OR cd.serviceDate >= :startDate)
-            AND (:endDate IS NULL OR cd.serviceDate <= :endDate)
-            ORDER BY cd.serviceDate DESC, r.createdAt DESC
-            """)
-    List<Reservation> findByInstitutionIdWithFilters(
-            @Param("institutionId") Long institutionId,
-            @Param("status") ReservationStatus status,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
-    );
+
 
     @Query("""
             select 
