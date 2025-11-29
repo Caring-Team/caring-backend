@@ -82,7 +82,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByIdAndDeletedFalse(Long reviewId);
 
     @Query("""
-            select r 
+            select r
             from Review r
             left join fetch r.member m
             left join fetch r.institution i

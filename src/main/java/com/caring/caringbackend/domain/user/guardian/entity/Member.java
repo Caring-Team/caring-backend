@@ -5,6 +5,7 @@ import com.caring.caringbackend.global.model.Gender;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.tag.entity.MemberPreferenceTag;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -81,6 +82,14 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberPreferenceTag> preferenceTags = new ArrayList<>();
 
+    // 선호 기관 유형 (다중 선택, 최소 1개 최대 3개)
+    @ElementCollection
+    @CollectionTable(name = "member_preferred_institution_types",
+            joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "institution_type")
+    @Enumerated(EnumType.STRING)
+    private List<InstitutionType> preferredInstitutionTypes = new ArrayList<>();
+
     @Builder
     public Member(MemberRole role, String name, String phoneNumber, String duplicationInformation,
                   Gender gender, LocalDate birthDate, Address address, GeoPoint location) {
@@ -94,19 +103,26 @@ public class Member extends BaseEntity {
         this.location = location;
         this.elderlyProfiles = new ArrayList<>();
         this.preferenceTags = new ArrayList<>();
+        this.preferredInstitutionTypes = new ArrayList<>();
     }
 
     /**
      * 회원 정보 수정
      */
     public void updateInfo(String name, String phoneNumber, Gender gender,
-                           LocalDate birthDate, Address address, GeoPoint location) {
+                           LocalDate birthDate, Address address, GeoPoint location,
+                           List<InstitutionType> preferredInstitutionTypes) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.birthDate = birthDate;
         this.address = address;
         this.location = location;
+        // 선호 기관 유형 업데이트 (기존 리스트를 교체)
+        this.preferredInstitutionTypes.clear();
+        if (preferredInstitutionTypes != null) {
+            this.preferredInstitutionTypes.addAll(preferredInstitutionTypes);
+        }
     }
 
     /**
@@ -122,16 +138,15 @@ public class Member extends BaseEntity {
     public void clearPreferenceTags() {
         this.preferenceTags.clear();
     }
-    // TODO: 필요한 도메인 로직 작성
 
     /**
      * Make custom duplication information.
      * @param name          name of member
-     * @param brithDate     birthdate of member
+     * @param birthDate     birthdate of member
      * @param phoneNumber   phone number of member
      * @return simple combination of name, birthdate, phone number
      */
-    public static String makeDuplicationInformation(String name, LocalDate brithDate, String phoneNumber) {
-        return name + brithDate + phoneNumber;
+    public static String makeDuplicationInformation(String name, LocalDate birthDate, String phoneNumber) {
+        return name + birthDate + phoneNumber;
     }
 }

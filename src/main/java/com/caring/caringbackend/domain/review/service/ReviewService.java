@@ -204,7 +204,7 @@ public class ReviewService {
     public InstitutionReviewsResponseDto getInstitutionDetailReviews(Long institutionId) {
         // 리뷰에 reservation, member, institution를 한번에 다 가져온다.
         List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
-
+        initializeLazyCollection(reviews);
         List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
                 .map(InstitutionReviewResponseDto::from)
                 .toList();
@@ -368,15 +368,20 @@ public class ReviewService {
      * @param tagIds 태그 ID 목록
      */
     private void saveReviewTags(Review review, List<Long> tagIds) {
-        // 1. 태그 조회
+        // 1. 태그 개수 검증 (최대 5개)
+        if (tagIds.size() > 5) {
+            throw new BusinessException(ErrorCode.REVIEW_TAG_LIMIT_EXCEEDED);
+        }
+
+        // 2. 태그 조회
         List<Tag> tags = tagRepository.findAllByIdIn(tagIds);
 
-        // 2. 존재하지 않는 태그 ID 검증
+        // 3. 존재하지 않는 태그 ID 검증
         if (tags.size() != tagIds.size()) {
             throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
         }
 
-        // 3. ReviewTagMapping 생성 및 저장
+        // 4. ReviewTagMapping 생성 및 저장
         List<ReviewTagMapping> mappings = tags.stream()
                 .map(tag -> ReviewTagMapping.builder()
                         .review(review)
@@ -461,6 +466,19 @@ public class ReviewService {
         if (!review.isOwnedBy(memberId)) {
             throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
         }
+    }
+
+    private static void initializeLazyCollection(List<Review> reviews) {
+        reviews.forEach(review -> {
+            if (review.getReviewTags() != null && !review.getReviewTags().isEmpty()) {
+
+                review.getReviewTags().size();
+                review.getReviewTags().forEach(reviewTag -> {
+                    Tag tag = reviewTag.getTag();
+                    tag.getName();
+                });
+            }
+        });
     }
 }
 

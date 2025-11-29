@@ -39,9 +39,9 @@ public class ReviewUpdateRequest {
     private int rating;
 
     /**
-     * 🏷️ 리뷰 태그 ID 목록 (선택, 최대 10개)
+     * 🏷️ 리뷰 태그 ID 목록 (선택, 최대 5개)
      */
-    @Size(max = 10, message = "태그는 최대 10개까지 선택할 수 있습니다.")
+    @Size(max = 5, message = "태그는 최대 5개까지 선택할 수 있습니다.")
     @Nullable
     private List<Long> tagIds;
 }

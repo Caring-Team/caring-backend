@@ -82,8 +82,8 @@ class ElderlyProfileServiceTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("장기요양등급이 있는 상태에서 활동/인지 수준을 입력하면 예외가 발생한다")
-    void createProfile_withGradeAndActivity_shouldFail() {
+    @DisplayName("장기요양등급과 인지수준을 동시에 입력할 수 있다")
+    void createProfile_withGradeAndCognitiveLevel_shouldSucceed() {
         // given
         Member member = memberRepository.save(TestDataFactory.createMember());
         when(geocodingService.convertAddressToGeoPoint(any(Address.class)))
@@ -102,9 +102,39 @@ class ElderlyProfileServiceTest extends IntegrationTestBase {
                         .build())
                 .build();
 
+        // when
+        ElderlyProfileResponse response = elderlyProfileService.createProfile(member.getId(), request);
+
+        // then
+        assertThat(response.getLongTermCareGrade()).isEqualTo(LongTermCareGrade.GRADE_1);
+        assertThat(response.getActivityLevel()).isEqualTo(ActivityLevel.HIGH);
+        assertThat(response.getCognitiveLevel()).isEqualTo(CognitiveLevel.NORMAL);
+    }
+
+    @Test
+    @DisplayName("장기요양등급과 인지수준 둘 다 없으면 예외가 발생한다")
+    void createProfile_withoutGradeAndCognitiveLevel_shouldFail() {
+        // given
+        Member member = memberRepository.save(TestDataFactory.createMember());
+        when(geocodingService.convertAddressToGeoPoint(any(Address.class)))
+                .thenReturn(new GeoPoint(37.2, 127.2));
+
+        ElderlyProfileCreateRequest request = ElderlyProfileCreateRequest.builder()
+                .name("김어르신")
+                .gender(member.getGender())
+                .longTermCareGrade(null) // null이면 NONE으로 설정됨
+                .cognitiveLevel(null) // 인지수준도 null
+                .address(AddressDto.builder()
+                        .city("서울시 강남구")
+                        .street("테헤란로 1")
+                        .zipCode("06000")
+                        .build())
+                .build();
+
         // expect
         assertThatThrownBy(() -> elderlyProfileService.createProfile(member.getId(), request))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("장기요양등급 또는 인지수준 중 최소 하나는 필수입니다");
     }
 
     @Test

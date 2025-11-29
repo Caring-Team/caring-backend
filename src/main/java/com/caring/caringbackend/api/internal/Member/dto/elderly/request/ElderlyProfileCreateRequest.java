@@ -72,8 +72,8 @@ public class ElderlyProfileCreateRequest {
     /**
      * 🏥 장기요양등급
      * <p>
-     * 등급이 있으면 인지수준, 활동레벨은 불필요합니다.
-     * 등급이 없으면(NONE) 인지수준, 활동레벨이 필수입니다.
+     * 장기요양등급과 인지수준은 모두 동시에 입력 가능합니다.
+     * 단, 장기요양등급 또는 인지수준 중 최소 하나는 필수입니다.
      */
     private LongTermCareGrade longTermCareGrade;
 
