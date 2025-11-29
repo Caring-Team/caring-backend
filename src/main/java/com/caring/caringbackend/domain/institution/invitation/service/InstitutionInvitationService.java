@@ -32,7 +32,7 @@ public class InstitutionInvitationService {
         validateInvitee(invitee);
 
         List<InstitutionInvitation> invitations = institutionInvitationRepository
-                .findAllByInvitee(invitee);
+                .findAllByInviteeWithFetch(invitee);
 
         return invitations.stream().map(InstitutionAdminInvitationResponseDto::from).toList();
     }
