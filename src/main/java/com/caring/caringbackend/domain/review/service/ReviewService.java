@@ -173,44 +173,7 @@ public class ReviewService {
         return ReviewListResponse.of(reviewResponses, reviewPage);
     }
 
-    /**
-     * 기관의 리뷰 목록 조회 (공개)
-     *
-     * @param institutionId 기관 ID
-     * @param pageable      페이징 정보 (정렬: createdAt, rating 지원)
-     * @return 리뷰 목록 응답
-     */
-    public ReviewListResponse getInstitutionReviews(Long institutionId, Pageable pageable) {
-        // 1. 리뷰 목록 조회 (삭제되지 않은 리뷰만)
-        // 기관 존재 여부는 리뷰 조회 시 자동으로 확인됨 (없으면 빈 목록 반환)
-        Page<Review> reviewPage = reviewRepository.findByInstitutionIdAndDeletedFalseAndReportedFalse(
-                institutionId, pageable);
 
-        // 2. DTO 변환 (태그 및 이미지 포함)
-        List<ReviewResponse> reviewResponses = reviewPage.getContent().stream()
-                .map(review -> {
-                    List<Tag> tags = reviewTagMappingRepository.findByReviewId(review.getId()).stream()
-                            .map(ReviewTagMapping::getTag)
-                            .collect(Collectors.toList());
-                    List<String> imageUrls = getReviewImageUrls(review.getId());
-                    return ReviewResponse.fromWithTagsAndImages(review, tags, imageUrls);
-                })
-                .collect(Collectors.toList());
-
-        // 3. 응답 반환
-        return ReviewListResponse.of(reviewResponses, reviewPage);
-    }
-
-    public InstitutionReviewsResponseDto getInstitutionDetailReviews(Long institutionId) {
-        // 리뷰에 reservation, member, institution를 한번에 다 가져온다.
-        List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
-        initializeLazyCollection(reviews);
-        List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
-                .map(InstitutionReviewResponseDto::from)
-                .toList();
-
-        return InstitutionReviewsResponseDto.of(reviewResponses);
-    }
 
     /**
      * 내 리뷰 상세 조회
@@ -466,19 +429,6 @@ public class ReviewService {
         if (!review.isOwnedBy(memberId)) {
             throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
         }
-    }
-
-    private static void initializeLazyCollection(List<Review> reviews) {
-        reviews.forEach(review -> {
-            if (review.getReviewTags() != null && !review.getReviewTags().isEmpty()) {
-
-                review.getReviewTags().size();
-                review.getReviewTags().forEach(reviewTag -> {
-                    Tag tag = reviewTag.getTag();
-                    tag.getName();
-                });
-            }
-        });
     }
 }
 

@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/public/advertisements")
 @RequiredArgsConstructor
-@Tag(name = "18. 📺 Public Advertisement", description = "공개 광고 API | 광고 조회 (인증 불필요)")
+@Tag(name = "21. 📺 Public Advertisement", description = "공개 광고 API | 광고 조회 (인증 불필요)")
 public class PublicAdvertisementController {
 
     private final AdvertisementService advertisementService;

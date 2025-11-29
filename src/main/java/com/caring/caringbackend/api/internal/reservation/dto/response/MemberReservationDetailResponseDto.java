@@ -35,8 +35,11 @@ public record MemberReservationDetailResponseDto(
         @Schema(description = "예약 날짜", example = "2025-01-15")
         LocalDate reservationDate,
 
-        @Schema(description = "예약 시간", example = "14:00")
-        LocalTime reservationTime,
+        @Schema(description = "예약 시작 시간", example = "14:00")
+        LocalTime startTime,
+
+        @Schema(description = "예약 종료 시간", example = "14:30")
+        LocalTime endTime,
 
         @Schema(description = "예약 상태", example = "PENDING")
         ReservationStatus status,
@@ -54,7 +57,8 @@ public record MemberReservationDetailResponseDto(
                 .elderlyProfileId(reservation.getElderlyProfile().getId())
                 .elderlyName(reservation.getElderlyProfile().getName())
                 .reservationDate(reservation.getCounselDetail().getServiceDate())
-                .reservationTime(reservation.getReservationTime())
+                .startTime(reservation.getStartTime())
+                .endTime(reservation.getEndTime())
                 .status(reservation.getStatus())
                 .institutionDescription(reservation.getCounselDetail().getInstitutionCounsel().getInstitution().getDescription())
                 .build();

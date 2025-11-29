@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/tags")
 @RequiredArgsConstructor
-@io.swagger.v3.oas.annotations.tags.Tag(name = "23. Admin Tag", description = "관리자 태그 관리 API | 태그 생성/수정/삭제/활성화")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "26. Admin Tag", description = "관리자 태그 관리 API | 태그 생성/수정/삭제/활성화")
 public class AdminTagController {
 
     private final TagService tagService;

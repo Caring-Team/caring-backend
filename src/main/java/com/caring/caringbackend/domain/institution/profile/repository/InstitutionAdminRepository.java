@@ -22,4 +22,6 @@ public interface InstitutionAdminRepository extends JpaRepository<InstitutionAdm
             WHERE ia.id = :id
             """)
     public Optional<InstitutionAdmin> findByIdWithInstitution(Long id);
+
+
 }

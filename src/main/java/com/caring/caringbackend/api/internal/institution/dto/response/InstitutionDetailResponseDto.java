@@ -1,15 +1,13 @@
 package com.caring.caringbackend.api.internal.institution.dto.response;
 
-import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
-import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewResponse;
 import com.caring.caringbackend.api.internal.admin.dto.response.TagResponse;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
 import com.caring.caringbackend.domain.file.service.FileService;
 import com.caring.caringbackend.domain.institution.profile.entity.ApprovalStatus;
 import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
-import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 

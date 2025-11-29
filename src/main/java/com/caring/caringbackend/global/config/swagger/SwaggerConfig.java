@@ -8,7 +8,6 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +39,8 @@ public class SwaggerConfig {
                 .info(apiInfo())
                 .servers(serverList())
                 .addSecurityItem(securityRequirement())
-                .components(securitySchemes())
-                .tags(tagList());
+                .components(securitySchemes());
+//                .tags(tagList());
     }
 
 
@@ -139,114 +138,114 @@ public class SwaggerConfig {
      * 4. 🔓 공개 API (Public)
      * 5. 🔧 관리자 (Admin)
      */
-    private List<Tag> tagList() {
-        return List.of(
-                // ============================================
-                // 🔐 인증 그룹 (Authentication)
-                // ============================================
-                new Tag()
-                        .name("01. 🧑‍🤝‍🧑 Member Auth")
-                        .description("회원 인증 API | 회원가입, 로그인, 토큰 관리"),
-
-                new Tag()
-                        .name("02. 🏥 Institution Auth")
-                        .description("기관 인증 API | 기관 회원가입, 로그인, 토큰 관리"),
-
-                // ============================================
-                // 👤 회원 그룹 (Member Services)
-                // ============================================
-                new Tag()
-                        .name("03. 👤 Member")
-                        .description("회원 프로필 관리 API | 내 정보 조회/수정, 선호 태그 관리"),
-
-                new Tag()
-                        .name("04. 👵 Elderly Profile")
-                        .description("어르신 프로필 관리 API | 어르신 등록/수정/삭제, 케어 정보 관리"),
-
-                new Tag()
-                        .name("05. 🧑‍🤝‍🧑 Member Reservation")
-                        .description("회원 예약 관리 API | 예약 생성/조회/취소"),
-
-                new Tag()
-                        .name("06. 💬 Member Chat")
-                        .description("회원 채팅 API | 기관과의 실시간 상담 채팅"),
-
-                new Tag()
-                        .name("07. 💬 Member Consult Requests")
-                        .description("회원 상담 내역 API | 상담 요청 내역 조회"),
-
-                new Tag()
-                        .name("08. ⭐ Member Review")
-                        .description("리뷰 관리 API | 리뷰 작성/수정/삭제/신고"),
-
-                new Tag()
-                        .name("09. 🤖 AI Recommendation")
-                        .description("AI 추천 API | AI 기반 맞춤 기관 추천"),
-
-                // ============================================
-                // 🏥 기관 그룹 (Institution Services)
-                // ============================================
-                new Tag()
-                        .name("10. 🏥 Institution Profile")
-                        .description("기관 프로필 관리 API | 내 기관 정보 조회/수정, 태그 관리"),
-
-                new Tag()
-                        .name("11. 👩‍⚕️ Institution CareGiver")
-                        .description("기관 요양보호사 관리 API | 요양보호사 등록/수정/삭제"),
-
-                new Tag()
-                        .name("12. 💬 Institution Counsel")
-                        .description("기관 상담 서비스 관리 API | 상담 서비스 등록/수정/삭제, 시간 관리"),
-
-                new Tag()
-                        .name("13. 📺 Institution Advertisement")
-                        .description("기관 광고 관리 API | 광고 신청/조회/수정"),
-
-                new Tag()
-                        .name("14. 🏥 Institution Reservation")
-                        .description("기관 예약 관리 API | 예약 조회/상태 변경"),
-
-                new Tag()
-                        .name("15. 🏥 Institution Chat")
-                        .description("기관 채팅 API | 회원과의 실시간 상담 채팅"),
-
-                new Tag()
-                        .name("16. 🏥 Institution Consult Requests")
-                        .description("기관 상담 내역 API | 상담 요청 내역 조회"),
-
-                // ============================================
-                // 🔓 공개 API 그룹 (Public APIs - 인증 불필요)
-                // ============================================
-                new Tag()
-                        .name("17. 🏥 Public Institution")
-                        .description("공개 기관 API | 기관 검색/조회 (인증 불필요)"),
-
-                new Tag()
-                        .name("18. 📺 Public Advertisement")
-                        .description("공개 광고 API | 광고 조회 (인증 불필요)"),
-
-                new Tag()
-                        .name("19. 🏷 Public Tag")
-                        .description("공개 태그 API | 태그 조회 (인증 불필요)"),
-
-                // ============================================
-                // 🔧 관리자 그룹 (Admin Management)
-                // ============================================
-                new Tag()
-                        .name("20. Admin Institution")
-                        .description("관리자 기관 관리 API | 기관 승인/거절/조회"),
-
-                new Tag()
-                        .name("21. Admin Advertisement")
-                        .description("관리자 광고 관리 API | 광고 심사/승인/거절"),
-
-                new Tag()
-                        .name("22. Admin Member")
-                        .description("관리자 회원 관리 API | 회원 조회/관리"),
-
-                new Tag()
-                        .name("23. Admin Tag")
-                        .description("관리자 태그 관리 API | 태그 생성/수정/삭제/활성화")
-        );
-    }
+//    private List<Tag> tagList() {
+//        return List.of(
+//                // ============================================
+//                // 🔐 인증 그룹 (Authentication)
+//                // ============================================
+//                new Tag()
+//                        .name("01. 🧑‍🤝‍🧑 Member Auth")
+//                        .description("회원 인증 API | 회원가입, 로그인, 토큰 관리"),
+//
+//                new Tag()
+//                        .name("02. 🏥 Institution Auth")
+//                        .description("기관 인증 API | 기관 회원가입, 로그인, 토큰 관리"),
+//
+//                // ============================================
+//                // 👤 회원 그룹 (Member Services)
+//                // ============================================
+//                new Tag()
+//                        .name("03. 👤 Member")
+//                        .description("회원 프로필 관리 API | 내 정보 조회/수정, 선호 태그 관리"),
+//
+//                new Tag()
+//                        .name("04. 👵 Elderly Profile")
+//                        .description("어르신 프로필 관리 API | 어르신 등록/수정/삭제, 케어 정보 관리"),
+//
+//                new Tag()
+//                        .name("05. 🧑‍🤝‍🧑 Member Reservation")
+//                        .description("회원 예약 관리 API | 예약 생성/조회/취소"),
+//
+//                new Tag()
+//                        .name("06. 💬 Member Chat")
+//                        .description("회원 채팅 API | 기관과의 실시간 상담 채팅"),
+//
+//                new Tag()
+//                        .name("07. 💬 Member Consult Requests")
+//                        .description("회원 상담 내역 API | 상담 요청 내역 조회"),
+//
+//                new Tag()
+//                        .name("08. ⭐ Member Review")
+//                        .description("리뷰 관리 API | 리뷰 작성/수정/삭제/신고"),
+//
+//                new Tag()
+//                        .name("09. 🤖 AI Recommendation")
+//                        .description("AI 추천 API | AI 기반 맞춤 기관 추천"),
+//
+//                // ============================================
+//                // 🏥 기관 그룹 (Institution Services)
+//                // ============================================
+//                new Tag()
+//                        .name("10. 🏥 Institution Profile")
+//                        .description("기관 프로필 관리 API | 내 기관 정보 조회/수정, 태그 관리"),
+//
+//                new Tag()
+//                        .name("11. 👩‍⚕️ Institution CareGiver")
+//                        .description("기관 요양보호사 관리 API | 요양보호사 등록/수정/삭제"),
+//
+//                new Tag()
+//                        .name("12. 💬 Institution Counsel")
+//                        .description("기관 상담 서비스 관리 API | 상담 서비스 등록/수정/삭제, 시간 관리"),
+//
+//                new Tag()
+//                        .name("13. 📺 Institution Advertisement")
+//                        .description("기관 광고 관리 API | 광고 신청/조회/수정"),
+//
+//                new Tag()
+//                        .name("14. 🏥 Institution Reservation")
+//                        .description("기관 예약 관리 API | 예약 조회/상태 변경"),
+//
+//                new Tag()
+//                        .name("15. 🏥 Institution Chat")
+//                        .description("기관 채팅 API | 회원과의 실시간 상담 채팅"),
+//
+//                new Tag()
+//                        .name("16. 🏥 Institution Consult Requests")
+//                        .description("기관 상담 내역 API | 상담 요청 내역 조회"),
+//
+//                // ============================================
+//                // 🔓 공개 API 그룹 (Public APIs - 인증 불필요)
+//                // ============================================
+//                new Tag()
+//                        .name("17. 🏥 Public Institution")
+//                        .description("공개 기관 API | 기관 검색/조회 (인증 불필요)"),
+//
+//                new Tag()
+//                        .name("18. 📺 Public Advertisement")
+//                        .description("공개 광고 API | 광고 조회 (인증 불필요)"),
+//
+//                new Tag()
+//                        .name("19. 🏷 Public Tag")
+//                        .description("공개 태그 API | 태그 조회 (인증 불필요)"),
+//
+//                // ============================================
+//                // 🔧 관리자 그룹 (Admin Management)
+//                // ============================================
+//                new Tag()
+//                        .name("20. Admin Institution")
+//                        .description("관리자 기관 관리 API | 기관 승인/거절/조회"),
+//
+//                new Tag()
+//                        .name("21. Admin Advertisement")
+//                        .description("관리자 광고 관리 API | 광고 심사/승인/거절"),
+//
+//                new Tag()
+//                        .name("22. Admin Member")
+//                        .description("관리자 회원 관리 API | 회원 조회/관리"),
+//
+//                new Tag()
+//                        .name("23. Admin Tag")
+//                        .description("관리자 태그 관리 API | 태그 생성/수정/삭제/활성화")
+//        );
+// }
 }

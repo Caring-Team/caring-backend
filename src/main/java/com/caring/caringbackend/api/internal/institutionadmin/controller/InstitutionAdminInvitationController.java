@@ -4,6 +4,7 @@ import com.caring.caringbackend.domain.institution.invitation.entity.enums.Insti
 import com.caring.caringbackend.domain.institution.invitation.service.InstitutionInvitationService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('INSTITUTION_STAFF')")
 @RestController
 @RequestMapping("/api/v1/institution-admins/me/invitations")
+@Tag(name = "19. 🏥 Institution Admin Invitation", description = "기관 관리자 초대 관리 API | 기관 관리자 초대장 조회 및 응답")
 public class InstitutionAdminInvitationController {
 
     private final InstitutionInvitationService institutionInvitationService;

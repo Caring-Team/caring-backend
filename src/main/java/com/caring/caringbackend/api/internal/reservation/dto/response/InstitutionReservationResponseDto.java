@@ -13,37 +13,41 @@ public record InstitutionReservationResponseDto(
         @Schema(description = "예약 ID", example = "1")
         Long reservationId,
 
-        @Schema(description = "예약 날짜", example = "2025-11-11")
-        LocalDate reservationDate,
-
-        @Schema(description = "예약 시간", example = "09:00")
-        LocalTime reservationTime,
-
-        @Schema(description = "예약 상태", example = "COMPLETED")
-        ReservationStatus status,
-
-        @Schema(description = "상담 서비스 이름", example = "초기 상담")
-        String counselTitle,
-
         @Schema(description = "회원 이름", example = "홍길동")
         String memberName,
 
         @Schema(description = "어르신 이름", example = "김영희")
         String elderlyName,
 
+        @Schema(description = "상담 서비스 이름", example = "초기 상담")
+        String counselTitle,
+
+        @Schema(description = "예약 상태", example = "COMPLETED")
+        ReservationStatus status,
+
         @Schema(description = "예약 생성일시", example = "2025-11-06T10:30:00")
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+
+        @Schema(description = "예약 날짜", example = "2025-11-11")
+        LocalDate reservationDate,
+
+        @Schema(description = "예약 시작 시간", example = "09:00")
+        LocalTime startTime,
+
+        @Schema(description = "예약 종료 시간", example = "09:30")
+        LocalTime endTime
 ) {
     public static InstitutionReservationResponseDto from(Reservation reservation) {
         return new InstitutionReservationResponseDto(
                 reservation.getId(),
-                reservation.getCounselDetail().getServiceDate(),
-                reservation.getReservationTime(),
-                reservation.getStatus(),
-                reservation.getCounselDetail().getInstitutionCounsel().getTitle(),
                 reservation.getMember().getName(),
                 reservation.getElderlyProfile().getName(),
-                reservation.getCreatedAt()
+                reservation.getCounselDetail().getInstitutionCounsel().getTitle(),
+                reservation.getStatus(),
+                reservation.getCreatedAt(),
+                reservation.getCounselDetail().getServiceDate(),
+                reservation.getStartTime(),
+                reservation.getEndTime()
         );
     }
 }

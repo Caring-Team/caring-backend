@@ -20,6 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/institutions/me/reservations")
@@ -31,29 +33,22 @@ public class InstitutionReservationController {
 
     @GetMapping
     @Operation(summary = "1. 내 기관 예약 목록 조회", description = "내 기관에 대한 예약 목록을 조회합니다.")
-    public ApiResponse<Page<InstitutionReservationResponseDto>> getMyInstitutionReservations(
+    public ApiResponse<List<InstitutionReservationResponseDto>> getMyInstitutionReservations(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
             @ParameterObject InstitutionReservationSearchRequestDto searchRequest
     ) {
-        Pageable pageable = PageRequest.of(
-                searchRequest.getPage(),
-                searchRequest.getSize(),
-                Sort.by(Sort.Direction.DESC, "createdAt")
+        List<InstitutionReservationResponseDto> reservations = institutionReservationService.getMyInstitutionReservations(
+                adminDetails.getId(),
+                searchRequest.getStatus(),
+                searchRequest.getStartDate(),
+                searchRequest.getEndDate()
         );
-
-        Page<InstitutionReservationResponseDto> reservations = institutionReservationService.getMyInstitutionReservations(
-                        adminDetails.getId(),
-                        searchRequest.getStatus(),
-                        searchRequest.getStartDate(),
-                        searchRequest.getEndDate(),
-                        pageable
-                );
 
         return ApiResponse.success(reservations);
     }
 
     @GetMapping("/{reservationId}")
-    @Operation(summary = "2. 내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
+    @Operation(summary = "3. 내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> getMyInstitutionReservationDetail(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 
@@ -67,7 +62,7 @@ public class InstitutionReservationController {
     }
 
     @PatchMapping("/{reservationId}/status")
-    @Operation(summary = "3. 내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
+    @Operation(summary = "4. 내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> updateMyInstitutionReservationStatus(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 

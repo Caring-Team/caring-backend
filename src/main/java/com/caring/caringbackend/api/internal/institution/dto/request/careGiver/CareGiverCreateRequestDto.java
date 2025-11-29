@@ -1,7 +1,6 @@
-package com.caring.caringbackend.api.internal.institution.dto.request;
+package com.caring.caringbackend.api.internal.institution.dto.request.careGiver;
 
 import com.caring.caringbackend.global.model.Gender;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
