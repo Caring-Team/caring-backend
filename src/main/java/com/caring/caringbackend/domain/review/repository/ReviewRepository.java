@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,5 +95,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             order by r.createdAt desc
             """)
     List<Review> findByIdWithFetches(Long institutionId);
+
+    @Query("""
+            select count(r) as recentReviewCount
+            from Review r
+            where r.institution.id = :institutionId
+            and r.createdAt >= :from
+            """)
+    ReviewStatsProjection countRecentReviews(Long institutionId, LocalDateTime from);
 }
 
