@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.tag.repository;
 
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -39,7 +40,7 @@ public interface InstitutionTagRepository extends JpaRepository<InstitutionTag, 
     FROM InstitutionTag it
     WHERE it.institution.id = :institutionId
     """)
-    List<Long> findTagIdsByInstitutionId(Long institutionId);
+    Set<Long> findTagIdsByInstitutionId(Long institutionId);
     
     /**
      * 기관 ID로 기관 태그 전체 삭제

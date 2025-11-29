@@ -28,6 +28,7 @@ import com.caring.caringbackend.global.integration.ai.service.AiServerService;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -309,7 +310,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         Institution institution = admin.getInstitution();
 
         List<Tag> allActiveTags = tagService.getAllActiveTags();
-        List<Long> institutionActiveTags = institutionTagRepository.findTagIdsByInstitutionId(institution.getId());
+        Set<Long> institutionActiveTags = institutionTagRepository.findTagIdsByInstitutionId(institution.getId());
 
         return TagListResponse.of(allActiveTags.stream()
                 .map((tag) -> TagResponse.hasTagFrom(tag, institutionActiveTags.contains(tag.getId()))).toList());
