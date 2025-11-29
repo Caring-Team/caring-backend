@@ -17,6 +17,7 @@ import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdm
 import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
+import com.caring.caringbackend.domain.review.service.InstitutionReviewService;
 import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
@@ -57,7 +58,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final TagRepository tagRepository;
     private final InstitutionTagRepository institutionTagRepository;
     private final AiServerService aiServerService;
-    private final ReviewService reviewService;
+    private final InstitutionReviewService institutionReviewService;
     private final TagService tagService;
 
     /**
@@ -159,7 +160,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         initializeLazyCollections(institution);
 
         // 리뷰 조회
-        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institutionId);
+        InstitutionReviewsResponseDto institutionDetailReviews = institutionReviewService.getInstitutionDetailReviews(institutionId);
 
         return InstitutionDetailResponseDto.from(institution, fileService, institutionDetailReviews);
     }
@@ -178,7 +179,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         initializeLazyCollections(institution);
 
         // 리뷰 조회
-        InstitutionReviewsResponseDto institutionDetailReviews = reviewService.getInstitutionDetailReviews(institution.getId());
+        InstitutionReviewsResponseDto institutionDetailReviews = institutionReviewService.getInstitutionDetailReviews(institution.getId());
         return InstitutionDetailResponseDto.from(institution, fileService, institutionDetailReviews);
     }
 

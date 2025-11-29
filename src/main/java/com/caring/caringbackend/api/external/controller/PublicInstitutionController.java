@@ -7,6 +7,7 @@ import com.caring.caringbackend.api.internal.institution.dto.response.Institutio
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
+import com.caring.caringbackend.domain.review.service.InstitutionReviewService;
 import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class PublicInstitutionController {
 
     private final InstitutionService institutionService;
     private final InstitutionCounselService institutionCounselService;
-    private final ReviewService reviewService;
+    private final InstitutionReviewService institutionReviewService;
 
     /**
      * 기관 목록 조회 (검색, 필터링, 페이징, 정렬)
@@ -120,7 +121,7 @@ public class PublicInstitutionController {
             @PathVariable Long institutionId,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
 
-        ReviewListResponse reviews = reviewService.getInstitutionReviews(institutionId, pageable);
+        ReviewListResponse reviews = institutionReviewService.getInstitutionReviews(institutionId, pageable);
         return ResponseEntity.ok(ApiResponse.success("기관 리뷰 목록 조회 성공", reviews));
     }
 }
