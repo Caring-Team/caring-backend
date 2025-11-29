@@ -1,7 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverCreateRequestDto;
-import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverUpdateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.careGiver.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.careGiver.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.CareGiverResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 

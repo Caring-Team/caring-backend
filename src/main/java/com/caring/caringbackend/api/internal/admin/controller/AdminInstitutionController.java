@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/institutions")
 @RequiredArgsConstructor
-@Tag(name = "20. Admin Institution", description = "관리자 기관 관리 API | 기관 승인/거절/조회")
+@Tag(name = "23. Admin Institution", description = "관리자 기관 관리 API | 기관 승인/거절/조회")
 public class AdminInstitutionController {
 
     private final InstitutionService institutionService;

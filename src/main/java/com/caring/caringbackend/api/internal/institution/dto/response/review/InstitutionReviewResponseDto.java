@@ -12,6 +12,9 @@ public record InstitutionReviewResponseDto(
         // 작성자 이름
         String memberName,
 
+        // 기관 상담 상품 이름
+        String counselName,
+
         // 리뷰 별점
         int rating,
 
@@ -31,6 +34,7 @@ public record InstitutionReviewResponseDto(
         return new InstitutionReviewResponseDto(
                 review.getId(),
                 review.getMember().getName(),
+                review.getReservation().getCounselDetail().getInstitutionCounsel().getTitle(),
                 review.getRating(),
                 review.getContent(),
                 review.getReviewTags().stream()

@@ -6,8 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,10 +89,42 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             left join fetch r.member m
             left join fetch r.institution i
             left join fetch r.reservation res
+            left join fetch res.counselDetail cd
+            left join fetch cd.institutionCounsel ic
             where i.id = :institutionId
             and r.deleted = false
             order by r.createdAt desc
             """)
-    List<Review> findByIdWithFetches(Long institutionId);
+    List<Review> findByIdWithFetches(@Param("institutionId") Long institutionId);
+
+    @Query("""
+            select r
+            from Review r
+            left join fetch r.member m
+            left join fetch r.institution i
+            left join fetch r.reservation res
+            left join fetch res.counselDetail cd
+            left join fetch cd.institutionCounsel ic
+            where i.id = :institutionId
+            and r.deleted = false
+            and r.createdAt >= :fromDateTime
+            order by r.createdAt desc
+            """)
+    List<Review> findByIdWithFetchesAndFilter(
+            @Param("institutionId") Long institutionId,
+            @Param("fromDateTime") LocalDateTime fromDateTime
+    );
+
+    @Query("""
+            select count(r) as recentReviewCount
+            from Review r
+            where r.institution.id = :institutionId
+            and r.createdAt >= :from
+            and r.deleted = false
+            """)
+    ReviewStatsProjection countRecentReviews(
+            @Param("institutionId") Long institutionId,
+            @Param("from") LocalDateTime from
+    );
 }
 

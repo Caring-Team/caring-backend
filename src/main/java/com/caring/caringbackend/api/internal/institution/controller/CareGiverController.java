@@ -1,7 +1,7 @@
 package com.caring.caringbackend.api.internal.institution.controller;
 
-import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverCreateRequestDto;
-import com.caring.caringbackend.api.internal.institution.dto.request.CareGiverUpdateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.careGiver.CareGiverCreateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.request.careGiver.CareGiverUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.CareGiverResponseDto;
 import com.caring.caringbackend.domain.institution.profile.service.CareGiverService;
 import com.caring.caringbackend.global.response.ApiResponse;

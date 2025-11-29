@@ -4,6 +4,7 @@ import com.caring.caringbackend.api.internal.institution.dto.request.Institution
 import com.caring.caringbackend.domain.institution.invitation.service.InstitutionInvitationService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import com.caring.caringbackend.global.security.details.InstitutionAdminDetails;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('INSTITUTION_OWNER')")
 @RestController
 @RequestMapping("/api/v1/institutions/me/invitations")
+@Tag(name = "18. 🏥 Institution Invitation", description = "기관 초대 관리 API | 기관 초대장 발송 및 관리")
 public class InstitutionInvitationController {
 
     private final InstitutionInvitationService institutionInvitationService;

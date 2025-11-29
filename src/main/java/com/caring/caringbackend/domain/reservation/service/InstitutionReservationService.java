@@ -3,10 +3,13 @@ package com.caring.caringbackend.domain.reservation.service;
 import com.caring.caringbackend.api.internal.reservation.dto.response.InstitutionReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.reservation.dto.response.InstitutionReservationResponseDto;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
+import com.caring.caringbackend.domain.reservation.repository.ReservationStatsProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 기관 예약 관리 서비스 인터페이스
@@ -20,15 +23,13 @@ public interface InstitutionReservationService {
      * @param status 예약 상태 필터 (선택)
      * @param startDate 시작 날짜 필터 (선택)
      * @param endDate 종료 날짜 필터 (선택)
-     * @param pageable 페이징 정보
      * @return 예약 목록
      */
-    Page<InstitutionReservationResponseDto> getMyInstitutionReservations(
+    List<InstitutionReservationResponseDto> getMyInstitutionReservations(
             Long adminId,
             ReservationStatus status,
             LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable
+            LocalDate endDate
     );
 
     /**
@@ -56,4 +57,6 @@ public interface InstitutionReservationService {
             Long reservationId,
             ReservationStatus status
     );
+
+    ReservationStatsProjection getReservationStatusCounts(Long institutionId);
 }

@@ -28,9 +28,13 @@ public class Reservation extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 예약 시간
+    // 예약 시작 시간
     @Column(nullable = false)
-    private LocalTime reservationTime;
+    private LocalTime startTime;
+
+    // 예약 종료 시간
+    @Column(nullable = false)
+    private LocalTime endTime;
 
     // 기관 상담 서비스 디테일
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,42 +60,58 @@ public class Reservation extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    // 확정된 날짜와 시간
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
+    // 취소된 날짜와 시간
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
     @Builder
     public Reservation(InstitutionCounselDetail counselDetail,
                        Member member,
                        ElderlyProfile elderlyProfile,
-                       LocalTime reservationTime,
+                       LocalTime startTime,
+                       LocalTime endTime,
                        ReservationStatus status
     ) {
         this.counselDetail = counselDetail;
-        this.reservationTime = reservationTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.member = member;
         this.elderlyProfile = elderlyProfile;
         this.status = status;
     }
 
-    public static Reservation createReservation(InstitutionCounselDetail counselDetail, Member member, ElderlyProfile elderlyProfile, LocalTime reservationTime) {
+    public static Reservation createReservation(
+            InstitutionCounselDetail counselDetail,
+            Member member,
+            ElderlyProfile elderlyProfile,
+            LocalTime startTime,
+            LocalTime endTime) {
         return Reservation.builder()
-
                 .counselDetail(counselDetail)
                 .member(member)
                 .elderlyProfile(elderlyProfile)
-                .reservationTime(reservationTime)
+                .startTime(startTime)
+                .endTime(endTime)
                 .status(ReservationStatus.PENDING)
                 .build();
     }
 
-    /**
-     * 예약 상태 변경
-     * <p>
-     * 상태가 COMPLETED로 변경될 때 completedAt을 자동으로 설정합니다.
-     */
-    public void updateStatus(ReservationStatus newStatus) {
-        this.status = newStatus;
-        
-        // 상태가 COMPLETED로 변경되면 완료 시각 기록
-        if (newStatus == ReservationStatus.COMPLETED && this.completedAt == null) {
-            this.completedAt = LocalDateTime.now();
-        }
+    public void updateToConfirmed() {
+        this.status = ReservationStatus.CONFIRMED;
+        this.confirmedAt = LocalDateTime.now();
+    }
+
+    public void updateToCancelled() {
+        this.status = ReservationStatus.CANCELLED;
+        this.canceledAt = LocalDateTime.now();
+    }
+
+    public void updateToCompleted() {
+        this.status = ReservationStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
     }
 }

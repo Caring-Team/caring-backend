@@ -7,16 +7,18 @@ import com.caring.caringbackend.domain.institution.profile.repository.Institutio
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
+import com.caring.caringbackend.domain.reservation.repository.ReservationStatsProjection;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 /**
  * 기관 예약 관리 서비스 구현
@@ -31,19 +33,20 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
     private final InstitutionAdminRepository institutionAdminRepository;
 
     @Override
-    public Page<InstitutionReservationResponseDto> getMyInstitutionReservations(
+    public List<InstitutionReservationResponseDto> getMyInstitutionReservations(
             Long adminId,
             ReservationStatus status,
             LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable) {
+            LocalDate endDate
+    ) {
 
         // adminId로 institutionId 조회
         Long institutionId = getInstitutionIdByAdminId(adminId);
 
-        Page<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(institutionId, status, startDate, endDate, pageable);
-
-        return reservations.map(InstitutionReservationResponseDto::from);
+        List<Reservation> reservations = reservationRepository.findByInstitutionIdWithFilters(institutionId, status, startDate, endDate);
+        return reservations.stream()
+                .map(InstitutionReservationResponseDto::from)
+                .toList();
     }
 
     @Override
@@ -74,10 +77,36 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
 
         // 기관 소유 확인
         validateInstitutionOwnership(reservation, institutionId);
-        reservation.updateStatus(status);
 
+        // 확정 처리
+        if (status == ReservationStatus.CONFIRMED) {
+            validateAndConfirmReservation(reservation);
+        }
+        // 취소 처리
+        if (status == ReservationStatus.CANCELLED) {
+            validateAndCancelReservation(reservation);
+        }
+        // 완료 처리
+        if (status == ReservationStatus.COMPLETED) {
+            validateAndCompleted(reservation);
+        }
         return InstitutionReservationDetailResponseDto.from(reservation);
     }
+
+    // 내 기관 상태별 예약 개수 조회
+    @Override
+    public ReservationStatsProjection getReservationStatusCounts(Long institutionId) {
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime endOfToday = today.plusDays(1).atStartOfDay();
+        return reservationRepository.countReservationsByStatusAndInstitution(
+                institutionId,
+                startOfToday,
+                endOfToday
+        );
+    }
+
+    // ======================== private methods ========================
 
     /**
      * adminId로 institutionId 가져오기
@@ -105,6 +134,30 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
         if (!reservation.getCounselDetail().getInstitutionCounsel().getInstitution().getId().equals(institutionId)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_INSTITUTION_ACCESS);
         }
+    }
+
+    private static void validateAndCompleted(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS_TRANSITION);
+        }
+
+        reservation.updateToCompleted();
+    }
+
+    private static void validateAndCancelReservation(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS_TRANSITION);
+        }
+
+        reservation.updateToCancelled();
+    }
+
+    private static void validateAndConfirmReservation(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS_TRANSITION);
+        }
+
+        reservation.updateToConfirmed();
     }
 }
 

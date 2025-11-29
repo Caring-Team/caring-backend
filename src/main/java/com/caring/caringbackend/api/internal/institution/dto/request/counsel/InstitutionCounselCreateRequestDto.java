@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.institution.dto.request;
+package com.caring.caringbackend.api.internal.institution.dto.request.counsel;
 
 import com.caring.caringbackend.api.internal.institution.dto.CounselHourDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;
