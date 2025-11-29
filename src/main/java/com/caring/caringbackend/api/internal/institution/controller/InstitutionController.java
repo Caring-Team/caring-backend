@@ -97,6 +97,11 @@ public class InstitutionController {
     }
 
 
+    /**
+     * 적용중인 기관 테그 조회
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     */
     @GetMapping("/tags")
     public ApiResponse<TagListResponse> getInstitutionTags(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
@@ -105,12 +110,17 @@ public class InstitutionController {
         return ApiResponse.success(institutionService.getInstitutionTags(adminDetails.getId()));
     }
 
+    /**
+     * 적용중인 기관 테그를 모든 Active 상태의 테그와 함께 조회
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     */
     @GetMapping("/tags/all")
     public ApiResponse<TagListResponse> getInstitutionTagsAll(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
 
-        return ApiResponse.success(institutionService.getInstitutionTagsAll(adminDetails.getId()));
+        return ApiResponse.success(institutionService.getInstitutionTagsWithAllActivateTags(adminDetails.getId()));
     }
 
     /**

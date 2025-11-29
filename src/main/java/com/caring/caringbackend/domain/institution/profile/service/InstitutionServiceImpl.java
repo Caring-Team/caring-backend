@@ -292,6 +292,11 @@ public class InstitutionServiceImpl implements InstitutionService {
         log.info("기관 삭제 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
     }
 
+
+    /**
+     * 적용중인 기관 테그 조회
+     * @param adminId 관리자 ID
+     */
     @Transactional(readOnly = true)
     public TagListResponse getInstitutionTags(Long adminId) {
         InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
@@ -303,8 +308,12 @@ public class InstitutionServiceImpl implements InstitutionService {
         return TagListResponse.from(institutionActiveTags);
     }
 
+    /**
+     * 적용중인 기관 테그를 모든 Active 상태의 테그와 함께 조회
+     * @param adminId 관리자 ID
+     */
     @Transactional(readOnly = true)
-    public TagListResponse getInstitutionTagsAll(Long adminId) {
+    public TagListResponse getInstitutionTagsWithAllActivateTags(Long adminId) {
         InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
         validateHasInstitution(admin);
         Institution institution = admin.getInstitution();

@@ -66,7 +66,7 @@ public interface InstitutionService {
 
     TagListResponse getInstitutionTags(Long adminId);
 
-    TagListResponse getInstitutionTagsAll(Long adminId);
+    TagListResponse getInstitutionTagsWithAllActivateTags(Long adminId);
 
     /**
      * 기관 태그 설정
