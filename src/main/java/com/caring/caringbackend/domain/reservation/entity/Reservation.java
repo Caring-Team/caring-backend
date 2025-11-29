@@ -28,9 +28,13 @@ public class Reservation extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 예약 시간
+    // 예약 시작 시간
     @Column(nullable = false)
-    private LocalTime reservationTime;
+    private LocalTime startTime;
+
+    // 예약 종료 시간
+    @Column(nullable = false)
+    private LocalTime endTime;
 
     // 기관 상담 서비스 디테일
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,27 +60,42 @@ public class Reservation extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    // 확정된 날짜와 시간
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
+    // 취소된 날짜와 시간
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
     @Builder
     public Reservation(InstitutionCounselDetail counselDetail,
                        Member member,
                        ElderlyProfile elderlyProfile,
-                       LocalTime reservationTime,
+                       LocalTime startTime,
+                       LocalTime endTime,
                        ReservationStatus status
     ) {
         this.counselDetail = counselDetail;
-        this.reservationTime = reservationTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.member = member;
         this.elderlyProfile = elderlyProfile;
         this.status = status;
     }
 
-    public static Reservation createReservation(InstitutionCounselDetail counselDetail, Member member, ElderlyProfile elderlyProfile, LocalTime reservationTime) {
+    public static Reservation createReservation(
+            InstitutionCounselDetail counselDetail,
+            Member member,
+            ElderlyProfile elderlyProfile,
+            LocalTime startTime,
+            LocalTime endTime) {
         return Reservation.builder()
-
                 .counselDetail(counselDetail)
                 .member(member)
                 .elderlyProfile(elderlyProfile)
-                .reservationTime(reservationTime)
+                .startTime(startTime)
+                .endTime(endTime)
                 .status(ReservationStatus.PENDING)
                 .build();
     }
