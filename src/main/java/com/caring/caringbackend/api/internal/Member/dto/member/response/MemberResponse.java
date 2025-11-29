@@ -1,5 +1,6 @@
 package com.caring.caringbackend.api.internal.Member.dto.member.response;
 
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.entity.MemberRole;
 import com.caring.caringbackend.global.model.Address;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 👤 회원 정보 응답 DTO
@@ -78,6 +80,11 @@ public class MemberResponse {
     private LocalDateTime updatedAt;
 
     /**
+     * 🏥 선호 기관 유형 목록
+     */
+    private List<InstitutionType> preferredInstitutionTypes;
+
+    /**
      * 🏠 주소 내부 클래스
      */
     @Getter
@@ -117,6 +124,7 @@ public class MemberResponse {
             .location(toGeoPointDto(member.getLocation()))
             .createdAt(member.getCreatedAt())
             .updatedAt(member.getUpdatedAt())
+            .preferredInstitutionTypes(member.getPreferredInstitutionTypes())
             .build();
     }
 

@@ -112,6 +112,7 @@ public enum ErrorCode {
     REVIEW_REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW-006", "이미 해당 리뷰를 신고했습니다"),
     REVIEW_SELF_REPORT_DENIED(HttpStatus.BAD_REQUEST, "REVIEW-007", "본인이 작성한 리뷰는 신고할 수 없습니다"),
     REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "REVIEW-008", "리뷰 이미지는 최대 5개까지 업로드할 수 있습니다"),
+    REVIEW_TAG_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "REVIEW-009", "리뷰 태그는 최대 5개까지 선택할 수 있습니다"),
 
     // 🏷️ Tag Domain Errors (TAG-xxx)
     TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG-001", "존재하지 않는 태그입니다"),

@@ -4,7 +4,6 @@ import com.caring.caringbackend.api.internal.Member.dto.elderly.request.ElderlyP
 import com.caring.caringbackend.api.internal.Member.dto.elderly.request.ElderlyProfileUpdateRequest;
 import com.caring.caringbackend.api.internal.Member.dto.elderly.response.ElderlyProfileListResponse;
 import com.caring.caringbackend.api.internal.Member.dto.elderly.response.ElderlyProfileResponse;
-import com.caring.caringbackend.domain.user.elderly.entity.ActivityLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.CognitiveLevel;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.entity.LongTermCareGrade;
@@ -57,12 +56,8 @@ public class ElderlyProfileService {
             longTermCareGrade = LongTermCareGrade.NONE;
         }
 
-        // 3. 장기요양등급 검증
-        validateLongTermCareGrade(
-                longTermCareGrade,
-                request.getActivityLevel(),
-                request.getCognitiveLevel()
-        );
+        // 3. 장기요양등급 또는 인지수준 최소 하나 필수 검증
+        validateElderlyProfileRequiredFields(longTermCareGrade, request.getCognitiveLevel());
 
         // 4. 주소 → 위경도 변환 (주소 필수이므로 null 체크 불필요)
         Address address = request.toAddress();
@@ -142,14 +137,16 @@ public class ElderlyProfileService {
                     : LongTermCareGrade.NONE;
         }
 
-        // 3. 장기요양등급 검증
-        validateLongTermCareGrade(
-                longTermCareGrade,
-                request.getActivityLevel(),
-                request.getCognitiveLevel()
-        );
+        // 3. 인지수준 처리 (수정 시 기존 값 유지)
+        CognitiveLevel cognitiveLevel = request.getCognitiveLevel();
+        if (cognitiveLevel == null) {
+            cognitiveLevel = profile.getCognitiveLevel();
+        }
 
-        // 4. 주소 → 위경도 변환 (주소 변경 시에만)
+        // 4. 장기요양등급 또는 인지수준 최소 하나 필수 검증
+        validateElderlyProfileRequiredFields(longTermCareGrade, cognitiveLevel);
+
+        // 5. 주소 → 위경도 변환 (주소 변경 시에만)
         Address updatedAddress = request.toAddress();
         GeoPoint updatedLocation = calculateUpdatedLocation(updatedAddress, profileId);
         
@@ -166,7 +163,7 @@ public class ElderlyProfileService {
             request.getBloodType(),
             request.getPhoneNumber(),
             request.getActivityLevel(),
-            request.getCognitiveLevel(),
+            cognitiveLevel,
             longTermCareGrade,
             request.getNotes(),
             updatedAddress,
@@ -209,37 +206,28 @@ public class ElderlyProfileService {
     }
 
     /**
-     * 장기요양등급 검증
+     * 어르신 프로필 필수 필드 검증
      * <p>
-     * 등급이 있으면 (NONE이 아니면): 인지수준, 활동레벨은 null이어야 함
-     * 등급이 없으면 (NONE이면): 인지수준, 활동레벨이 필수
+     * 장기요양등급 또는 인지수준 중 최소 하나는 필수입니다.
+     * 둘 다 입력 가능하지만, 둘 다 없으면 안 됩니다.
      *
      * @param longTermCareGrade 장기요양등급
-     * @param activityLevel 활동 수준
      * @param cognitiveLevel 인지 수준
      */
-    private void validateLongTermCareGrade(LongTermCareGrade longTermCareGrade,
-                                           ActivityLevel activityLevel,
-                                           CognitiveLevel cognitiveLevel) {
-        boolean hasGrade = longTermCareGrade != null && longTermCareGrade != LongTermCareGrade.NONE;
+    private void validateElderlyProfileRequiredFields(LongTermCareGrade longTermCareGrade,
+                                                       CognitiveLevel cognitiveLevel) {
+        // 장기요양등급이 NONE이 아니거나, 인지수준이 있으면 OK
+        boolean hasLongTermCareGrade = longTermCareGrade != null && longTermCareGrade != LongTermCareGrade.NONE;
+        boolean hasCognitiveLevel = cognitiveLevel != null;
 
-        if (hasGrade) {
-            // 등급이 있으면 인지수준, 활동레벨은 불필요
-            if (activityLevel != null || cognitiveLevel != null) {
-                throw new BusinessException(
-                        ErrorCode.ELDERLY_PROFILE_INVALID_DATA,
-                        "장기요양등급이 있는 경우 인지수준과 활동레벨은 입력할 수 없습니다."
-                );
-            }
-        } else {
-            // 등급이 없으면 인지수준, 활동레벨이 필수
-            if (activityLevel == null || cognitiveLevel == null) {
-                throw new BusinessException(
-                        ErrorCode.ELDERLY_PROFILE_INVALID_DATA,
-                        "장기요양등급이 없는 경우 인지수준과 활동레벨은 필수입니다."
-                );
-            }
+        // 둘 다 없으면 에러
+        if (!hasLongTermCareGrade && !hasCognitiveLevel) {
+            throw new BusinessException(
+                    ErrorCode.ELDERLY_PROFILE_INVALID_DATA,
+                    "장기요양등급 또는 인지수준 중 최소 하나는 필수입니다."
+            );
         }
     }
+
 }
 

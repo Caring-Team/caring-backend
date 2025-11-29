@@ -19,6 +19,7 @@ import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
+import com.caring.caringbackend.domain.institution.profile.entity.InstitutionType;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.MemberNotFoundException;
@@ -64,6 +65,11 @@ public class MemberService {
         Member member = memberRepository.findByIdAndDeletedFalse(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         
+        // 선호 기관 유형 초기화 (N+1 방지: @ElementCollection은 자동으로 조회됨)
+        if (member.getPreferredInstitutionTypes() != null) {
+            member.getPreferredInstitutionTypes().size(); // Lazy Loading 트리거
+        }
+        
         return MemberResponse.from(member);
     }
 
@@ -102,6 +108,9 @@ public class MemberService {
         Address updatedAddress = request.toAddress();
         GeoPoint updatedLocation = calculateUpdatedLocation(updatedAddress, memberId);
 
+        // 선호 기관 유형 개수 검증 (Service 레벨 검증)
+        validatePreferredInstitutionTypes(request.getPreferredInstitutionTypes());
+
         // 회원 정보 업데이트 (JPA 변경 감지로 자동 저장)
         member.updateInfo(
             request.getName(),
@@ -109,7 +118,8 @@ public class MemberService {
             request.getGender(),
             request.getBirthDate(),
             updatedAddress,
-            updatedLocation
+            updatedLocation,
+            request.getPreferredInstitutionTypes()
         );
         
         return MemberResponse.from(member);
@@ -134,13 +144,15 @@ public class MemberService {
         // - 이름: "탈퇴회원"
         // - 전화번호: null (또는 "000-0000-0000" 등 정책에 맞게)
         // - 주소/위치: null
+        // - 선호 기관 유형: 기존 값 유지
         member.updateInfo(
                 "탈퇴회원",
                 null,
                 member.getGender(),
                 member.getBirthDate(),
                 null,
-                null
+                null,
+                member.getPreferredInstitutionTypes()  // 기존 값 유지
         );
 
         // 3) 소프트 삭제
@@ -208,6 +220,20 @@ public class MemberService {
     }
     
     /**
+     * 선호 기관 유형 검증 (Service 레벨 검증)
+     * 
+     * @param preferredInstitutionTypes 선호 기관 유형 목록
+     * @throws BusinessException 검증 실패 시
+     */
+    private void validatePreferredInstitutionTypes(List<InstitutionType> preferredInstitutionTypes) {
+        if (preferredInstitutionTypes == null || 
+            preferredInstitutionTypes.isEmpty() ||
+            preferredInstitutionTypes.size() > 3) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
+    }
+    
+    /**
      * 회원 선호 태그 조회
      * 
      * @param memberId 회원 ID
@@ -229,6 +255,29 @@ public class MemberService {
         return TagListResponse.of(tagResponses);
     }
     
+    /**
+     * 회원 선호 기관 유형 설정
+     * 
+     * @param memberId 회원 ID
+     * @param preferredInstitutionTypes 선호 기관 유형 목록 (최소 1개, 최대 3개)
+     */
+    @Transactional
+    public void setPreferredInstitutionTypes(Long memberId, List<InstitutionType> preferredInstitutionTypes) {
+        // 회원 존재 확인
+        Member member = memberRepository.findByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        
+        // 선호 기관 유형 개수 검증 (Service 레벨 검증)
+        validatePreferredInstitutionTypes(preferredInstitutionTypes);
+        
+        // 선호 기관 유형 설정 (기존 리스트를 교체)
+        member.getPreferredInstitutionTypes().clear();
+        member.getPreferredInstitutionTypes().addAll(preferredInstitutionTypes);
+        
+        log.info("선호 기관 유형 설정 완료: memberId={}, institutionTypeCount={}", 
+                memberId, preferredInstitutionTypes.size());
+    }
+
     /**
      * 회원 선호 태그 설정
      * 
