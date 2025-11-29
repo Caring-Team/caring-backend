@@ -95,13 +95,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     );
 
     @Query("""
-            select r.status as status, count(r) as count
+            select 
+                sum(case when r.status = 'PENDING' then 1 else 0 end) as pendingCount,
+                sum(case when r.status = 'COMFIRMED' and DATE(r.confirmedAt) = CURRENT_DATE then 1 else 0 end) as todayConfirmedCount,
+                sum(case when r.status = 'CANCELLED' and Date(r.canceledAt) = CURRENT_DATE then 1 else 0 end) as todaycancelledCount                
             from Reservation r
             join r.counselDetail cd
             join cd.institutionCounsel ic
             join ic.institution i
             where i.id = :institutionId
-            group by r.status
             """)
-    List<ReservationStatsProjection> countReservationsByStatusForInstitution(Long institutionId);
+    ReservationStatsProjection countReservationsByStatusAndInstitution(Long institutionId);
 }

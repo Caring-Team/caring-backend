@@ -50,7 +50,9 @@ public class MemberReservationServiceImpl implements MemberReservationService {
                     counselDetail,
                     member,
                     elderlyProfile,
-                    requestDto.getStartTime());
+                    requestDto.getStartTime(),
+                    requestDto.getEndTime()
+            );
 
             // 예약 시간대 비트마스크 업데이트
             counselDetail.markSlotAsReserved(requestDto.getSlotIndex());

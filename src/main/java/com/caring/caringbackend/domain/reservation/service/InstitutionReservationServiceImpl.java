@@ -84,15 +84,9 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
 
     // 내 기관 상태별 예약 개수 조회
     @Override
-    public Map<ReservationStatus, Long> getReservationStatusCounts(Long institutionId) {
-        return reservationRepository.countReservationsByStatusForInstitution(institutionId)
-                .stream()
-                .collect(Collectors.toMap(
-                        ReservationStatsProjection::getStatus,
-                        ReservationStatsProjection::getCount
-                ));
+    public ReservationStatsProjection getReservationStatusCounts(Long institutionId) {
+        return reservationRepository.countReservationsByStatusAndInstitution(institutionId);
     }
-
 
     // ======================== private methods ========================
 

@@ -3,6 +3,7 @@ package com.caring.caringbackend.domain.reservation.service;
 import com.caring.caringbackend.api.internal.reservation.dto.response.InstitutionReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.reservation.dto.response.InstitutionReservationResponseDto;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
+import com.caring.caringbackend.domain.reservation.repository.ReservationStatsProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -58,5 +59,5 @@ public interface InstitutionReservationService {
             ReservationStatus status
     );
 
-    Map<ReservationStatus, Long> getReservationStatusCounts(Long institutionId);
+    ReservationStatsProjection getReservationStatusCounts(Long institutionId);
 }
