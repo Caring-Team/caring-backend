@@ -1,5 +1,6 @@
 package com.caring.caringbackend.api.internal.institution.controller;
 
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionTagRequest;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
@@ -93,6 +94,33 @@ public class InstitutionController {
     ) {
         institutionService.changeAdmissionAvailability(adminDetails.getId(), isAdmissionAvailable);
         return ApiResponse.success(null);
+    }
+
+
+    /**
+     * 적용중인 기관 테그 조회
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     */
+    @GetMapping("/tags")
+    public ApiResponse<TagListResponse> getInstitutionTags(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+    ) {
+
+        return ApiResponse.success(institutionService.getInstitutionTags(adminDetails.getId()));
+    }
+
+    /**
+     * 적용중인 기관 테그를 모든 Active 상태의 테그와 함께 조회
+     *
+     * @param adminDetails  인증된 기관 관리자 정보
+     */
+    @GetMapping("/tags/all")
+    public ApiResponse<TagListResponse> getInstitutionTagsAll(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+    ) {
+
+        return ApiResponse.success(institutionService.getInstitutionTagsWithAllActivateTags(adminDetails.getId()));
     }
 
     /**

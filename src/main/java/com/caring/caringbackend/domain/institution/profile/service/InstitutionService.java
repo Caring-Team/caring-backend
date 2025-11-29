@@ -1,5 +1,6 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
@@ -62,6 +63,10 @@ public interface InstitutionService {
      * @param adminId 관리자 ID
      */
     void deleteInstitution(Long adminId);
+
+    TagListResponse getInstitutionTags(Long adminId);
+
+    TagListResponse getInstitutionTagsWithAllActivateTags(Long adminId);
 
     /**
      * 기관 태그 설정
