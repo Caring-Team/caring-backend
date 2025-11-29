@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.institution.dto.request;
+package com.caring.caringbackend.api.internal.institution.dto.request.careGiver;
 
 import com.caring.caringbackend.global.model.Gender;
 import jakarta.validation.constraints.Email;
