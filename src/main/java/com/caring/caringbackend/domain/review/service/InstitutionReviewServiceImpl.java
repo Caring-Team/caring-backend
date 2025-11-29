@@ -2,6 +2,7 @@ package com.caring.caringbackend.domain.review.service;
 
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewResponse;
+import com.caring.caringbackend.api.internal.institution.dto.request.review.InstitutionReviewSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
 import com.caring.caringbackend.domain.file.entity.File;
@@ -43,7 +44,6 @@ public class InstitutionReviewServiceImpl implements InstitutionReviewService {
      * @param institutionId 기관 ID
      * @param pageable      페이징 정보 (정렬: createdAt, rating 지원)
      * @return 리뷰 목록 응답
-     *
      * @author 윤다인
      */
     @Override
@@ -84,14 +84,24 @@ public class InstitutionReviewServiceImpl implements InstitutionReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public InstitutionReviewsResponseDto getMyInstitutionReviews(Long adminId) {
+    public InstitutionReviewsResponseDto getMyInstitutionReviews(
+            Long adminId,
+            InstitutionReviewSearchFilter searchFilter
+    ) {
         InstitutionAdmin admin = institutionAdminRepository.findByIdWithInstitution(adminId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
 
         Long institutionId = admin.getInstitution().getId();
-        List<Review> reviews = reviewRepository.findByIdWithFetches(institutionId);
-        initializeLazyCollection(reviews);
+        List<Review> reviews;
+        // daysAgo가 null이거나 0 이하면 전체 조회, 값이 있으면 해당 기간만 조회
+        if (searchFilter.getDaysAgo() != null && searchFilter.getDaysAgo() > 0) {
+            LocalDateTime fromDateTime = LocalDateTime.now().minusDays(searchFilter.getDaysAgo());
+            reviews = reviewRepository.findByIdWithFetchesAndFilter(institutionId, fromDateTime);
+        } else {
+            reviews = reviewRepository.findByIdWithFetches(institutionId);
+        }
 
+        initializeLazyCollection(reviews);
         List<InstitutionReviewResponseDto> reviewResponses = reviews.stream()
                 .map(InstitutionReviewResponseDto::from)
                 .toList();
