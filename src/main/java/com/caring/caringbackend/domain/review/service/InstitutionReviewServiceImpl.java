@@ -36,7 +36,7 @@ public class InstitutionReviewServiceImpl implements InstitutionReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewTagMappingRepository reviewTagMappingRepository;
     private final InstitutionAdminRepository institutionAdminRepository;
-    private final int RECENT_REVIEW_DAYS = 7;
+    private static final int RECENT_REVIEW_DAYS = 7;
 
     /**
      * 기관의 리뷰 목록 조회 (공개)
