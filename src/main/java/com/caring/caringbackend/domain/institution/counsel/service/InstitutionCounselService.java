@@ -2,9 +2,9 @@ package com.caring.caringbackend.domain.institution.counsel.service;
 
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCounselCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCounselUpdateRequestDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselDetailResponseDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselDetailResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselReservationDetailResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselStatus;
 
 import java.time.LocalDate;

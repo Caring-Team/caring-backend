@@ -1,5 +1,6 @@
-package com.caring.caringbackend.api.internal.institution.dto.response;
+package com.caring.caringbackend.api.internal.institution.dto.response.counsel;
 
+import com.caring.caringbackend.api.internal.institution.dto.response.TimeSlotDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselReservationStatus;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;

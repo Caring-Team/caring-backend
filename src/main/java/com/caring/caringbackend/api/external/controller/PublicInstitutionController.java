@@ -1,7 +1,7 @@
 package com.caring.caringbackend.api.external.controller;
 
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;

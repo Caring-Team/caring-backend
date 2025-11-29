@@ -42,18 +42,18 @@ public class InstitutionReservationController {
         );
 
         Page<InstitutionReservationResponseDto> reservations = institutionReservationService.getMyInstitutionReservations(
-                        adminDetails.getId(),
-                        searchRequest.getStatus(),
-                        searchRequest.getStartDate(),
-                        searchRequest.getEndDate(),
-                        pageable
-                );
+                adminDetails.getId(),
+                searchRequest.getStatus(),
+                searchRequest.getStartDate(),
+                searchRequest.getEndDate(),
+                pageable
+        );
 
         return ApiResponse.success(reservations);
     }
 
     @GetMapping("/{reservationId}")
-    @Operation(summary = "2. 내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
+    @Operation(summary = "3. 내 기관 예약 상세 조회", description = "내 기관의 특정 예약 상세 정보를 조회합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> getMyInstitutionReservationDetail(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 
@@ -67,7 +67,7 @@ public class InstitutionReservationController {
     }
 
     @PatchMapping("/{reservationId}/status")
-    @Operation(summary = "3. 내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
+    @Operation(summary = "4. 내 기관 예약 상태 변경", description = "내 기관의 특정 예약 상태를 변경합니다.")
     public ApiResponse<InstitutionReservationDetailResponseDto> updateMyInstitutionReservationStatus(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails,
 

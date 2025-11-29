@@ -4,6 +4,7 @@ import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.DashboardDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import org.springframework.data.domain.Page;

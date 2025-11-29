@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 /**
  * 기관 예약 관리 서비스 인터페이스
@@ -56,4 +57,6 @@ public interface InstitutionReservationService {
             Long reservationId,
             ReservationStatus status
     );
+
+    Map<ReservationStatus, Long> getReservationStatusCounts(Long institutionId);
 }

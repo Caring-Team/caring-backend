@@ -93,5 +93,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
-}
 
+    @Query("""
+            select r.status as status, count(r) as count
+            from Reservation r
+            join r.counselDetail cd
+            join cd.institutionCounsel ic
+            join ic.institution i
+            where i.id = :institutionId
+            group by r.status
+            """)
+    List<ReservationStatsProjection> countReservationsByStatusForInstitution(Long institutionId);
+}

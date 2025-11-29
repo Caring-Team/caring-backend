@@ -2,9 +2,8 @@ package com.caring.caringbackend.api.internal.institution.controller;
 
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCounselCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCounselUpdateRequestDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselDetailResponseDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselReservationDetailResponseDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionCounselResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselDetailResponseDto;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselStatus;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.global.response.ApiResponse;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

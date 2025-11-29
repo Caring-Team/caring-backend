@@ -7,6 +7,7 @@ import com.caring.caringbackend.domain.institution.profile.repository.Institutio
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import com.caring.caringbackend.domain.reservation.repository.ReservationRepository;
+import com.caring.caringbackend.domain.reservation.repository.ReservationStatsProjection;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 기관 예약 관리 서비스 구현
@@ -78,6 +81,20 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
 
         return InstitutionReservationDetailResponseDto.from(reservation);
     }
+
+    // 내 기관 상태별 예약 개수 조회
+    @Override
+    public Map<ReservationStatus, Long> getReservationStatusCounts(Long institutionId) {
+        return reservationRepository.countReservationsByStatusForInstitution(institutionId)
+                .stream()
+                .collect(Collectors.toMap(
+                        ReservationStatsProjection::getStatus,
+                        ReservationStatsProjection::getCount
+                ));
+    }
+
+
+    // ======================== private methods ========================
 
     /**
      * adminId로 institutionId 가져오기

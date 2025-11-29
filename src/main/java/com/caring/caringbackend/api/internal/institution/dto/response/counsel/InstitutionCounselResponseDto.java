@@ -1,4 +1,4 @@
-package com.caring.caringbackend.api.internal.institution.dto.response;
+package com.caring.caringbackend.api.internal.institution.dto.response.counsel;
 
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounsel;
 import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselStatus;
