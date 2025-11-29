@@ -100,15 +100,6 @@ public class Reservation extends BaseTimeEntity {
                 .build();
     }
 
-    /**
-     * 예약 상태 변경
-     * <p>
-     * 상태가 변경될 때 완료 시각을 기록합니다.
-     */
-    public void updateStatus(ReservationStatus newStatus) {
-
-    }
-
     public void updateToConfirmed() {
         this.status = ReservationStatus.CONFIRMED;
         this.confirmedAt = LocalDateTime.now();

@@ -100,7 +100,7 @@ public class MemberReservationServiceImpl implements MemberReservationService {
         }
 
         // 예약 상태를 취소로 변경
-        reservation.updateStatus(ReservationStatus.CANCELLED);
+        reservation.updateToCancelled();
 
         // 해당 시간대 비트마스크 복원 (다시 예약 가능하도록)
         InstitutionCounselDetail counselDetail = reservation.getCounselDetail();
