@@ -1,5 +1,6 @@
 package com.caring.caringbackend.api.internal.institution.controller;
 
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionTagRequest;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
@@ -93,6 +94,23 @@ public class InstitutionController {
     ) {
         institutionService.changeAdmissionAvailability(adminDetails.getId(), isAdmissionAvailable);
         return ApiResponse.success(null);
+    }
+
+
+    @GetMapping("/tags")
+    public ApiResponse<TagListResponse> getInstitutionTags(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+    ) {
+
+        return ApiResponse.success(institutionService.getInstitutionTags(adminDetails.getId()));
+    }
+
+    @GetMapping("/tags/all")
+    public ApiResponse<TagListResponse> getInstitutionTagsAll(
+            @AuthenticationPrincipal InstitutionAdminDetails adminDetails
+    ) {
+
+        return ApiResponse.success(institutionService.getInstitutionTagsAll(adminDetails.getId()));
     }
 
     /**

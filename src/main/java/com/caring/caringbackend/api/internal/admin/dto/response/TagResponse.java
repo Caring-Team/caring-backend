@@ -2,6 +2,7 @@ package com.caring.caringbackend.api.internal.admin.dto.response;
 
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.entity.TagCategory;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +55,9 @@ public class TagResponse {
      */
     private Boolean isActive;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean hasTag;
+
     /**
      * 정렬 순서
      */
@@ -71,6 +75,20 @@ public class TagResponse {
                 .name(tag.getName())
                 .description(tag.getDescription())
                 .isActive(tag.getIsActive())
+                .displayOrder(tag.getDisplayOrder())
+                .build();
+    }
+
+    public static TagResponse hasTagFrom(Tag tag, boolean hasTag) {
+        return TagResponse.builder()
+                .id(tag.getId())
+                .category(tag.getCategory())
+                .categoryDescription(tag.getCategory().getDescription())
+                .code(tag.getCode())
+                .name(tag.getName())
+                .description(tag.getDescription())
+                .isActive(tag.getIsActive())
+                .hasTag(hasTag)
                 .displayOrder(tag.getDisplayOrder())
                 .build();
     }

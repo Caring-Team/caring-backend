@@ -1,7 +1,9 @@
 package com.caring.caringbackend.domain.tag.repository;
 
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
+import com.caring.caringbackend.domain.tag.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,6 +24,22 @@ public interface InstitutionTagRepository extends JpaRepository<InstitutionTag, 
      * @return 기관 태그 목록
      */
     List<InstitutionTag> findByInstitutionId(Long institutionId);
+
+
+    @Query("""
+    SELECT it.tag
+    FROM InstitutionTag it
+    WHERE it.institution.id = :institutionId
+    """)
+    List<Tag> findTagsByInstitutionId(Long institutionId);
+
+
+    @Query("""
+    SELECT it.tag.id
+    FROM InstitutionTag it
+    WHERE it.institution.id = :institutionId
+    """)
+    List<Long> findTagIdsByInstitutionId(Long institutionId);
     
     /**
      * 기관 ID로 기관 태그 전체 삭제
