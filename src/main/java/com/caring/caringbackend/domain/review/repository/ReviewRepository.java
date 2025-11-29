@@ -120,6 +120,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             from Review r
             where r.institution.id = :institutionId
             and r.createdAt >= :from
+            and r.deleted = false
             """)
     ReviewStatsProjection countRecentReviews(
             @Param("institutionId") Long institutionId,
