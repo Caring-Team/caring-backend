@@ -1,6 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.service;
 
-import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagListResponse;
+import com.caring.caringbackend.api.internal.admin.dto.response.TagResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
@@ -20,12 +21,14 @@ import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
 import com.caring.caringbackend.domain.tag.repository.TagRepository;
+import com.caring.caringbackend.domain.tag.service.TagService;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.integration.ai.service.AiServerService;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -54,6 +57,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final InstitutionTagRepository institutionTagRepository;
     private final AiServerService aiServerService;
     private final ReviewService reviewService;
+    private final TagService tagService;
 
     /**
      * 기관 등록
@@ -286,6 +290,39 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         institution.deleteInstitution();
         log.info("기관 삭제 완료: adminId={}, id={}, name={}", adminId, institution.getId(), institution.getName());
+    }
+
+
+    /**
+     * 적용중인 기관 테그 조회
+     * @param adminId 관리자 ID
+     */
+    @Transactional(readOnly = true)
+    public TagListResponse getInstitutionTags(Long adminId) {
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
+        validateHasInstitution(admin);
+        Institution institution = admin.getInstitution();
+
+        List<Tag> institutionActiveTags = institutionTagRepository.findTagsByInstitutionId(institution.getId());
+
+        return TagListResponse.from(institutionActiveTags);
+    }
+
+    /**
+     * 적용중인 기관 테그를 모든 Active 상태의 테그와 함께 조회
+     * @param adminId 관리자 ID
+     */
+    @Transactional(readOnly = true)
+    public TagListResponse getInstitutionTagsWithAllActivateTags(Long adminId) {
+        InstitutionAdmin admin = findInstitutionAdminByIdWithInstitution(adminId);
+        validateHasInstitution(admin);
+        Institution institution = admin.getInstitution();
+
+        List<Tag> allActiveTags = tagService.getAllActiveTags();
+        Set<Long> institutionActiveTags = institutionTagRepository.findTagIdsByInstitutionId(institution.getId());
+
+        return TagListResponse.of(allActiveTags.stream()
+                .map((tag) -> TagResponse.hasTagFrom(tag, institutionActiveTags.contains(tag.getId()))).toList());
     }
 
     /**
