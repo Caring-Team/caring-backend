@@ -87,6 +87,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             left join fetch r.member m
             left join fetch r.institution i
             left join fetch r.reservation res
+            left join fetch res.counselDetail cd
+            left join fetch cd.institutionCounsel ic
             where i.id = :institutionId
             and r.deleted = false
             order by r.createdAt desc
