@@ -104,7 +104,7 @@ public class MemberReservationServiceImpl implements MemberReservationService {
 
         // 해당 시간대 비트마스크 복원 (다시 예약 가능하도록)
         InstitutionCounselDetail counselDetail = reservation.getCounselDetail();
-        counselDetail.releaseSlot(counselDetail.calculateSlotIndex(reservation.getReservationTime()));
+        counselDetail.releaseSlot(counselDetail.calculateSlotIndex(reservation.getStartTime()));
     }
 
     private ElderlyProfile getElderlyProfile(Long memberId, MemberReservationCreateRequestDto requestDto) {

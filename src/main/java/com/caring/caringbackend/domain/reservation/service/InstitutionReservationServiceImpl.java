@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -85,7 +87,14 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
     // 내 기관 상태별 예약 개수 조회
     @Override
     public ReservationStatsProjection getReservationStatusCounts(Long institutionId) {
-        return reservationRepository.countReservationsByStatusAndInstitution(institutionId);
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime endOfToday = today.plusDays(1).atStartOfDay();
+        return reservationRepository.countReservationsByStatusAndInstitution(
+                institutionId,
+                startOfToday,
+                endOfToday
+        );
     }
 
     // ======================== private methods ========================

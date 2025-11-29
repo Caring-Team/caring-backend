@@ -6,6 +6,7 @@ import com.caring.caringbackend.api.internal.institution.dto.request.Institution
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.DashboardDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
+import com.caring.caringbackend.domain.institution.dashboard.service.InstitutionDashboardService;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import com.caring.caringbackend.domain.reservation.service.InstitutionReservationService;
 import com.caring.caringbackend.domain.review.service.ReviewService;
@@ -33,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "10. 🏥 Institution Profile", description = "기관 프로필 관리 API | 내 기관 정보 조회/수정, 태그 관리")
 public class InstitutionController {
     private final InstitutionService institutionService;
-
+    private final InstitutionDashboardService institutionDashboardService;
 
     /**
      * 기관 등록 요청
@@ -74,7 +75,8 @@ public class InstitutionController {
     public ApiResponse<DashboardDto> getMyInstitutionDashboard(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        return null;
+        DashboardDto dashboardData = institutionDashboardService.getDashboardData(adminDetails.getId());
+        return ApiResponse.success(dashboardData);
     }
 
     /**

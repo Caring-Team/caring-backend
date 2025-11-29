@@ -54,7 +54,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 )
                 .orderBy(
                         institutionCounselDetail.serviceDate.desc(),
-                        reservation.reservationTime.desc()
+                        reservation.startTime.desc()
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

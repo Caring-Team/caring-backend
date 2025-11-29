@@ -4,5 +4,5 @@ import com.caring.caringbackend.api.internal.institution.dto.response.DashboardD
 
 public interface InstitutionDashboardService {
 
-    DashboardDto getDashboardData(Long institutionId);
+    DashboardDto getDashboardData(Long adminId);
 }
