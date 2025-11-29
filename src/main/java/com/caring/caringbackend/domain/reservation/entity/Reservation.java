@@ -103,14 +103,21 @@ public class Reservation extends BaseTimeEntity {
     /**
      * 예약 상태 변경
      * <p>
-     * 상태가 COMPLETED로 변경될 때 completedAt을 자동으로 설정합니다.
+     * 상태가 변경될 때 완료 시각을 기록합니다.
      */
     public void updateStatus(ReservationStatus newStatus) {
         this.status = newStatus;
-        
         // 상태가 COMPLETED로 변경되면 완료 시각 기록
         if (newStatus == ReservationStatus.COMPLETED && this.completedAt == null) {
             this.completedAt = LocalDateTime.now();
+        }
+
+        if (newStatus == ReservationStatus.CONFIRMED && this.confirmedAt == null) {
+            this.confirmedAt = LocalDateTime.now();
+        }
+
+        if (newStatus == ReservationStatus.CANCELLED && this.canceledAt == null) {
+            this.canceledAt = LocalDateTime.now();
         }
     }
 }
