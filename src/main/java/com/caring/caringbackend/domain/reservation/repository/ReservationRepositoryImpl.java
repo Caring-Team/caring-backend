@@ -3,12 +3,8 @@ package com.caring.caringbackend.domain.reservation.repository;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -31,15 +27,13 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Reservation> findByInstitutionIdWithFilters(
+    public List<Reservation> findByInstitutionIdWithFilters(
             Long institutionId,
             ReservationStatus status,
             LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable) {
-
-        // 데이터 조회 쿼리
-        List<Reservation> content = queryFactory
+            LocalDate endDate
+    ) {
+        return queryFactory
                 .selectFrom(reservation)
                 .join(reservation.counselDetail, institutionCounselDetail).fetchJoin()
                 .join(institutionCounselDetail.institutionCounsel, institutionCounsel).fetchJoin()
@@ -54,27 +48,9 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 )
                 .orderBy(
                         institutionCounselDetail.serviceDate.desc(),
-                        reservation.startTime.desc()
+                        reservation.createdAt.desc()
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
-
-        // Count 쿼리 (fetchJoin 제외)
-        JPAQuery<Long> countQuery = queryFactory
-                .select(reservation.count())
-                .from(reservation)
-                .join(reservation.counselDetail, institutionCounselDetail)
-                .join(institutionCounselDetail.institutionCounsel, institutionCounsel)
-                .join(institutionCounsel.institution, institution)
-                .where(
-                        institutionIdEq(institutionId),
-                        statusEq(status),
-                        serviceDateGoe(startDate),
-                        serviceDateLoe(endDate)
-                );
-
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     /**
