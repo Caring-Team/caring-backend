@@ -1,5 +1,7 @@
 package com.caring.caringbackend.domain.institution.profile.entity;
 
+import com.caring.caringbackend.global.exception.BusinessException;
+import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -131,5 +133,19 @@ public class InstitutionAdmin extends BaseEntity {
         institution.addAdmin(this);
 
         this.role = InstitutionAdminRole.STAFF;
+    }
+
+    public void unlinkInstitution() {
+        if (!hasInstitution()) {
+            throw new BusinessException(ErrorCode.ADMIN_HAS_NO_INSTITUTION);
+        }
+        this.institution.removeAdmin(this);
+        this.institution = null;
+        this.role = InstitutionAdminRole.STAFF;
+    }
+
+    protected void setInstitutionNull() {
+        this.role = InstitutionAdminRole.STAFF;
+        this.institution = null;
     }
 }
