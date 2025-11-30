@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@PreAuthorize("hasRole('INSTITUTION_OWNER')")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/institutions/me/staffs")
@@ -23,7 +23,6 @@ public class InstitutionStaffController {
 
     private final InstitutionStaffService institutionStaffService;
 
-    @PreAuthorize("hasRole('INSTITUTION_OWNER')")
     @GetMapping()
     public ApiResponse<InstitutionStaffsResponse> getAllStaffs(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails) {
