@@ -90,8 +90,8 @@ public class MemberReservationServiceImpl implements MemberReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         // 이미 취소된 예약인지 확인
-        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
-            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
+        if (reservation.getStatus() == ReservationStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_CANCELED);
         }
 
         // 이미 완료된 예약은 취소 불가
@@ -100,7 +100,7 @@ public class MemberReservationServiceImpl implements MemberReservationService {
         }
 
         // 예약 상태를 취소로 변경
-        reservation.updateToCancelled();
+        reservation.updateToCanceled();
 
         // 해당 시간대 비트마스크 복원 (다시 예약 가능하도록)
         InstitutionCounselDetail counselDetail = reservation.getCounselDetail();

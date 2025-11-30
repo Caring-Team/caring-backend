@@ -1,14 +1,12 @@
 package com.caring.caringbackend.domain.institution.dashboard.service;
 
 import com.caring.caringbackend.api.internal.institution.dto.response.DashboardDto;
-import com.caring.caringbackend.domain.institution.profile.entity.Institution;
 import com.caring.caringbackend.domain.institution.profile.entity.InstitutionAdmin;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.reservation.repository.ReservationStatsProjection;
 import com.caring.caringbackend.domain.reservation.service.InstitutionReservationService;
 import com.caring.caringbackend.domain.review.service.InstitutionReviewService;
 import com.caring.caringbackend.global.exception.BusinessException;
-import com.caring.caringbackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +32,7 @@ public class InstitutionDashboardServiceImpl implements InstitutionDashboardServ
         return DashboardDto.builder()
                 .pendingCount(reservationStats.getPendingCount())
                 .todayConfirmedCount(reservationStats.getTodayConfirmedCount())
-                .todayCancelledCount(reservationStats.getTodayCancelledCount())
+                .todayCanceledCount(reservationStats.getTodayCanceledCount())
                 .recentReviewCount(recentReviewCount)
                 .build();
     }
