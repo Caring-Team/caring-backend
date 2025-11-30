@@ -73,9 +73,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
                 coalesce(sum(case when r.status = 'CONFIRMED' 
                           and r.confirmedAt between :startOfToday and :endOfToday 
                          then 1 else 0 end), 0) as todayConfirmedCount,
-                coalesce(sum(case when r.status = 'CANCELLED' 
+                coalesce(sum(case when r.status = 'CANCELED' 
                           and r.canceledAt between :startOfToday and :endOfToday
-                         then 1 else 0 end), 0) as todayCancelledCount                
+                         then 1 else 0 end), 0) as todayCanceledCount                
             from Reservation r
             join r.counselDetail cd
             join cd.institutionCounsel ic

@@ -83,7 +83,7 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
             validateAndConfirmReservation(reservation);
         }
         // 취소 처리
-        if (status == ReservationStatus.CANCELLED) {
+        if (status == ReservationStatus.CANCELED) {
             validateAndCancelReservation(reservation);
         }
         // 완료 처리
@@ -145,11 +145,12 @@ public class InstitutionReservationServiceImpl implements InstitutionReservation
     }
 
     private static void validateAndCancelReservation(Reservation reservation) {
-        if (reservation.getStatus() != ReservationStatus.PENDING) {
+        if (reservation.getStatus() != ReservationStatus.PENDING
+                && reservation.getStatus() != ReservationStatus.CONFIRMED) {
             throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS_TRANSITION);
         }
 
-        reservation.updateToCancelled();
+        reservation.updateToCanceled();
     }
 
     private static void validateAndConfirmReservation(Reservation reservation) {

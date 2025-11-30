@@ -9,7 +9,7 @@ public record DashboardDto(
 
         Long todayConfirmedCount,
 
-        Long todayCancelledCount,
+        Long todayCanceledCount,
 
         Long recentReviewCount
 ) {

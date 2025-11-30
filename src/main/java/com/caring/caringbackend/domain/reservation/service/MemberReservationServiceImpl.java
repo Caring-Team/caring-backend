@@ -4,6 +4,7 @@ import com.caring.caringbackend.api.internal.reservation.dto.request.MemberReser
 import com.caring.caringbackend.api.internal.reservation.dto.response.MemberReservationDetailResponseDto;
 import com.caring.caringbackend.api.internal.reservation.dto.response.MemberReservationResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.entity.InstitutionCounselDetail;
+import com.caring.caringbackend.domain.institution.counsel.entity.enums.CounselTimeUnit;
 import com.caring.caringbackend.domain.institution.counsel.repository.InstitutionCounselDetailRepository;
 import com.caring.caringbackend.domain.reservation.entity.Reservation;
 import com.caring.caringbackend.domain.reservation.entity.ReservationStatus;
@@ -14,6 +15,7 @@ import com.caring.caringbackend.domain.user.guardian.entity.Member;
 import com.caring.caringbackend.domain.user.guardian.repository.MemberRepository;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,8 +44,10 @@ public class MemberReservationServiceImpl implements MemberReservationService {
             ElderlyProfile elderlyProfile = getElderlyProfile(memberId, requestDto);
             InstitutionCounselDetail counselDetail = getCounselDetail(requestDto);
 
+            validateReservationRequest(requestDto, counselDetail);
+
             // 예약이 가능한지 확인
-            validateIsAvailable(requestDto, counselDetail);
+            validateIsReservationAvailable(requestDto, counselDetail);
 
             // 예약 생성
             Reservation reservation = Reservation.createReservation(
@@ -55,7 +59,7 @@ public class MemberReservationServiceImpl implements MemberReservationService {
             );
 
             // 예약 시간대 비트마스크 업데이트
-            counselDetail.markSlotAsReserved(requestDto.getSlotIndex());
+            counselDetail.markSlotAsReserved(timeToSlotIndex(requestDto.getStartTime()));
 
             // 예약 저장
             reservationRepository.save(reservation);
@@ -90,8 +94,8 @@ public class MemberReservationServiceImpl implements MemberReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         // 이미 취소된 예약인지 확인
-        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
-            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
+        if (reservation.getStatus() == ReservationStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_CANCELED);
         }
 
         // 이미 완료된 예약은 취소 불가
@@ -100,11 +104,11 @@ public class MemberReservationServiceImpl implements MemberReservationService {
         }
 
         // 예약 상태를 취소로 변경
-        reservation.updateToCancelled();
+        reservation.updateToCanceled();
 
         // 해당 시간대 비트마스크 복원 (다시 예약 가능하도록)
         InstitutionCounselDetail counselDetail = reservation.getCounselDetail();
-        counselDetail.releaseSlot(counselDetail.calculateSlotIndex(reservation.getStartTime()));
+        counselDetail.releaseSlot(timeToSlotIndex(reservation.getStartTime()));
     }
 
     private ElderlyProfile getElderlyProfile(Long memberId, MemberReservationCreateRequestDto requestDto) {
@@ -112,8 +116,25 @@ public class MemberReservationServiceImpl implements MemberReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ELDERLY_PROFILE_NOT_FOUND));
     }
 
-    private static void validateIsAvailable(MemberReservationCreateRequestDto requestDto, InstitutionCounselDetail counselDetail) {
-        if (!counselDetail.isSlotAvailable(requestDto.getSlotIndex())) {
+    private void validateReservationRequest(MemberReservationCreateRequestDto requestDto, InstitutionCounselDetail counselDetail) {
+        if (requestDto.getStartTime().isAfter(requestDto.getEndTime())) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+
+        int startTimeSlot = timeToSlotIndex(requestDto.getStartTime());
+        int endTimeSlot = timeToSlotIndex(requestDto.getEndTime());
+
+        int diff = endTimeSlot - startTimeSlot;
+        CounselTimeUnit timeUnit = counselDetail.getUnit();
+
+        if (timeUnit.getSpace() != diff) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST);
+        }
+    }
+
+    private void validateIsReservationAvailable(MemberReservationCreateRequestDto requestDto, InstitutionCounselDetail counselDetail) {
+        int startTimeSlot = timeToSlotIndex(requestDto.getStartTime());
+        if (!counselDetail.isSlotAvailable(startTimeSlot)) {
             throw new BusinessException(RESERVATION_TIME_NOT_AVAILABLE);
         }
     }
@@ -128,5 +149,12 @@ public class MemberReservationServiceImpl implements MemberReservationService {
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    // returns 0 to 47
+    private int timeToSlotIndex(LocalTime time) {
+        int hour = time.getHour();
+        int minute = time.getMinute();
+        return hour * 2 + minute / 30;
     }
 }

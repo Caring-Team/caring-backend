@@ -27,19 +27,17 @@ public class MemberReservationCreateRequestDto {
     @NotNull(message = "reservationDate는 필수입니다")
     private LocalDate reservationDate;
 
-    @Schema(description = "슬롯 인덱스 (0~47)", example = "18")
-    @NotNull(message = "slotIndex는 필수입니다")
-    @Min(value = 0, message = "slotIndex는 0 이상이어야 합니다")
-    @Max(value = 47, message = "slotIndex는 47 이하이어야 합니다")
-    int slotIndex;
-
     @Schema(description = "시작 시간", example = "09:00")
     @NotNull(message = "startTime는 필수입니다")
     LocalTime startTime;
 
+
     @Schema(description = "종료 시간", example = "09:30")
+    @NotNull(message = "endTime는 필수입니다")
     LocalTime endTime;
 
+
     @Schema(description = "어르신 프로필 ID", example = "1")
+    @NotNull(message = "어르신 프로필 ID는 필수입니다")
     Long elderlyProfileId;
 }

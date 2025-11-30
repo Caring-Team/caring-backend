@@ -5,13 +5,14 @@ import com.caring.caringbackend.api.internal.institution.dto.response.counsel.In
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.api.internal.Member.dto.review.response.ReviewListResponse;
+import com.caring.caringbackend.api.internal.institution.dto.response.counsel.InstitutionCounselResponseDto;
 import com.caring.caringbackend.domain.institution.counsel.service.InstitutionCounselService;
 import com.caring.caringbackend.domain.institution.profile.service.InstitutionService;
 import com.caring.caringbackend.domain.review.service.InstitutionReviewService;
-import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -89,8 +90,18 @@ public class PublicInstitutionController {
     }
 
     // 상담을 통해 세부 정보를 누를때 detail 동적 생성
-    @GetMapping("/{counselId}/details")
-    @Operation(summary = "3. 상담 예약 가능 시간 조회", description = "상담 예약 가능 시간을 조회합니다.")
+    @GetMapping("/{institutionId}/counsels")
+    @Operation(summary = "3. 기관의 예약 상품 목록 조회", description = "기관의 예약 상품 목록을 조회합니다.")
+    public ApiResponse<List<InstitutionCounselResponseDto>> getInstitutionCounsels(
+            @PathVariable Long institutionId
+    ) {
+        List<InstitutionCounselResponseDto> responseDto = institutionCounselService.getInstitutionCounselsByInstitutionId(
+                institutionId);
+        return ApiResponse.success(responseDto);
+    }
+
+    @GetMapping("/counsels/{counselId}")
+    @Operation(summary = "4. 상담 예약 가능 시간 조회", description = "상담 예약 가능 시간을 조회합니다.")
     public ApiResponse<InstitutionCounselReservationDetailResponseDto> getInstitutionCounselDetail(
             @PathVariable Long counselId,
             @RequestParam("date") LocalDate date
@@ -110,7 +121,7 @@ public class PublicInstitutionController {
      */
     @GetMapping("/{institutionId}/reviews")
     @Operation(
-            summary = "4. 기관 리뷰 목록 조회",
+            summary = "5. 기관 리뷰 목록 조회",
             description = "특정 기관의 리뷰 목록을 조회합니다. (공개, 삭제되지 않은 리뷰만)\n\n" +
                     "**정렬 옵션:**\n" +
                     "- `sort=createdAt,desc` (최신순, 기본값)\n" +
