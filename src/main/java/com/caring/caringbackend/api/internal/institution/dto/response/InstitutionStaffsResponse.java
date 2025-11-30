@@ -30,7 +30,6 @@ public class InstitutionStaffsResponse {
 
         private String username;
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime lastActivityAt;
 
         public static InstitutionStaffResponse from(InstitutionAdmin admin) {
