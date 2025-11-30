@@ -45,6 +45,9 @@ public class InstitutionAdmin extends BaseEntity {
     @Column
     private LocalDate birthDate;
 
+    @Column
+    private LocalDateTime lastActivityAt;
+
     // 역할
     // 역할 (ADMIN, STAFF)
     @Enumerated(EnumType.STRING)
@@ -147,5 +150,9 @@ public class InstitutionAdmin extends BaseEntity {
     protected void setInstitutionNull() {
         this.role = InstitutionAdminRole.STAFF;
         this.institution = null;
+    }
+
+    public void activity() {
+        this.lastActivityAt = LocalDateTime.now();
     }
 }
