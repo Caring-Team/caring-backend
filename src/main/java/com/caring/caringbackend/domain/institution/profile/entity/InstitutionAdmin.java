@@ -5,6 +5,7 @@ import com.caring.caringbackend.global.exception.ErrorCode;
 import com.caring.caringbackend.global.model.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
