@@ -15,7 +15,7 @@ public interface InstitutionCounselService {
 
     List<InstitutionCounselResponseDto> getInstitutionCounselsByAdminId(Long adminId);
 
-    List<InstitutionCounselResponseDto> getInstitutionCounselsByInstitutionId(Long adminId);
+    List<InstitutionCounselResponseDto> getInstitutionCounselsByInstitutionId(Long institutionId);
 
     CounselStatus toggleInstitutionCounselStatus(Long adminId, Long counselId);
 

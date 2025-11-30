@@ -90,7 +90,7 @@ public class PublicInstitutionController {
     }
 
     // 상담을 통해 세부 정보를 누를때 detail 동적 생성
-    @GetMapping("{institutionId}/counsels")
+    @GetMapping("/{institutionId}/counsels")
     @Operation(summary = "3. 기관의 예약 상품 목록 조회", description = "기관의 예약 상품 목록을 조회합니다.")
     public ApiResponse<List<InstitutionCounselResponseDto>> getInstitutionCounsels(
             @PathVariable Long institutionId
