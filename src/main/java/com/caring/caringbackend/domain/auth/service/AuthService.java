@@ -427,6 +427,7 @@ public class AuthService {
         return tokenService.regenerateAccessToken(generateTokenDto);
     }
 
+    @Transactional
     public JwtTokenResponse regenerateAccessTokenInstitutionAdmin(TokenRefreshRequest tokenRefreshRequest) {
         if (tokenRefreshRequest.getRequestToken() == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
@@ -440,6 +441,7 @@ public class AuthService {
                 .id(institutionAdmin.getId())
                 .role(institutionAdmin.getRole().getKey())
                 .build();
+        institutionAdmin.activity();
         return tokenService.regenerateAccessToken(generateTokenDto);
     }
 
