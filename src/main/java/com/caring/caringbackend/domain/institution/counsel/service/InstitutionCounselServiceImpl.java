@@ -82,10 +82,25 @@ public class InstitutionCounselServiceImpl implements InstitutionCounselService 
      * 기관의 상담 서비스 목록 조회
      */
     @Override
-    public List<InstitutionCounselResponseDto> getInstitutionCounsels(Long adminId) {
+    public List<InstitutionCounselResponseDto> getInstitutionCounselsByAdminId(Long adminId) {
         InstitutionAdmin admin = findInstitutionAdminById(adminId);
         validateInstitution(admin);
         Institution institution = admin.getInstitution();
+
+        List<InstitutionCounsel> counsels = institutionCounselRepository.findByInstitutionId(institution.getId());
+
+        return counsels.stream()
+                .map(InstitutionCounselResponseDto::from)
+                .toList();
+    }
+
+    /**
+     * 기관의 상담 서비스 목록 조회
+     */
+    @Override
+    public List<InstitutionCounselResponseDto> getInstitutionCounselsByInstitutionId(Long institutionId) {
+        Institution institution = institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INSTITUTION_NOT_FOUND));
 
         List<InstitutionCounsel> counsels = institutionCounselRepository.findByInstitutionId(institution.getId());
 

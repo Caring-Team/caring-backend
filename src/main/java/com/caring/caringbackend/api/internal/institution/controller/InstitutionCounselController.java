@@ -42,7 +42,7 @@ public class InstitutionCounselController {
     public ApiResponse<List<InstitutionCounselResponseDto>> getInstitutionCounsels(
             @AuthenticationPrincipal InstitutionAdminDetails adminDetails
     ) {
-        List<InstitutionCounselResponseDto> responseDto = institutionCounselService.getInstitutionCounsels(adminDetails.getId());
+        List<InstitutionCounselResponseDto> responseDto = institutionCounselService.getInstitutionCounselsByAdminId(adminDetails.getId());
         return ApiResponse.success(responseDto);
     }
 

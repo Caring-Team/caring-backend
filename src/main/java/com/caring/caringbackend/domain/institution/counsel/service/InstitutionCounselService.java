@@ -13,7 +13,9 @@ import java.util.List;
 public interface InstitutionCounselService {
     void createInstitutionCounsel(Long adminId, InstitutionCounselCreateRequestDto requestDto);
 
-    List<InstitutionCounselResponseDto> getInstitutionCounsels(Long adminId);
+    List<InstitutionCounselResponseDto> getInstitutionCounselsByAdminId(Long adminId);
+
+    List<InstitutionCounselResponseDto> getInstitutionCounselsByInstitutionId(Long adminId);
 
     CounselStatus toggleInstitutionCounselStatus(Long adminId, Long counselId);
 
