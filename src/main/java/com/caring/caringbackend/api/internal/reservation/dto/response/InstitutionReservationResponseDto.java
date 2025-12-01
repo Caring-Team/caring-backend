@@ -25,8 +25,8 @@ public record InstitutionReservationResponseDto(
         @Schema(description = "예약 상태", example = "COMPLETED")
         ReservationStatus status,
 
-        @Schema(description = "예약 생성일시", example = "2025-11-06T10:30:00")
-        LocalDateTime createdAt,
+        @Schema(description = "예약 생성일", example = "2025-11-06")
+        LocalDate createdAt,
 
         @Schema(description = "예약 날짜", example = "2025-11-11")
         LocalDate reservationDate,
@@ -44,7 +44,7 @@ public record InstitutionReservationResponseDto(
                 reservation.getElderlyProfile().getName(),
                 reservation.getCounselDetail().getInstitutionCounsel().getTitle(),
                 reservation.getStatus(),
-                reservation.getCreatedAt(),
+                reservation.getCreatedAt().toLocalDate(),
                 reservation.getCounselDetail().getServiceDate(),
                 reservation.getStartTime(),
                 reservation.getEndTime()

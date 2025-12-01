@@ -105,8 +105,8 @@ public class Reservation extends BaseTimeEntity {
         this.confirmedAt = LocalDateTime.now();
     }
 
-    public void updateToCancelled() {
-        this.status = ReservationStatus.CANCELLED;
+    public void updateToCanceled() {
+        this.status = ReservationStatus.CANCELED;
         this.canceledAt = LocalDateTime.now();
     }
 

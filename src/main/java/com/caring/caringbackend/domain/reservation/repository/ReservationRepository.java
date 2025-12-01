@@ -69,13 +69,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
     @Query("""
             select 
-                sum(case when r.status = 'PENDING' then 1 else 0 end) as pendingCount,
-                sum(case when r.status = 'CONFIRMED' 
+                coalesce(sum(case when r.status = 'PENDING' then 1 else 0 end),0) as pendingCount,
+                coalesce(sum(case when r.status = 'CONFIRMED' 
                           and r.confirmedAt between :startOfToday and :endOfToday 
-                         then 1 else 0 end) as todayConfirmedCount,
-                sum(case when r.status = 'CANCELLED' 
+                         then 1 else 0 end), 0) as todayConfirmedCount,
+                coalesce(sum(case when r.status = 'CANCELED' 
                           and r.canceledAt between :startOfToday and :endOfToday
-                         then 1 else 0 end) as todayCancelledCount                
+                         then 1 else 0 end), 0) as todayCanceledCount                
             from Reservation r
             join r.counselDetail cd
             join cd.institutionCounsel ic

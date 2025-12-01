@@ -82,7 +82,7 @@ public class Institution extends BaseEntity {
 
     // 기관 계정 목록 (OWNER, ADMIN, STAFF 포함) -> 기관장은 Role로 확인
     @BatchSize(size = 50)
-    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private List<InstitutionAdmin> admins = new ArrayList<>();
 
     // 요양사 목록
@@ -198,8 +198,12 @@ public class Institution extends BaseEntity {
     /**
      * 관리자 추가 편의 메서드
      */
-    public void addAdmin(InstitutionAdmin admin) {
+    protected void addAdmin(InstitutionAdmin admin) {
         this.admins.add(admin);
+    }
+
+    protected void removeAdmin(InstitutionAdmin admin) {
+        this.admins.remove(admin);
     }
 
     /**
@@ -291,6 +295,11 @@ public class Institution extends BaseEntity {
         }
     }
 
+    public void preDelete() {
+        admins.forEach(InstitutionAdmin::setInstitutionNull);
+        admins.clear();
+    }
+
     /**
      * 기관 삭제 (Soft Delete)
      * <p>
@@ -301,6 +310,8 @@ public class Institution extends BaseEntity {
         if (!isActive()) {
             throw new BusinessException(ErrorCode.INSTITUTION_ALREADY_DELETED);
         }
+
+        preDelete();
 
         // 삭제 시 입소 불가능으로 변경
         this.isAdmissionAvailable = false;

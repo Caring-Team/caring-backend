@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -74,44 +73,71 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((requests) -> requests
-                        // Swagger 및 API 문서 경로
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/swagger-resources/**").permitAll()
-                        .requestMatchers("/webjars/**").permitAll()
-
-                        // 회원 인증 경로
-                        .requestMatchers("/api/v1/auth/oauth2/login/**").permitAll()
-                        .requestMatchers("/api/v1/auth/token/refresh").permitAll()
-                        .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/api/v1/auth/certification-code").permitAll()
-                        .requestMatchers("/api/v1/auth/verify-phone").permitAll()
-
-                        // 기관 인증 경로
-                        .requestMatchers("/api/v1/auth/institution/login").permitAll()
-                        .requestMatchers("/api/v1/auth/institution/verify-phone").permitAll()
-                        .requestMatchers("/api/v1/auth/institution/certification-code").permitAll()
-                        .requestMatchers("/api/v1/auth/institution/token/refresh").permitAll()
-
-                        // 공개 API (인증 불필요)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/institutions/profile/*").permitAll()  // 기관 상세 조회
-                        .requestMatchers("/api/v1/institutions/*/reviews").permitAll()  // 기관 리뷰 목록 조회
-                        .requestMatchers("/api/v1/reviews/*").permitAll()  // 리뷰 상세 조회
-                        .requestMatchers(HttpMethod.GET, "/api/v1/tags/**").permitAll()  // 태그 조회만 공개
-                        .requestMatchers("/api/v1/tags/**").hasRole("ADMIN")  // 태그 관리는 시스템 관리자만
-
-                        // 채팅 API (인증 필요 - 회원 또는 기관 관리자)
+                        // ========================================
+                        // 1. Swagger 및 API 문서 (공개)
+                        // ========================================
                         .requestMatchers(
-                                "/api/v1/member/chat/**",
-                                "/api/v1/institution/chat/**",
-                                "/api/v1/member/consult-requests",
-                                "/api/v1/institution/consult-requests"
-                        ).authenticated()
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
 
-                        // 테스트 경로 (개발 환경)
+                        // ========================================
+                        // 2. 인증 API (공개)
+                        // ========================================
+                        // 회원 인증
+                        .requestMatchers(
+                                "/api/v1/auth/certification-code",      // 회원 휴대폰 인증 코드 전송
+                                "/api/v1/auth/verify-phone",            // 회원 휴대폰 번호 인증
+                                "/api/v1/auth/login",                   // 회원 로컬 로그인
+                                "/api/v1/auth/oauth2/login/**",         // 회원 OAuth2 로그인
+                                "/api/v1/auth/token/refresh"            // 회원 토큰 갱신
+                        ).permitAll()
+
+                        // 기관 인증
+                        .requestMatchers(
+                                "/api/v1/auth/institution/certification-code",  // 기관 인증 코드 전송
+                                "/api/v1/auth/institution/verify-phone",        // 기관 휴대폰 인증
+                                "/api/v1/auth/institution/login",               // 기관 로그인
+                                "/api/v1/auth/institution/token/refresh"        // 기관 토큰 갱신
+                        ).permitAll()
+
+                        // ========================================
+                        // 3. 공개 API (인증 불필요)
+                        // ========================================
+                        .requestMatchers("/api/v1/public/**").permitAll()  // 공개 기관, 광고, 태그
+
+                        // ========================================
+                        // 4. 회원 전용 API (ROLE_USER)
+                        // ========================================
+                        .requestMatchers(
+                                "/api/v1/member/**"
+                        ).hasRole("USER")
+
+                        // ========================================
+                        // 5. 기관 관리자 전용 API (ROLE_INSTITUTION_OWNER, ROLE_INSTITUTION_STAFF)
+                        // ========================================
+                        .requestMatchers(
+                                "/api/v1/institution/**"
+                        ).hasAnyRole("INSTITUTION_OWNER", "INSTITUTION_STAFF")
+
+                        // ========================================
+                        // 6. 시스템 관리자 전용 API (ROLE_ADMIN)
+                        // ========================================
+                        .requestMatchers(
+                                "/api/v1/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // ========================================
+                        // 7. 테스트 경로 (개발 환경)
+                        // ========================================
                         .requestMatchers("/api/v1/test/**").permitAll()
 
+                        // ========================================
+                        // 8. 그 외 모든 요청은 인증 필요
+                        // ========================================
                         .anyRequest().authenticated());
         return http.build();
     }
