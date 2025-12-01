@@ -4,7 +4,10 @@ import com.caring.caringbackend.domain.auth.annotation.OAuth2Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.swagger.v3.core.util.AnnotationsUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -15,8 +18,11 @@ public class OAuth2ServiceFactory {
 
     public OAuth2ServiceFactory(List<OAuth2Service> services) {
         for (OAuth2Service service : services) {
-            OAuth2Provider annotation = service.getClass().getAnnotation(OAuth2Provider.class);
+            Class<?> targetClass = AopUtils.getTargetClass(service);
+            OAuth2Provider annotation = targetClass.getAnnotation(OAuth2Provider.class);
             if (annotation != null) {
+                String key = annotation.value().toLowerCase();
+                log.info("OAuth2Service 등록 Provider : {} -> {}", key, targetClass.getSimpleName());
                 oAuth2ServiceMap.put(annotation.value().toLowerCase(), service);
             }
         }
