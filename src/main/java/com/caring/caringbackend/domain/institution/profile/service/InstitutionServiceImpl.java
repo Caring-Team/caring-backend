@@ -368,7 +368,9 @@ public class InstitutionServiceImpl implements InstitutionService {
                 .filter(v -> needRemove.contains(v.getTag().getId()))
                 .toList());
 
-        saveInstitutionTags(institution, needAdd.stream().toList());
+        if (!needAdd.isEmpty()) {
+            saveInstitutionTags(institution, needAdd.stream().toList());
+        }
 
         log.info("기관 태그 설정 완료: adminId={}, institutionId={}, tagCount={}",
                 adminId, institution.getId(), tagIds != null ? tagIds.size() : 0);
