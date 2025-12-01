@@ -113,6 +113,7 @@ public class MemberResponse {
      * 📤 Member 엔티티를 MemberResponse로 변환
      */
     public static MemberResponse from(Member member) {
+        List<InstitutionType> preferredInstitutionTypes = member.getPreferredInstitutionTypes();
         return MemberResponse.builder()
             .id(member.getId())
             .role(member.getRole())
@@ -124,7 +125,12 @@ public class MemberResponse {
             .location(toGeoPointDto(member.getLocation()))
             .createdAt(member.getCreatedAt())
             .updatedAt(member.getUpdatedAt())
-            .preferredInstitutionTypes(member.getPreferredInstitutionTypes())
+            // LazyInitializationException 방지를 위해 복사본 사용
+            .preferredInstitutionTypes(
+                preferredInstitutionTypes != null
+                    ? List.copyOf(preferredInstitutionTypes)
+                    : List.of()
+            )
             .build();
     }
 
