@@ -5,7 +5,6 @@ import com.caring.caringbackend.api.internal.admin.dto.response.TagResponse;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionCreateRequestDto;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionSearchFilter;
 import com.caring.caringbackend.api.internal.institution.dto.request.InstitutionUpdateRequestDto;
-import com.caring.caringbackend.api.internal.institution.dto.response.DashboardDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionDetailResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.InstitutionProfileResponseDto;
 import com.caring.caringbackend.api.internal.institution.dto.response.review.InstitutionReviewsResponseDto;
@@ -18,11 +17,11 @@ import com.caring.caringbackend.domain.institution.profile.entity.PriceInfo;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionAdminRepository;
 import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.domain.review.service.InstitutionReviewService;
-import com.caring.caringbackend.domain.review.service.ReviewService;
 import com.caring.caringbackend.domain.tag.entity.InstitutionTag;
 import com.caring.caringbackend.domain.tag.entity.Tag;
 import com.caring.caringbackend.domain.tag.repository.InstitutionTagRepository;
 import com.caring.caringbackend.domain.tag.repository.TagRepository;
+import com.caring.caringbackend.domain.tag.repository.dto.InstitutionTagWithTagIdDto;
 import com.caring.caringbackend.domain.tag.service.TagService;
 import com.caring.caringbackend.global.exception.BusinessException;
 import com.caring.caringbackend.global.exception.ErrorCode;
@@ -30,6 +29,7 @@ import com.caring.caringbackend.global.integration.ai.service.AiServerService;
 import com.caring.caringbackend.global.model.Address;
 import com.caring.caringbackend.global.model.GeoPoint;
 import com.caring.caringbackend.global.service.GeocodingService;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -186,8 +186,8 @@ public class InstitutionServiceImpl implements InstitutionService {
     /**
      * 기관 정보 수정 (PATCH)
      *
-     * @param adminId 관리자 ID
-     * @param requestDto    기관 수정 요청 DTO
+     * @param adminId    관리자 ID
+     * @param requestDto 기관 수정 요청 DTO
      */
     @Override
     @Transactional
@@ -352,13 +352,26 @@ public class InstitutionServiceImpl implements InstitutionService {
         // 권한 체크: 해당 기관의 OWNER 또는 STAFF 모두 가능
         validateAdminAuthorization(admin, false);
 
-        // 기존 태그 전체 삭제
-        institutionTagRepository.deleteByInstitutionId(institution.getId());
+        List<InstitutionTagWithTagIdDto> withTagIdByInstitutionId = institutionTagRepository.findWithTagIdByInstitutionId(
+                institution.getId());
 
-        // 새 태그 저장 (빈 리스트가 아닌 경우만)
-        if (tagIds != null && !tagIds.isEmpty()) {
-            saveInstitutionTags(institution, tagIds);
-        }
+        Set<Long> currentTags = new HashSet<>(withTagIdByInstitutionId.stream()
+                .map(InstitutionTagWithTagIdDto::getTagId).toList());
+
+        Set<Long> requestedTags = new HashSet<>(tagIds);
+
+        Set<Long> needAdd = new HashSet<>(requestedTags);
+        needAdd.removeAll(currentTags);
+
+        Set<Long> needRemove = new HashSet<>(currentTags);
+        needRemove.removeAll(requestedTags);
+
+        institution.getTags().removeAll(withTagIdByInstitutionId.stream()
+                .filter(v -> needRemove.contains(v.getTagId()))
+                .map(InstitutionTagWithTagIdDto::getInstitutionTag)
+                .toList());
+
+        saveInstitutionTags(institution, needAdd.stream().toList());
 
         log.info("기관 태그 설정 완료: adminId={}, institutionId={}, tagCount={}",
                 adminId, institution.getId(), tagIds != null ? tagIds.size() : 0);
