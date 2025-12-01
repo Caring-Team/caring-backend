@@ -22,7 +22,7 @@ public class OAuth2ServiceFactory {
             OAuth2Provider annotation = targetClass.getAnnotation(OAuth2Provider.class);
             if (annotation != null) {
                 String key = annotation.value().toLowerCase();
-                log.info("OAuth2Service 등록 Provide : {} -> {}", key, targetClass.getSimpleName());
+                log.info("OAuth2Service 등록 Provider : {} -> {}", key, targetClass.getSimpleName());
                 oAuth2ServiceMap.put(annotation.value().toLowerCase(), service);
             }
         }
