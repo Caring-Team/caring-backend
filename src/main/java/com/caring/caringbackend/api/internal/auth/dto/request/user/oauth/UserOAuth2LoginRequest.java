@@ -8,6 +8,6 @@ import lombok.Getter;
 public class UserOAuth2LoginRequest {
 
     @NotBlank
-    @JsonProperty("authorization_code")
+    @JsonProperty("access_token")
     private String accessToken;
 }
