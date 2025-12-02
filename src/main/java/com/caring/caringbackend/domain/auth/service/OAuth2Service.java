@@ -6,8 +6,6 @@ import com.caring.caringbackend.api.internal.auth.dto.response.OAuth2ProviderUse
 
 public interface OAuth2Service {
 
-    public OAuth2ProviderTokenResponse getTokenFromProvider(UserOAuth2LoginRequest request);
-
     public OAuth2ProviderUserInfoResponse getUserInfoFromProvider(
-            OAuth2ProviderTokenResponse response);
+            String accessToken);
 }

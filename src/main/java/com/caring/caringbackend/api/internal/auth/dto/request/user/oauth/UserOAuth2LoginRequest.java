@@ -9,9 +9,5 @@ public class UserOAuth2LoginRequest {
 
     @NotBlank
     @JsonProperty("authorization_code")
-    private String authorizationCode;
-
-    @NotBlank
-    @JsonProperty("state")
-    private String state;
+    private String accessToken;
 }
