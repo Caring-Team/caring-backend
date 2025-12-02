@@ -17,6 +17,9 @@ public record MemberReservationResponseDto(
         @Schema(description = "기관명", example = "행복요양원")
         String institutionName,
 
+        @Schema(description = "서비스 이름", example = "방문 상담")
+        String counselServiceName,
+
         @Schema(description = "어르신 이름", example = "김할머니")
         String elderlyName,
 
@@ -39,6 +42,7 @@ public record MemberReservationResponseDto(
         return MemberReservationResponseDto.builder()
                 .reservationId(reservation.getId())
                 .institutionName(reservation.getCounselDetail().getInstitutionCounsel().getInstitution().getName())
+                .counselServiceName(reservation.getCounselDetail().getInstitutionCounsel().getTitle())
                 .elderlyName(reservation.getElderlyProfile().getName())
                 .reservationDate(reservation.getCounselDetail().getServiceDate())
                 .startTime(reservation.getStartTime())

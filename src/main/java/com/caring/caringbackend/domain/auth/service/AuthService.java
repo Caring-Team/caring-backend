@@ -15,7 +15,6 @@ import com.caring.caringbackend.api.internal.auth.dto.request.VerifyPhoneRequest
 import com.caring.caringbackend.api.internal.auth.dto.response.InstitutionAdminMeResponse;
 import com.caring.caringbackend.api.internal.auth.dto.response.InstitutionAdminMeResponse.InstitutionAdminMeResponseBuilder;
 import com.caring.caringbackend.api.internal.auth.dto.response.JwtTokenResponse;
-import com.caring.caringbackend.api.internal.auth.dto.response.OAuth2ProviderTokenResponse;
 import com.caring.caringbackend.api.internal.auth.dto.response.OAuth2ProviderUserInfoResponse;
 import com.caring.caringbackend.domain.auth.entity.TemporaryUserInfo;
 import com.caring.caringbackend.domain.auth.repository.TemporaryUserInfoRepository;
@@ -65,8 +64,8 @@ public class AuthService {
     public JwtTokenResponse oAuth2LoginOrGenerateTemporaryToken(String provider,
                                                                 UserOAuth2LoginRequest userOAuth2LoginRequest) {
         OAuth2Service service = oAuth2ServiceFactory.getService(provider);
-        OAuth2ProviderTokenResponse tokenFromProvider = service.getTokenFromProvider(userOAuth2LoginRequest);
-        OAuth2ProviderUserInfoResponse userInfoFromProvider = service.getUserInfoFromProvider(tokenFromProvider);
+        OAuth2ProviderUserInfoResponse userInfoFromProvider = service.getUserInfoFromProvider(
+                userOAuth2LoginRequest.getAccessToken());
 
         return transactionTemplate.execute(
                 status -> authCredentialRepository

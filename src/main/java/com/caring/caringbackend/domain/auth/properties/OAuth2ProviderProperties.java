@@ -19,7 +19,6 @@ public class OAuth2ProviderProperties {
     public static class ProviderProperties {
         private String clientId;
         private String clientSecret;
-        private String redirectUri;
         private String tokenUri;
         private String userInfoUri;
     }
