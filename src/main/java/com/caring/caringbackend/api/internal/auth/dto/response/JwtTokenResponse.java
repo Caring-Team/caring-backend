@@ -31,9 +31,9 @@ public class JwtTokenResponse {
             ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
                     .path("/")
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .maxAge(expiresIn)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build(); //
             headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         }
@@ -41,9 +41,9 @@ public class JwtTokenResponse {
             ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
                     .path("/")
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .maxAge(refreshTokenExpiresIn)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
             headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         }

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +43,7 @@ public class InstitutionAuthController {
     public ResponseEntity<?> verifyPhoneInstitutionAdmin(
             @Valid @RequestBody VerifyPhoneRequest verifyPhoneRequest) {
 
-        return ResponseEntity.ok().headers(authService.verifyPhoneInstitution(verifyPhoneRequest).toHeaders()).build();
+        return ResponseEntity.ok(authService.verifyPhoneInstitution(verifyPhoneRequest));
     }
 
     @PreAuthorize("hasRole('TEMP_INSTITUTION')")
@@ -54,9 +53,8 @@ public class InstitutionAuthController {
             @AuthenticationPrincipal TemporaryInstitutionAdminDetails temporaryInstitutionDetails,
             @Valid @RequestBody InstitutionLocalRegisterRequest institutionLocalRegisterRequest) {
 
-        return ResponseEntity.ok().headers(
-                authService.completeRegisterInstitution(temporaryInstitutionDetails, institutionLocalRegisterRequest)
-                        .toHeaders()).build();
+        return ResponseEntity.ok(
+                authService.completeRegisterInstitution(temporaryInstitutionDetails, institutionLocalRegisterRequest));
     }
 
     @PostMapping("/login")
@@ -64,18 +62,16 @@ public class InstitutionAuthController {
     public ResponseEntity<?> loginInstitutionAdmin(
             @Valid @RequestBody InstitutionLocalLoginRequest institutionLocalLoginRequest) {
 
-        return ResponseEntity.ok().headers(authService.loginInstitutionAdmin(institutionLocalLoginRequest).toHeaders())
-                .build();
+        return ResponseEntity.ok(authService.loginInstitutionAdmin(institutionLocalLoginRequest));
     }
 
     @PostMapping("/token/refresh")
     @Operation(summary = "5. 기관 관리자 액세스 토큰 재발급", description = "기관 관리자 액세스 토큰을 재발급합니다.")
     public ResponseEntity<?> refreshAccessTokenInstitutionAdmin(
-            @CookieValue(value = "refresh_token", required = false) String refreshToken) {
+            @Valid @RequestBody TokenRefreshRequest request) {
 
-        TokenRefreshRequest dto = TokenRefreshRequest.builder().requestToken(refreshToken).build();
-        return ResponseEntity.ok()
-                .headers(authService.regenerateAccessTokenInstitutionAdmin(dto).toHeaders()).build();
+        TokenRefreshRequest dto = TokenRefreshRequest.builder().requestToken(request.getRequestToken()).build();
+        return ResponseEntity.ok(authService.regenerateAccessTokenInstitutionAdmin(dto));
     }
 
     @PreAuthorize("hasAnyRole('INSTITUTION_STAFF', 'INSTITUTION_OWNER')")
