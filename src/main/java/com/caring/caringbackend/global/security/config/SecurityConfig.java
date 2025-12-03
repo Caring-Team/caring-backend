@@ -126,9 +126,9 @@ public class SecurityConfig {
                         // ========================================
                         // 6. 시스템 관리자 전용 API (ROLE_ADMIN)
                         // ========================================
-                        .requestMatchers(
-                                "/api/v1/admin/**"
-                        ).hasRole("ADMIN")
+//                        .requestMatchers(
+//                                "/api/v1/admin/**"
+//                        ).hasRole("ADMIN")
 
                         // ========================================
                         // 7. 테스트 경로 (개발 환경)
