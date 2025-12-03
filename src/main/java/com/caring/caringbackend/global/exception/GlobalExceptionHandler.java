@@ -71,16 +71,16 @@ public class GlobalExceptionHandler {
                 .path("/")
                 .maxAge(0)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .value("")
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token")
                 .path("/")
                 .maxAge(0)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .value("")
                 .build();
 
