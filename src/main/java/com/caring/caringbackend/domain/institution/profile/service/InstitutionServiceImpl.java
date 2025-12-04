@@ -128,16 +128,13 @@ public class InstitutionServiceImpl implements InstitutionService {
                 .min(Comparator.comparingInt(InstitutionSearchStrategy::getPriority))
                 .orElseThrow(() -> new IllegalStateException("검색 전략을 찾을 수 없습니다."));
 
-        // 검색 실행
         Page<Institution> institutionPage = strategy.search(filter, pageable);
 
-        log.info("기관 목록 조회 완료: total={}, page={}, size={}",
-                institutionPage.getTotalElements(),
-                institutionPage.getNumber(),
-                institutionPage.getSize());
-
-        // Entity -> DTO 변환
-        return institutionPage.map(InstitutionProfileResponseDto::from);
+        return institutionPage.map(InstitutionProfileResponseDto::from)
+                .map(dto -> {
+                    dto.setMainImageUrl(fileService.generatePresignedUrl(dto.getMainImageUrl()));
+                    return dto;
+                });
     }
 
     /**
