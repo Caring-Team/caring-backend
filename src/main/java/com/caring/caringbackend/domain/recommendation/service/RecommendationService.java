@@ -58,7 +58,7 @@ public class RecommendationService {
         for (RecommendationInstitutionDto institutionDto : response.getInstitutions()) {
             Institution institution = institutionRepository.findById(institutionDto.getInstitutionId())
                     .orElseThrow(() -> new BusinessException(INSTITUTION_NOT_FOUND));
-            institutionDto.setMainImageUrl(institution.getMainImageUrl());
+            institutionDto.setMainImageUrl(fileService.generatePresignedUrl(institution.getMainImageUrl()));
         }
 
         if (response == null) {
