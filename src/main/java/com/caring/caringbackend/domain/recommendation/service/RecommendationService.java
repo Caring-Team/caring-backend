@@ -1,7 +1,11 @@
 package com.caring.caringbackend.domain.recommendation.service;
 
 import com.caring.caringbackend.api.internal.Member.dto.recommendation.request.RecommendRequestDto;
+import com.caring.caringbackend.api.internal.Member.dto.recommendation.response.RecommendationInstitutionDto;
 import com.caring.caringbackend.api.internal.Member.dto.recommendation.response.RecommendationResponseDto;
+import com.caring.caringbackend.domain.file.service.FileService;
+import com.caring.caringbackend.domain.institution.profile.entity.Institution;
+import com.caring.caringbackend.domain.institution.profile.repository.InstitutionRepository;
 import com.caring.caringbackend.domain.user.elderly.entity.ElderlyProfile;
 import com.caring.caringbackend.domain.user.elderly.repository.ElderlyProfileRepository;
 import com.caring.caringbackend.domain.user.guardian.entity.Member;
@@ -12,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 import static com.caring.caringbackend.global.exception.ErrorCode.*;
 
 @Service
@@ -21,6 +28,8 @@ public class RecommendationService {
     private final AiServerService aiServerService;
     private final MemberRepository memberRepository;
     private final ElderlyProfileRepository elderlyProfileRepository;
+    private final InstitutionRepository institutionRepository;
+    private final FileService fileService;
 
     // 추천 로직 구현
     @Transactional(readOnly = true)  // Lazy Loading을 위한 트랜잭션 추가
@@ -45,6 +54,13 @@ public class RecommendationService {
 
         // 추천 기관 목록 받아오기
         RecommendationResponseDto response = aiServerService.recommend(member, elderlyProfile);
+
+        for (RecommendationInstitutionDto institutionDto : response.getInstitutions()) {
+            Institution institution = institutionRepository.findById(institutionDto.getInstitutionId())
+                    .orElseThrow(() -> new BusinessException(INSTITUTION_NOT_FOUND));
+            institutionDto.setMainImageUrl(institution.getMainImageUrl());
+        }
+
         if (response == null) {
             throw new BusinessException(AI_SERVER_COMMUNICATION_FAILED);
 

@@ -122,4 +122,6 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long>,
             @Param("radiusKm") Double radiusKm,
             Pageable pageable
     );
+
+    // 메인 이미지 URL로 기관 조회
 }
